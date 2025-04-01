@@ -3,6 +3,7 @@ import { UserModule } from './apps/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/config';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './apps/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -10,7 +11,8 @@ import { ConfigModule } from '@nestjs/config';
       envFilePath: `.env.${process.env.NODE_ENV || 'development'}.local`,
     }),
     TypeOrmModule.forRootAsync(databaseConfig),
-    UserModule],
+    UserModule,
+    AuthModule],
   controllers: [],
   providers: [],
 })
