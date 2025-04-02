@@ -20,8 +20,10 @@ const validationPipe = new ValidationPipe({
 })
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(validationPipe); // 全局使用 ValidationPipe 验证器
+  app.useGlobalPipes(validationPipe);
   app.setGlobalPrefix("api");
-  await app.listen(2345);
+  await app.listen(2345, () => {
+    console.log("服务启动成功");
+  });
 }
 bootstrap();

@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as yaml from 'yaml';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
-import path from 'node:path';
+import { Tag } from '../apps/tags/entities/tag.entity'
 
 export const databaseConfig = {
     imports: [
@@ -17,7 +17,6 @@ export const databaseConfig = {
         const configPath = `src/config/config.${env}.yaml`;
         const configContent = fs.readFileSync(configPath, 'utf8');
         const config = yaml.parse(configContent);
-        console.log(config, 'config')
         // 验证配置
         const validationSchema = Joi.object({
             database: Joi.object({
@@ -44,7 +43,7 @@ export const databaseConfig = {
             username: value.database.username,
             password: value.database.password,
             database: value.database.database,
-            entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+            entities: [__dirname + '/../**/*.entity{.ts,.js}', Tag],
             synchronize: env === 'development',
         };
     },
