@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-// import { Article } from '../../article/entities/article.entity';
+import { Article } from '../../article/entities/article.entity';
 
 @Entity({ name: 'categories' })
 export class Category {
@@ -15,6 +15,6 @@ export class Category {
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     updated_at: Date;
 
-    // @OneToMany(() => Article, article => article.category)
-    // articles: Article[];
+    @OneToMany(() => Article, article => article.category)
+    articles: Article[];
 }

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
-// import { Article } from '../../article/entities/article.entity';
+import { Article } from '../../article/entities/article.entity';
 
 @Entity({ name: 'tags' })
 export class Tag {
@@ -15,6 +15,6 @@ export class Tag {
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     updated_at: Date;
 
-    // @ManyToMany(() => Article, article => article.tags)
-    // articles: Article[];
+    @ManyToMany(() => Article, article => article.tags)
+    articles: Article[];
 }
