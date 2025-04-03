@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-// import { TextComment } from '../../text-comments/entities/text-comment.entity';
+import { ArticleComment } from '../../article-comments/entities/article-comment.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -27,6 +27,6 @@ export class User {
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     updated_at: Date;
 
-    // @OneToMany(() => TextComment, comment => comment.user)
-    // comments: TextComment[];
+    @OneToMany(() => ArticleComment, comment => comment.user)
+    comments: ArticleComment[];
 }
