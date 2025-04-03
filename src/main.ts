@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { LoggerFactory } from './utils/my-logger';
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import cors from "cors";
 const validationPipe = new ValidationPipe({
   disableErrorMessages: false, // 必须为false（默认值）
   transform: true,             // 启用自动类型转换
@@ -24,6 +25,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: LoggerFactory("MyApp"),
   });
+  app.use(
+    cors((req, callback) => {
+      const origin = req.headers.origin;
+      console.log("origin", origin);
+      callback(null, {
+        origin: true,
+        credentials: true,
+      });
+    }),
+  );
   app.useGlobalPipes(validationPipe);
   app.setGlobalPrefix("api");
   const config = new DocumentBuilder()
