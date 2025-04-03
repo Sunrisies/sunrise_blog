@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { LoggerFactory } from './utils/my-logger';
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 const validationPipe = new ValidationPipe({
   disableErrorMessages: false, // 必须为false（默认值）
   transform: true,             // 启用自动类型转换
@@ -25,6 +26,14 @@ async function bootstrap() {
   });
   app.useGlobalPipes(validationPipe);
   app.setGlobalPrefix("api");
+  const config = new DocumentBuilder()
+    .setTitle("朝阳")
+    .setDescription("朝阳博客相关的Api")
+    .setVersion("1.0")
+    .addTag("个人博客")
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup("doc", app, document);
   await app.listen(2345, () => {
     console.log("服务启动成功");
   });

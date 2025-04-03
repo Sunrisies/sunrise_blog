@@ -29,3 +29,19 @@ export class CreateUserDto {
     @MaxLength(100)
     email?: string;
 }
+
+import { ApiProperty } from '@nestjs/swagger';
+
+export class PaginatedResponseDto<T> {
+    @ApiProperty({ description: '当前页码' })
+    page: number;
+
+    @ApiProperty({ description: '每页数量' })
+    limit: number;
+
+    @ApiProperty({ description: '总数据量' })
+    total: number;
+
+    @ApiProperty({ description: '分页数据', type: [Object] })
+    data: T[];
+}
