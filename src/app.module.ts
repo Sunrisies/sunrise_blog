@@ -7,6 +7,7 @@ import { AuthModule } from './apps/auth/auth.module';
 import { TagsModule } from './apps/tags/tags.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformInterceptor } from './interceptor/transform.interceptor';
+import { CategoriesModule } from './apps/categories/categories.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -16,7 +17,8 @@ import { TransformInterceptor } from './interceptor/transform.interceptor';
     TypeOrmModule.forRootAsync(databaseConfig),
     UserModule,
     AuthModule,
-    TagsModule],
+    TagsModule,
+    CategoriesModule],
   controllers: [],
   providers: [
     {
