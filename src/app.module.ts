@@ -10,6 +10,7 @@ import { TransformInterceptor } from './interceptor/transform.interceptor';
 import { CategoriesModule } from './apps/categories/categories.module';
 import { ArticleModule } from './apps/article/article.module';
 import { ArticleCommentsModule } from './apps/article-comments/article-comments.module';
+import { ToolsModule } from './apps/tools/tools.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,7 +23,8 @@ import { ArticleCommentsModule } from './apps/article-comments/article-comments.
     TagsModule,
     CategoriesModule,
     ArticleModule,
-    ArticleCommentsModule],
+    ArticleCommentsModule,
+    ToolsModule],
   controllers: [],
   providers: [
     {
