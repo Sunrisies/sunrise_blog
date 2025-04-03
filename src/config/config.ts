@@ -1,5 +1,6 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from '../apps/user/entities/user.entity';
+import { Tag } from '../apps/tags/entities/tag.entity'
 
 export const databaseConfig = {
     imports: [
@@ -16,7 +17,7 @@ export const databaseConfig = {
             username: 'root',
             password: 'zhuzhongqian@123456',
             database: 'test_db',
-            entities: [User],
+            entities: [User, Tag],
             synchronize: false
         };
     },

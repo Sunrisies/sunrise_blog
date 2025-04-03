@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/config';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './apps/auth/auth.module';
+import { TagsModule } from './apps/tags/tags.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TransformInterceptor } from './interceptor/transform.interceptor';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -12,8 +15,15 @@ import { AuthModule } from './apps/auth/auth.module';
     }),
     TypeOrmModule.forRootAsync(databaseConfig),
     UserModule,
-    AuthModule],
+    AuthModule,
+    TagsModule],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      // 全局拦截器
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
+    },
+  ],
 })
 export class AppModule { }

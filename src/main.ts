@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { LoggerFactory } from './utils/my-logger';
 const validationPipe = new ValidationPipe({
   disableErrorMessages: false, // 必须为false（默认值）
   transform: true,             // 启用自动类型转换
@@ -19,9 +20,13 @@ const validationPipe = new ValidationPipe({
   }
 })
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(validationPipe); // 全局使用 ValidationPipe 验证器
+  const app = await NestFactory.create(AppModule, {
+    logger: LoggerFactory("MyApp"),
+  });
+  app.useGlobalPipes(validationPipe);
   app.setGlobalPrefix("api");
-  await app.listen(2345);
+  await app.listen(2345, () => {
+    console.log("服务启动成功");
+  });
 }
 bootstrap();
