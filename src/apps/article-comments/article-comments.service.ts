@@ -101,7 +101,8 @@ export class ArticleCommentsService {
         nickname: comment.nickname || comment.user?.user_name,
         articleTitle: comment.article?.title, // 添加文章标题
         articleId: comment.article?.id,
-        status: comment.isDeleted ? '已删除' : '正常'
+        status: comment.isDeleted ? '已删除' : '正常',
+        email: comment.email,
       }));
 
       return {
@@ -109,8 +110,8 @@ export class ArticleCommentsService {
         data: {
           data: formatted,
           pagination: {
-            current_page: page,
-            per_limit: limit,
+            page: page,
+            limit: limit,
             total: total
           }
         }
@@ -143,12 +144,14 @@ export class ArticleCommentsService {
         created_at: comment.created_at.toISOString(),
         nickname: comment.nickname || comment.user?.user_name,
         avatar: comment.user?.image,
+        email: comment.email,
         replies: comment.replies.map(reply => ({
           id: reply.id,
           content: reply.content,
           created_at: reply.created_at.toISOString(),
           nickname: reply.nickname || reply.user?.user_name,
-          avatar: reply.user?.image
+          avatar: reply.user?.image,
+          email: comment.email,
         }))
       }));
 
@@ -157,8 +160,8 @@ export class ArticleCommentsService {
         data: {
           data: formatted,
           pagination: {
-            current_page: page,
-            per_limit: limit,
+            page: page,
+            limit: limit,
             total: total
           }
         }

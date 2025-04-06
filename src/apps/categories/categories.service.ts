@@ -28,6 +28,7 @@ export class CategoriesService {
   async findAll() {
     const categories = await this.categoryRepository.find();
     const tempCategories = categories.map((category) => {
+      console.log(category);
       return { value: category.id, label: category.name };
     });
     return { data: tempCategories, message: "查询成功" };
