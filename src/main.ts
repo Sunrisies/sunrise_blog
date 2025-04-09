@@ -9,6 +9,7 @@ const validationPipe = new ValidationPipe({
   transform: true,             // 启用自动类型转换
   whitelist: true,             // 过滤未经验证的属性
   forbidNonWhitelisted: true,  // 返回非白名单属性的错误
+  transformOptions: { enableImplicitConversion: true },
   exceptionFactory: (errors) => {
     const formattedErrors = errors.map(error => ({
       field: error.property,

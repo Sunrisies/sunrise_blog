@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Article } from '../../article/entities/article.entity';
+import { ThirdPartyLibrary } from 'src/apps/third-party-library/entities/third-party-library.entity';
 
 @Entity({ name: 'categories' })
 export class Category {
@@ -25,4 +26,7 @@ export class Category {
 
     @OneToMany(() => Article, article => article.category)
     articles: Article[];
+
+    @OneToMany(() => ThirdPartyLibrary, lib => lib.category)
+    libraries: ThirdPartyLibrary[];
 }

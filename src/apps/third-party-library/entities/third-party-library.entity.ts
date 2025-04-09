@@ -1,40 +1,35 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, ManyToOne, JoinColumn } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
-
+import { Tag } from '../../tags/entities/tag.entity';
 @Entity({ name: 'third_party_libraries' })
 export class ThirdPartyLibrary {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: number; // 主键ID
 
     @Column({ length: 100 })
-    name: string;
+    name: string; // 库名称
 
-    @Column({
-        type: 'enum',
-        enum: ['npm', 'composer', 'pypi', 'website', 'docker', 'other'],
-        default: 'npm'
+    // 在类中添加标签关联
+    @ManyToMany(() => Tag)
+    @JoinTable({
+        name: 'library_tags',
+        joinColumn: { name: 'library_id' },
+        inverseJoinColumn: { name: 'tag_id' }
     })
-    package_type: string;
+    tags: Tag[]; // 标签ID数组
 
-    @Column({ length: 50 })
-    language: string;
-
-    @Column({ length: 500 })
-    official_url: string;
+    @Column({ length: 250, name: 'official_url' })
+    officialUrl: string; // 官方文档URL
 
     @Column({ type: 'text', nullable: true })
-    description: string;
+    description: string; // 描述
 
     @Column({ type: 'json', nullable: true })
-    metadata: Record<string, any>;
+    metadata: Record<string, any>; // 元数据 JSON 格式
 
-    @ManyToMany(() => Category)
-    @JoinTable({
-        name: 'library_categories',
-        joinColumn: { name: 'library_id' },
-        inverseJoinColumn: { name: 'category_id' }
-    })
-    categories: Category[];
+    @ManyToOne(() => Category)
+    @JoinColumn({ name: 'category_id' })
+    category: Category;  // 单个分类关联
 
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date;

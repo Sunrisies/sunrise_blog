@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { ThirdPartyLibraryService } from './third-party-library.service';
 import { CreateThirdPartyLibraryDto } from './dto/create-third-party-library.dto';
 import { UpdateThirdPartyLibraryDto } from './dto/update-third-party-library.dto';
 
-@Controller('third-party-library')
+@Controller('thirdPartyLibrary')
 export class ThirdPartyLibraryController {
-  constructor(private readonly thirdPartyLibraryService: ThirdPartyLibraryService) {}
+  constructor(private readonly thirdPartyLibraryService: ThirdPartyLibraryService) { }
 
   @Post()
   create(@Body() createThirdPartyLibraryDto: CreateThirdPartyLibraryDto) {
@@ -13,8 +13,16 @@ export class ThirdPartyLibraryController {
   }
 
   @Get()
-  findAll() {
-    return this.thirdPartyLibraryService.findAll();
+  findAll(@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number, @Query('category') category?: string,      // 新增分类筛选
+    @Query('tag') tag?: string,               // 新增标签筛选
+    @Query('title') title?: string,          // 新增标题搜索
+  ) {
+    return this.thirdPartyLibraryService.findAll(page, limit, {
+      category,
+      tag,
+      title
+    });
   }
 
   @Get(':id')

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpCode, Query, ParseEnumPipe, BadRequestException } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
@@ -12,11 +12,14 @@ export class TagsController {
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagsService.create(createTagDto);
   }
-
   @Get()
-  findAll() {
-    return this.tagsService.findAll();
+  findAll(@Query('type', new ParseEnumPipe(['article', 'library'], {
+    optional: true,// 添加可选配置
+    exceptionFactory: () => new BadRequestException('type参数必须是 article 或 library')
+  })) type?: 'article' | 'library') {
+    return this.tagsService.findAll(type);
   }
+
 
   @Get(":id")
   findOne(@Param("id") id: string) {

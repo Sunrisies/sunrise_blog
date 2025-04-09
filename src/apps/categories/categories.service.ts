@@ -17,6 +17,7 @@ export class CategoriesService {
     try {
       const category = await this.categoryRepository.create({
         name: createCategoryDto.name,
+        type: createCategoryDto.type || 'article'
       });
       await this.categoryRepository.save(category);
       return { data: category, message: "创建成功" };
@@ -25,8 +26,10 @@ export class CategoriesService {
     }
   }
 
-  async findAll() {
-    const categories = await this.categoryRepository.find();
+  async findAll(type: 'article' | 'library') {
+    const categories = await this.categoryRepository.find({
+      where: { type: type || 'article' }
+    });
     const tempCategories = categories.map((category) => {
       console.log(category);
       return { value: category.id, label: category.name };
