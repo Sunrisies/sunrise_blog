@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Article } from '../../article/entities/article.entity';
+import { ThirdPartyLibrary } from 'src/apps/third-party-library/entities/third-party-library.entity';
 
 @Entity({ name: 'categories' })
 export class Category {
@@ -9,6 +10,14 @@ export class Category {
     @Column({ length: 50 })
     name: string;
 
+    // 新增分类类型字段
+    @Column({
+        type: 'enum',
+        enum: ['article', 'library'],
+        default: 'article'
+    })
+    type: string;
+
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date;
 
@@ -17,4 +26,7 @@ export class Category {
 
     @OneToMany(() => Article, article => article.category)
     articles: Article[];
+
+    @OneToMany(() => ThirdPartyLibrary, lib => lib.category)
+    libraries: ThirdPartyLibrary[];
 }

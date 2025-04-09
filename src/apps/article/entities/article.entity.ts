@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
 import { Tag } from '../../tags/entities/tag.entity';
-// import { TextComment } from '../../text-comments/entities/text-comment.entity';
+import { ArticleComment } from '../../article-comments/entities/article-comment.entity';
 
 @Entity({ name: 'article' })
 export class Article {
@@ -58,6 +58,8 @@ export class Article {
     @Column({ default: 0 })
     size: number;
 
-    // @OneToMany(() => TextComment, comment => comment.article)
-    // comments: TextComment[];
+    // @OneToMany(() => ArticleComment, articleComment => articleComment.article)
+    // comments: ArticleComment[];
+    @OneToMany(() => ArticleComment, comment => comment.article)
+    comments: ArticleComment[];
 }

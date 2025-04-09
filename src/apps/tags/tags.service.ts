@@ -26,8 +26,10 @@ export class TagsService {
     }
   }
 
-  async findAll() {
-    const tags = await this.tagsRepository.find();
+  async findAll(type?: 'article' | 'library') {
+    const tags = await this.tagsRepository.find({
+      where: { type: type || 'article' }
+    });
     console.log(tags);
     const tempTags = tags.map((tag) => {
       return { value: tag.id, label: tag.name };

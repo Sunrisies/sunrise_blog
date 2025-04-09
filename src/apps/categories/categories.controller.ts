@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, ParseEnumPipe, BadRequestException } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -13,8 +13,11 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll() {
-    return this.categoriesService.findAll();
+  findAll(@Query('type', new ParseEnumPipe(['article', 'library'], {
+    optional: true,// 添加可选配置
+    exceptionFactory: () => new BadRequestException('type参数必须是 article 或 library')
+  })) type?: 'article' | 'library') {
+    return this.categoriesService.findAll(type);
   }
 
   @Put(":id")
