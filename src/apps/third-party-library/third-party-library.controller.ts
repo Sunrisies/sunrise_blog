@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, DefaultValuePipe, Put } from '@nestjs/common';
 import { ThirdPartyLibraryService } from './third-party-library.service';
 import { CreateThirdPartyLibraryDto } from './dto/create-third-party-library.dto';
 import { UpdateThirdPartyLibraryDto } from './dto/update-third-party-library.dto';
@@ -30,7 +30,7 @@ export class ThirdPartyLibraryController {
     return this.thirdPartyLibraryService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateThirdPartyLibraryDto: UpdateThirdPartyLibraryDto) {
     return this.thirdPartyLibraryService.update(+id, updateThirdPartyLibraryDto);
   }

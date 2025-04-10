@@ -131,11 +131,70 @@ export class ThirdPartyLibraryService {
     return `This action returns a #${id} thirdPartyLibrary`;
   }
 
-  update(id: number, updateThirdPartyLibraryDto: UpdateThirdPartyLibraryDto) {
-    return `This action updates a #${id} thirdPartyLibrary`;
+  async update(id: number, updateThirdPartyLibraryDto: UpdateThirdPartyLibraryDto) {
+    // 先获取要更新的库
+    const existingLibrary = await this.libraryRepository.findOne({
+      where: { id },
+      relations: ['category', 'tags'] // 加载关联关系
+    });
+
+    if (!existingLibrary) {
+      return { message: '库不存在' };
+    }
+
+    try {
+      // 检查名称冲突（排除自身）
+      if (updateThirdPartyLibraryDto.name && updateThirdPartyLibraryDto.name !== existingLibrary.name) {
+        const nameExists = await this.libraryRepository.exist({
+          where: { name: updateThirdPartyLibraryDto.name }
+        });
+        if (nameExists) {
+          return { message: '名称已存在' };
+        }
+      }
+
+      // 更新分类关系
+      if (updateThirdPartyLibraryDto.categoryId) {
+        existingLibrary.category = await this.categoryRepository.findOneBy({
+          id: updateThirdPartyLibraryDto.categoryId
+        });
+      }
+
+      // 更新标签关系
+      if (updateThirdPartyLibraryDto.tagIds) {
+        existingLibrary.tags = await this.tagRepository.findByIds(
+          updateThirdPartyLibraryDto.tagIds
+        );
+      }
+
+      // 合并其他字段
+      this.libraryRepository.merge(existingLibrary, updateThirdPartyLibraryDto);
+
+      // 保存更新
+      const updatedLibrary = await this.libraryRepository.save(existingLibrary);
+      return {
+        message: '修改成功',
+        data: updatedLibrary
+      };
+    } catch (error) {
+      console.error('修改第三方库时出错:', error);
+      throw new BadRequestException('修改第三方库时出错');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} thirdPartyLibrary`;
+  async remove(id: number) {
+    // 检查库是否存在
+    const existingLibrary = this.libraryRepository.findOne({ where: { id } });
+    if (!existingLibrary) {
+      return { message: '库不存在' };
+    }
+    // 删除库
+    try {
+      await this.libraryRepository.delete(id);
+      return { message: '删除成功' };
+    } catch (error) {
+      console.error('删除第三方库时出错:', error);
+      throw new BadRequestException('删除第三方库时出错');
+    }
   }
 }

@@ -4,6 +4,7 @@ import { Tag } from '../../tags/entities/tag.entity';
 @Entity({ name: 'third_party_libraries' })
 export class ThirdPartyLibrary {
     @PrimaryGeneratedColumn()
+    // @PrimaryGeneratedColumn('uuid')
     id: number; // 主键ID
 
     @Column({ length: 100 })
