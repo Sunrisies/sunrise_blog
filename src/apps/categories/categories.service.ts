@@ -34,7 +34,7 @@ export class CategoriesService {
       console.log(category);
       return { value: category.id, label: category.name };
     });
-    return { data: tempCategories, message: "查询成功" };
+    return { data: { data: tempCategories, pagination: {} }, message: "查询成功" };
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {

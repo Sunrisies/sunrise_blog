@@ -34,7 +34,7 @@ export class TagsService {
     const tempTags = tags.map((tag) => {
       return { value: tag.id, label: tag.name };
     });
-    return { data: tempTags };
+    return { data: { data: tempTags, pagination: {} }, };
   }
 
   findOne(id: number) {
