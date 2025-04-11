@@ -14,14 +14,14 @@ export class ThirdPartyLibraryController {
 
   @Get()
   findAll(@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number, @Query('category') category?: string,      // 新增分类筛选
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number, @Query('categoryId') categoryId?: string,      // 新增分类筛选
     @Query('tag') tag?: string,               // 新增标签筛选
-    @Query('title') title?: string,          // 新增标题搜索
+    @Query('name') name?: string,          // 新增标题搜索
   ) {
     return this.thirdPartyLibraryService.findAll(page, limit, {
-      category,
+      categoryId,
       tag,
-      title
+      name
     });
   }
 

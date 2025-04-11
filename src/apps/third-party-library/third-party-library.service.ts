@@ -56,9 +56,9 @@ export class ThirdPartyLibraryService {
   }
 
   async findAll(page: number, limit: number, filters?: {
-    category?: string;
+    categoryId?: string;
     tag?: string;
-    title?: string;
+    name?: string;
   }) {
     // 首先获取所有第三库的数量
     const total = await this.libraryRepository.count();
@@ -87,9 +87,9 @@ export class ThirdPartyLibraryService {
         ]);
 
       // 修改筛选条件
-      if (filters?.category) {
+      if (filters?.categoryId) {
         queryBuilder.andWhere('category.id = :categoryId', {
-          categoryId: Number(filters.category)
+          categoryId: Number(filters.categoryId)
         });
       }
 
@@ -99,9 +99,9 @@ export class ThirdPartyLibraryService {
         });
       }
 
-      if (filters?.title) {
+      if (filters?.name) {
         queryBuilder.andWhere('library.name LIKE :name', {
-          name: `%${filters.title}%`
+          name: `%${filters.name}%`
         });
       }
       queryBuilder
@@ -117,7 +117,7 @@ export class ThirdPartyLibraryService {
           data: articles,
           pagination: {
             page: page, // 当前页码
-            imit: limit, // 每页显示的数量
+            limit: limit, // 每页显示的数量
             total: total // 总数量
           }
         }

@@ -133,7 +133,7 @@ export class ArticleService {
           data: articles,
           pagination: {
             page: page, // 当前页码
-            imit: limit, // 每页显示的数量
+            limit: limit, // 每页显示的数量
             // total_pages: totalPage,
             total: total // 总数量
           }
