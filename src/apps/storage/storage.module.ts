@@ -15,14 +15,7 @@ export interface StorageModuleOptions {
 export class StorageModule {
   static forRoot(options: StorageModuleOptions): DynamicModule {
     console.log(options.configuration, 'options');
-    // const storageProvider = {
-    //   provide: 'CLOUD_STORAGE',
-    //   useFactory: (config: any) => {
-    //     const Cls = this.getStorageClass(options.type);
-    //     return new Cls(config);
-    //   },
-    //   inject: ['STORAGE_CONFIG']
-    // };
+
     const providers: Provider[] = [
       // 更清晰的依赖注入配置
       {
