@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UserModule } from './apps/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/config';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './apps/auth/auth.module';
 import { TagsModule } from './apps/tags/tags.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -15,6 +15,9 @@ import { ThirdPartyLibraryModule } from './apps/third-party-library/third-party-
 import { StorageModule } from './apps/storage/storage.module';
 import * as fs from 'fs';
 import * as yaml from 'yaml';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import Joi from 'joi';
+import { RedisConnectionModule } from './config/redis.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -51,7 +54,10 @@ import * as yaml from 'yaml';
         // bucket: "process.env.QINIU_BUCKET",
         // region: "qiniu.zone.Zone_z2"
       }
-    })],
+    }),
+    RedisConnectionModule
+
+  ],
   controllers: [],
   providers: [
     {

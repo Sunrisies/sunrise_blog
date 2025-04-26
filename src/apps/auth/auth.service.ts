@@ -13,7 +13,6 @@ export class AuthService {
     private userRepository: Repository<User>
   ) { }
   async register(createAuthDto: AuthDto) {
-    console.log(createAuthDto);
     // 先确定是否有该用户
     const findUser = await this.userRepository.findOne({ where: { user_name: createAuthDto.user_name } });
     if (findUser) {
@@ -44,6 +43,41 @@ export class AuthService {
     }
   }
   async login(createAuthDto: AuthDto) {
+    const user = await this.userRepository.findOne({
+      where: { user_name: createAuthDto.user_name },
+      select: ['id', 'user_name', 'pass_word', 'email', 'phone']
+    });
+    console.log(user, "createAuthDto");
+    // 用户不存在校验
+    if (!user) {
+      throw new CustomUnauthorizedException('用户不存在', HttpStatus.NOT_FOUND);
+    }
+    // 密码校验
+    const isPasswordValid = await bcrypt.compare(
+      createAuthDto.pass_word,
+      user.pass_word
+    );
+    if (!isPasswordValid) {
+      throw new CustomUnauthorizedException('密码错误', HttpStatus.UNAUTHORIZED);
+    }
 
+    // 生成JWT令牌（需要先安装@nestjs/jwt）
+    const payload = {
+      sub: user.id,
+      username: user.user_name
+    };
+    // const accessToken = await this.jwtService.sign(payload);
+
+    // 返回用户信息（排除密码）
+    const { pass_word, ...userInfo } = user;
+    return {
+      code: 200,
+      message: "登录成功",
+      data: {
+        user: userInfo,
+        access_token: "accessToken",
+        expires_in: 3600 // token有效期
+      }
+    };
   }
 }
