@@ -36,10 +36,9 @@ export class UserService {
       data: {
         data: users,
         pagination: {
-          current_page: page,
-          per_page: limit,
-          total_pages: totalPage,
-          total_items: total
+          page: page,
+          limit: limit,
+          total: total
         }
       }
     };

@@ -5,12 +5,16 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import * as bcrypt from 'bcryptjs';
 import { CustomUnauthorizedException } from 'src/utils/custom-exceptions';
-
+import { JwtService } from '@nestjs/jwt';
+import Redis from "ioredis";
+import { InjectRedis } from '@nestjs-modules/ioredis';
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>
+    private userRepository: Repository<User>,
+    private jwtService: JwtService,
+    @InjectRedis() private readonly redis: Redis,
   ) { }
   async register(createAuthDto: AuthDto) {
     // 先确定是否有该用户
@@ -42,6 +46,7 @@ export class AuthService {
       throw new CustomUnauthorizedException("注册失败", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
   async login(createAuthDto: AuthDto) {
     const user = await this.userRepository.findOne({
       where: { user_name: createAuthDto.user_name },
@@ -66,8 +71,14 @@ export class AuthService {
       sub: user.id,
       username: user.user_name
     };
-    // const accessToken = await this.jwtService.sign(payload);
+    const accessToken = await this.jwtService.sign(payload);
 
+    await this.redis.set(
+      `access_token:${accessToken}`,
+      JSON.stringify(payload),
+      'EX',
+      3600 // 单位秒，与JWT过期时间同步
+    );
     // 返回用户信息（排除密码）
     const { pass_word, ...userInfo } = user;
     return {
@@ -75,7 +86,7 @@ export class AuthService {
       message: "登录成功",
       data: {
         user: userInfo,
-        access_token: "accessToken",
+        access_token: accessToken,
         expires_in: 3600 // token有效期
       }
     };

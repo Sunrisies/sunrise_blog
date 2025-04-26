@@ -1,14 +1,12 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { StorageController } from './storage.controller';
-export type StorageType = 'aliyun' | 'qiniu';
-import { CloudStorage } from './storage.interface';
+import { ConfigService } from '@nestjs/config';
 import { AliyunOSS } from './aliyun.service';
 import { QiniuOSS } from './qiniu.service';
-import { ConfigService } from '@nestjs/config';
-import * as Joi from 'joi';
+import { StorageController } from './storage.controller';
+import { CloudStorage } from './storage.interface';
+export type StorageType = 'aliyun' | 'qiniu';
 export interface StorageModuleOptions {
   type: StorageType;
-  configuration?: any;
   useFactory?: (...args: any[]) => Promise<CloudStorage> | CloudStorage | any;
   inject?: any[];
 }

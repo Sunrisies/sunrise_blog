@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpCode, Query, ParseEnumPipe, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpCode, Query, ParseEnumPipe, BadRequestException, UseGuards } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
-
+import { JwtGuard } from 'src/guard/jwt.guard';
 @Controller('tags')
 export class TagsController {
   constructor(private readonly tagsService: TagsService) { }
@@ -12,6 +12,8 @@ export class TagsController {
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagsService.create(createTagDto);
   }
+
+  @UseGuards(JwtGuard)
   @Get()
   findAll(@Query('type', new ParseEnumPipe(['article', 'library'], {
     optional: true,// 添加可选配置
