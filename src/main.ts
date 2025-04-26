@@ -47,7 +47,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("doc", app, document);
   await app.listen(2345, () => {
-    console.log("服务启动成功");
+    console.log(`服务启动成功,端口号是:2345`);
   });
 }
 bootstrap();

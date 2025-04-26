@@ -13,11 +13,19 @@ import { ArticleCommentsModule } from './apps/article-comments/article-comments.
 import { ToolsModule } from './apps/tools/tools.module';
 import { ThirdPartyLibraryModule } from './apps/third-party-library/third-party-library.module';
 import { StorageModule } from './apps/storage/storage.module';
+import * as fs from 'fs';
+import * as yaml from 'yaml';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV || 'development'}.local`,
+      load: [() => {
+        const env = process.env.NODE_ENV || 'development';
+        const configPath = `src/config/config.${env}.yaml`;
+        const configContent = fs.readFileSync(configPath, 'utf8');
+        return { ...yaml.parse(configContent), env };
+      }],
     }),
     TypeOrmModule.forRootAsync(databaseConfig),
     UserModule,

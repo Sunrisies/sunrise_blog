@@ -5,18 +5,7 @@ import * as Joi from 'joi';
 import { Tag } from '../apps/tags/entities/tag.entity'
 
 export const databaseConfig = {
-    imports: [
-        ConfigModule.forRoot({
-            isGlobal: true,
-            envFilePath: `.env.${process.env.NODE_ENV || 'development'}.local`,
-        }),
-    ],
     useFactory: async (configService: ConfigService) => {
-        // 加载 YAML 文件
-        const env = configService.get<string>('NODE_ENV');
-        const configPath = `src/config/config.${env}.yaml`;
-        const configContent = fs.readFileSync(configPath, 'utf8');
-        const config = yaml.parse(configContent);
         // 验证配置
         const validationSchema = Joi.object({
             database: Joi.object({
@@ -31,7 +20,9 @@ export const databaseConfig = {
                 database: Joi.string().required(),
             }),
         });
-
+        const config = {
+            database: configService.get('database') // 从 ConfigService 获取 database configuratio
+        }
         const { error, value } = validationSchema.validate(config);
         if (error) {
             throw new Error(`Config validation error: ${error.message}`);
@@ -44,7 +35,7 @@ export const databaseConfig = {
             password: value.database.password,
             database: value.database.database,
             entities: [__dirname + '/../**/*.entity{.ts,.js}', Tag],
-            synchronize: env === 'development',
+            synchronize: configService.get('env') === 'development',
         };
     },
     inject: [ConfigService],
