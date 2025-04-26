@@ -43,7 +43,6 @@ import { Tag } from '../apps/tags/entities/tag.entity';
         inject: [ConfigService],
       }
     ),
-
   ],
   exports: [TypeOrmModule]
 })

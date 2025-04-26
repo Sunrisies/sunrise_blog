@@ -7,7 +7,6 @@ import Joi from 'joi';
   imports: [
     RedisModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
-        console.log(configService, "configService.get('redis')");
         // 添加校验
         const validationSchema = Joi.object({
           redis: Joi.object({

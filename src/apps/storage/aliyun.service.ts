@@ -13,6 +13,7 @@ export class AliyunOSS implements CloudStorage {
       bucket: string;
     }
   ) {
+    console.log('Received config:aliyun', config); // Log the config object to check its content and properties
     // this.client = new OSS(this.config);
   }
 

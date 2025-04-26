@@ -9,13 +9,13 @@ import { TagsModule } from './apps/tags/tags.module';
 import { ThirdPartyLibraryModule } from './apps/third-party-library/third-party-library.module';
 import { ToolsModule } from './apps/tools/tools.module';
 import { UserModule } from './apps/user/user.module';
-import { GlobalConfigModule } from './config/config.modules';
-import { MysqlConnectionModule } from './config/mysql.modules';
+import { GlobalConfigModule } from './config/config.module';
+import { MysqlConnectionModule } from './config/mysql.module';
 import { RedisConnectionModule } from './config/redis.module';
 import { TransformInterceptor } from './interceptor/transform.interceptor';
+import { ConfigService } from '@nestjs/config';
 @Module({
   imports: [
-
     GlobalConfigModule,
     MysqlConnectionModule,
     UserModule,
@@ -27,21 +27,26 @@ import { TransformInterceptor } from './interceptor/transform.interceptor';
     ToolsModule,
     ThirdPartyLibraryModule,
     StorageModule.forRoot({
-      type: 'aliyun', // 'aliyun' 或 'qiniu'
-      configuration: {
-        // 阿里云配置
-        region: "process.env.ALIYUN_REGION",
-        accessKeyId: "process.env.ALIYUN_AK",
-        accessKeySecret: "process.env.ALIYUN_SK",
-        bucket: "process.env.ALIYUN_BUCKET",
-
-        // 或者七牛云配置
-        // accessKey: "process.env.QINIU_AK",
-        // secretKey: "process.env.QINIU_SK",
-        // bucket: "process.env.QINIU_BUCKET",
-        // region: "qiniu.zone.Zone_z2"
-      }
+      type: 'qiniu',
+      useFactory: (configService: ConfigService) => ({}), // 保留工厂函数结构,
+      inject: [ConfigService]
     }),
+    // StorageModule.forRoot({
+    //   type: 'aliyun', // 'aliyun' 或 'qiniu'
+    //   configuration: {
+    //     // 阿里云配置
+    //     region: "process.env.ALIYUN_REGION",
+    //     accessKeyId: "process.env.ALIYUN_AK",
+    //     accessKeySecret: "process.env.ALIYUN_SK",
+    //     bucket: "process.env.ALIYUN_BUCKET",
+
+    //     // 或者七牛云配置
+    //     // accessKey: "process.env.QINIU_AK",
+    //     // secretKey: "process.env.QINIU_SK",
+    //     // bucket: "process.env.QINIU_BUCKET",
+    //     // region: "qiniu.zone.Zone_z2"
+    //   }
+    // }),
     RedisConnectionModule
 
   ],

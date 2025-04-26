@@ -9,14 +9,14 @@ export class QiniuOSS implements CloudStorage {
   private bucketManager: qiniu.rs.BucketManager;
 
   constructor(
-    @Inject('STORAGE_CONFIG')
-
+    // @Inject('STORAGE_CONFIG')
     config: {
       accessKey: string;
       secretKey: string;
       bucket: string;
       region: qiniu.conf.Zone;
     }) {
+    console.log('QiniuOSS constructor called with config:', config); // Log the config object to check if it's being passed correctly
     // this.mac = new qiniu.auth.digest.Mac(config.accessKey, config.secretKey);
     // this.config = new qiniu.conf.Config({ zone: config.region });
     // this.bucketManager = new qiniu.rs.BucketManager(this.mac, this.config);

@@ -4,37 +4,38 @@ export type StorageType = 'aliyun' | 'qiniu';
 import { CloudStorage } from './storage.interface';
 import { AliyunOSS } from './aliyun.service';
 import { QiniuOSS } from './qiniu.service';
+import { ConfigService } from '@nestjs/config';
+import * as Joi from 'joi';
 export interface StorageModuleOptions {
   type: StorageType;
-  configuration: any;
+  configuration?: any;
+  useFactory?: (...args: any[]) => Promise<CloudStorage> | CloudStorage | any;
+  inject?: any[];
 }
 @Module({
   controllers: [StorageController],
-  // providers: [StorageService],
 })
 export class StorageModule {
-  static forRoot(options: StorageModuleOptions): DynamicModule {
-    console.log(options.configuration, 'options');
-
+  public static forRoot(options: StorageModuleOptions): DynamicModule {
     const providers: Provider[] = [
-      // 更清晰的依赖注入配置
       {
-        // 由于 CloudStorage 是类型，不能直接作为值使用，这里用一个字符串常量替代
         provide: 'CLOUD_STORAGE',
-        useClass: this.getStorageClass(options.type), // 动态选择实现类
+        useFactory: (configService: ConfigService) => {
+          const config = {
+            storage: configService.get('storage'),
+          }
+          const StorageClass = this.getStorageClass(config.storage.type);
+          return new StorageClass(config.storage[config.storage.type]);
+        },
+        inject: [ConfigService]
       },
-      {
-        provide: 'STORAGE_CONFIG',
-        useValue: options.configuration,
-      }
     ];
 
     return {
-      global: true, // 可选设置为全局模块
+      global: true,
       module: StorageModule,
       providers,
-      // 由于 CloudStorage 是类型，不能直接作为值导出，这里用之前定义的字符串常量 'CLOUD_STORAGE' 替代
-      exports: ['CLOUD_STORAGE', 'STORAGE_CONFIG'],
+      exports: ['CLOUD_STORAGE'],
     };
   }
 
@@ -45,5 +46,4 @@ export class StorageModule {
     };
     return strategyMap[type];
   }
-
 }
