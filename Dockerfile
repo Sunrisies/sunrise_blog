@@ -1,11 +1,18 @@
+# 多阶段构建示例
+FROM node:alpine AS builder
+WORKDIR /home/temp
+COPY dist1 /home/temp/dist
+COPY src/config /home/temp/src/config
+RUN npm config set registry https://registry.npmmirror.com/ && npm i @yao-pkg/pkg -g
+RUN pkg /home/temp/dist/index.js --target=node22 --platform=alpine --output=web_server
+
+
 FROM alpine:latest AS production
-RUN apk add --no-cache --update nodejs-current openssl font-droid-nonlatin 
+# 从builder阶段复制编译结果
+COPY --from=builder /home/temp/web_server /home/app/
+# 复制配置文件（保持原有结构）
+COPY --from=builder /home/temp/src/config /home/app/src/config
 
-
-# 创建一个文件夹，把下面的内容都放进去
 WORKDIR /home/app
-COPY dist1 /home/app/dist
-# 进入到node_modules/qiniu包下，删除node_modules，以免体积过大
-# RUN rm -rf /home/app/node_modules/qiniu/node_modules
-
-CMD [ "node", "/home/app/dist/index.js" ]
+# 直接运行编译后的二进制文件
+CMD ["./web_server"]

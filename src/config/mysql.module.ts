@@ -3,6 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { Tag } from '../apps/tags/entities/tag.entity';
+import { Article } from '../apps/article/entities/article.entity';
+import { Category } from '../apps/categories/entities/category.entity';
+import { ArticleComment } from '../apps/article-comments/entities/article-comment.entity';
+import { ThirdPartyLibrary } from '../apps/third-party-library/entities/third-party-library.entity';
+import { User } from '../apps/user/entities/user.entity';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync(
@@ -29,6 +34,7 @@ import { Tag } from '../apps/tags/entities/tag.entity';
           if (error) {
             throw new Error(`Config validation error: ${error.message}`);
           }
+          console.log(value, '数据'); // Log the validated configuratio
           return {
             type: value.database.type,
             host: value.database.host,
@@ -36,8 +42,15 @@ import { Tag } from '../apps/tags/entities/tag.entity';
             username: value.database.username,
             password: value.database.password,
             database: value.database.database,
-            entities: [__dirname + '/../**/*.entity{.ts,.js}', Tag],
+            // entities: [__dirname + '/../**/*.entity{.ts,.js}', Tag],
+            entities: [Tag, Article, Category, User, ThirdPartyLibrary, ArticleComment],
             synchronize: configService.get('env') === 'development',
+            insecureAuth: true, // 允许旧版认证协议
+            authSwitchHandler: (data, cb) => {
+              if (data.pluginName === 'mysql_clear_password') {
+                cb(null, Buffer.from(value.database.password + '\0'));
+              }
+            }
           };
         },
         inject: [ConfigService],
