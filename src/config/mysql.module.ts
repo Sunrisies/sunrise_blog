@@ -34,7 +34,6 @@ import { User } from '../apps/user/entities/user.entity';
           if (error) {
             throw new Error(`Config validation error: ${error.message}`);
           }
-          console.log(value, '数据'); // Log the validated configuratio
           return {
             type: value.database.type,
             host: value.database.host,
@@ -42,7 +41,6 @@ import { User } from '../apps/user/entities/user.entity';
             username: value.database.username,
             password: value.database.password,
             database: value.database.database,
-            // entities: [__dirname + '/../**/*.entity{.ts,.js}', Tag],
             entities: [Tag, Article, Category, User, ThirdPartyLibrary, ArticleComment],
             synchronize: configService.get('env') === 'development',
             insecureAuth: true, // 允许旧版认证协议
