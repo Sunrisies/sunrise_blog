@@ -56,7 +56,17 @@ export class StorageService {
     };
   }
 
-  async delete(filename: string): Promise<void> {
-    // 实现删除逻辑
+  async delete(id: number) {
+    const file = await this.storageRepository.findOne({ where: { id } });
+    if (!file) {
+      return { message: '当前文件不存在', code: 404 } // 如果文件不存在，抛出错误
+    }
+    try {
+      await this.storageRepository.delete(id);
+    } catch (error) {
+      return { message: '当前文件不存在', code: 404 }
+    }
+    // 删除文件记录
+    return { code: 200, message: '删除成功' }; // 返回删除成功的消息
   }
 }

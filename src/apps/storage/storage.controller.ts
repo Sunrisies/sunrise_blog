@@ -56,10 +56,9 @@ export class StorageController {
     return await this.storageService.findAll(page, limit)
   }
 
-  @Delete(':filename')
-  async delete(filename: string) {
-    return '-----'
-    // return this.storageService.delete(filename);
+  @Delete(':id')
+  async delete(@Param("id") id: string) {
+    return this.storageService.delete(+id);
   }
   @Post()
   @UseInterceptors(FileInterceptor('file'))
@@ -67,24 +66,4 @@ export class StorageController {
     console.log('Received file:', createStorageDto); // Log the file object
     // return this.storageService.create(createStorageDto);
   }
-
-  // @Get()
-  // findAll() {
-  //   return this.storageService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.storageService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateStorageDto: UpdateStorageDto) {
-  //   return this.storageService.update(+id, updateStorageDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.storageService.remove(+id);
-  // }
 }
