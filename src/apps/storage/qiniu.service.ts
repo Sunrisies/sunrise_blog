@@ -22,9 +22,9 @@ export class QiniuOSS implements CloudStorage {
     // this.bucketManager = new qiniu.rs.BucketManager(this.mac, this.config);
   }
 
-  async upload(file: Express.Multer.File): Promise<FileResponse> {
-    const filename = `${Date.now()}-${file.originalname}`;
-    console.log('Received file:qiniu', file); // Log the file object
+  async upload(file: Express.Multer.File, path: string): Promise<FileResponse> {
+    // const filename = `${Date.now()}-${file.originalname}`;
+    console.log('Received file:qiniu', file, path); // Log the file object
     return {
       url: "",
       filename: "",
@@ -33,10 +33,7 @@ export class QiniuOSS implements CloudStorage {
     };
   }
 
-  async list(prefix?: string): Promise<FileListResponse> {
-    // 实现列表逻辑
-    return []
-  }
+
 
   async delete(filename: string): Promise<void> {
     // 实现删除逻辑

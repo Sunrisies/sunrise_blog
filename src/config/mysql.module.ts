@@ -8,6 +8,7 @@ import { Category } from '../apps/categories/entities/category.entity';
 import { ArticleComment } from '../apps/article-comments/entities/article-comment.entity';
 import { ThirdPartyLibrary } from '../apps/third-party-library/entities/third-party-library.entity';
 import { User } from '../apps/user/entities/user.entity';
+import { Storage } from '../apps/storage/entities/storage.entity'
 @Module({
   imports: [
     TypeOrmModule.forRootAsync(
@@ -41,7 +42,7 @@ import { User } from '../apps/user/entities/user.entity';
             username: value.database.username,
             password: value.database.password,
             database: value.database.database,
-            entities: [Tag, Article, Category, User, ThirdPartyLibrary, ArticleComment],
+            entities: [Tag, Article, Category, User, ThirdPartyLibrary, ArticleComment, Storage],
             synchronize: configService.get('env') === 'development',
             insecureAuth: true, // 允许旧版认证协议
             authSwitchHandler: (data, cb) => {

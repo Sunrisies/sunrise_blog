@@ -1,7 +1,9 @@
 import { Inject } from '@nestjs/common';
 import { CloudStorage, FileListResponse, FileResponse } from './storage.interface';
 import OSS from 'ali-oss';
-
+import { fileSizeInBytes } from "../../utils";
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 export class AliyunOSS implements CloudStorage {
   private client: OSS;
   constructor(
@@ -14,20 +16,23 @@ export class AliyunOSS implements CloudStorage {
     }
   ) {
     console.log('Received config:aliyun', config); // Log the config object to check its content and properties
-    // this.client = new OSS(this.config);
+    this.client = new OSS(this.config);
+    console.log(this.client, '=============');
   }
 
-  async upload(file: Express.Multer.File): Promise<FileResponse> {
-    console.log('Received file:aliyun', file); // Log the file object to check its content and properties
-    return {
-      url: '',
-      filename: '',
-      size: 0,
-      mimeType: ''
+  async upload(file: Express.Multer.File, path: string) {
+
+    try {
+      const result = await this.client.put(path, file.buffer);
+      console.log("uploadFile result", result);
+      return { url: result.url, name: result.name, code: 200 };
+    } catch (error) {
+      throw new Error("Failed to upload file");
     }
+
   }
 
-  async list(prefix?: string): Promise<FileListResponse> {
+  async list(page: number, limit: number): Promise<FileListResponse> {
 
     return []
   }

@@ -4,6 +4,9 @@ import { AliyunOSS } from './aliyun.service';
 import { QiniuOSS } from './qiniu.service';
 import { StorageController } from './storage.controller';
 import { CloudStorage } from './storage.interface';
+import { StorageService } from './storage.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Storage } from './entities/storage.entity';
 export type StorageType = 'aliyun' | 'qiniu';
 export interface StorageModuleOptions {
   type: StorageType;
@@ -11,7 +14,9 @@ export interface StorageModuleOptions {
   inject?: any[];
 }
 @Module({
+  imports: [TypeOrmModule.forFeature([Storage])],
   controllers: [StorageController],
+  providers: [StorageService],
 })
 export class StorageModule {
   public static forRoot(options: StorageModuleOptions): DynamicModule {

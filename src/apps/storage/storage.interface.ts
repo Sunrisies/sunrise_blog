@@ -1,8 +1,7 @@
-// src/storage/storage.interface.ts
 export interface CloudStorage {
-    upload(file: Express.Multer.File): Promise<FileResponse>;
-    list(prefix?: string): Promise<FileListResponse>;
-    delete(filename: string): Promise<void>;
+    upload(file: Express.Multer.File, path: string): Promise<FileResponse> | any;
+    list?(page: number, limit: number): Promise<FileListResponse> | any;
+    delete?(filename: string): Promise<void>;
 }
 
 export type FileResponse = {
