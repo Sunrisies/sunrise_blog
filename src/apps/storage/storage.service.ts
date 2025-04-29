@@ -11,13 +11,15 @@ export class StorageService {
     path: string;
     size: string;
     type: string;
+    storage_provider: string;
   }) {
     const record = this.storageRepository.create({
       path: fileInfo.path,
       title: fileInfo.filename,
       size: fileInfo.size,
       type: fileInfo.type,
-      created_at: new Date()
+      created_at: new Date(),
+      storage_provider: fileInfo.storage_provider
     });
     return this.storageRepository.save(record);
   }

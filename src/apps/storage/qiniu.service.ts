@@ -7,7 +7,7 @@ export class QiniuOSS implements CloudStorage {
   private mac: qiniu.auth.digest.Mac;
   private config: qiniu.conf.Config;
   private bucketManager: qiniu.rs.BucketManager;
-
+  private newConfig: { accessKey: string; secretKey: string; bucket: string; region: qiniu.conf.Zone };
   constructor(
     // @Inject('STORAGE_CONFIG')
     config: {
@@ -16,21 +16,42 @@ export class QiniuOSS implements CloudStorage {
       bucket: string;
       region: qiniu.conf.Zone;
     }) {
-    console.log('QiniuOSS constructor called with config:', config); // Log the config object to check if it's being passed correctly
-    // this.mac = new qiniu.auth.digest.Mac(config.accessKey, config.secretKey);
-    // this.config = new qiniu.conf.Config({ zone: config.region });
-    // this.bucketManager = new qiniu.rs.BucketManager(this.mac, this.config);
+    this.newConfig = config;
+    this.mac = new qiniu.auth.digest.Mac(config.accessKey, config.secretKey);
+    this.config = new qiniu.conf.Config();
+    console.log('Received config:qiniu', config); // Log the config object to check if it's being passed correctly
   }
 
-  async upload(file: Express.Multer.File, path: string): Promise<FileResponse> {
-    // const filename = `${Date.now()}-${file.originalname}`;
-    console.log('Received file:qiniu', file, path); // Log the file object
-    return {
-      url: "",
-      filename: "",
-      size: file.size,
-      mimeType: file.mimetype
+  async upload(newFile: Express.Multer.File, path: string) {
+    const options = {
+      scope: `${this.newConfig.bucket}:${path}`,
     };
+    const file = newFile.buffer; // Assuming file is a Buffer object containing the file content
+    const config = new qiniu.conf.Config();
+    const formUploader = new qiniu.form_up.FormUploader(config);
+
+    const putExtra = new qiniu.form_up.PutExtra();
+    const putPolicy = new qiniu.rs.PutPolicy(options);
+    const uploadToken = putPolicy.uploadToken(this.mac);
+    return new Promise((resolve, reject) => {
+      formUploader.put(uploadToken, path, file, putExtra, (err, body, info) => {
+        if (err) {
+          reject(err);
+        }
+        if (info.statusCode === 200) {
+          console.log(body, info); // Log the response body to check if it contains the necessary information
+          const data = {
+            url: `https://vip.chaoyang1024.top/${info.data.key}`,
+            code: 200,
+            storage_provider: 'qiniu',
+          }
+          resolve(data);
+        } else {
+          reject(body);
+        }
+      });
+    })
+
   }
 
 

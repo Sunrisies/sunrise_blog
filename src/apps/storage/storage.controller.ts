@@ -29,6 +29,7 @@ export class StorageController {
     let fileName = file.originalname;
     const path = `uploads/${year}/${month}/${day}/${fileName}`;
     const data = await this.cloudStorage.upload(file, path);
+    console.log(data); // 假设云存储返回访问URL
     if (data.code !== 200) {
       return {
         code: HttpStatus.PRECONDITION_REQUIRED,
@@ -39,7 +40,8 @@ export class StorageController {
       filename: fileName,
       path: data.url, // 假设云存储返回访问URL
       size: fileSizeInBytes(file.size),
-      type: file.mimetype
+      type: file.mimetype,
+      storage_provider: data.storage_provider,
     });
     return {
       code: HttpStatus.OK,
