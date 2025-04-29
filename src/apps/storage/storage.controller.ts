@@ -1,8 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Inject, HttpStatus, Query, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
 import { CreateStorageDto } from './dto/create-storage.dto';
-import { UpdateStorageDto } from './dto/update-storage.dto';
 import { FileInterceptor } from "@nestjs/platform-express";
-import { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer-options.interface";
 import { CloudStorage } from './storage.interface';
 import { StorageService } from './storage.service';
 import { fileSizeInBytes } from 'src/utils';
@@ -60,10 +58,5 @@ export class StorageController {
   @Delete(':id')
   async delete(@Param("id") id: string) {
     return this.storageService.delete(+id);
-  }
-  @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  create(@Body() createStorageDto: CreateStorageDto) {
-    // return this.storageService.create(createStorageDto);
   }
 }

@@ -19,7 +19,6 @@ export class QiniuOSS implements CloudStorage {
     this.newConfig = config;
     this.mac = new qiniu.auth.digest.Mac(config.accessKey, config.secretKey);
     this.config = new qiniu.conf.Config();
-    console.log('Received config:qiniu', config); // Log the config object to check if it's being passed correctly
   }
 
   async upload(newFile: Express.Multer.File, path: string) {
@@ -39,7 +38,6 @@ export class QiniuOSS implements CloudStorage {
           reject(err);
         }
         if (info.statusCode === 200) {
-          console.log(body, info); // Log the response body to check if it contains the necessary information
           const data = {
             url: `https://vip.chaoyang1024.top/${info.data.key}`,
             code: 200,
