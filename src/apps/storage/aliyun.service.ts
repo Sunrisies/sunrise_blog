@@ -15,28 +15,15 @@ export class AliyunOSS implements CloudStorage {
       bucket: string;
     }
   ) {
-    console.log('Received config:aliyun', config); // Log the config object to check its content and properties
     this.client = new OSS(this.config);
-    console.log(this.client, '=============');
   }
 
   async upload(file: Express.Multer.File, path: string) {
-
     try {
       const result = await this.client.put(path, file.buffer);
-      console.log("uploadFile result", result);
       return { url: result.url, name: result.name, code: 200 };
     } catch (error) {
-      throw new Error("Failed to upload file");
+      return { url: "", name: "", code: 400 }; // 处理上传错误，返回空对象或其他错误信息
     }
-
-  }
-
-  async list(page: number, limit: number): Promise<FileListResponse> {
-
-    return []
-  }
-
-  async delete(filename: string): Promise<void> {
   }
 }

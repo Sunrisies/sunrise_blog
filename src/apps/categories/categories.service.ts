@@ -31,7 +31,6 @@ export class CategoriesService {
       where: { type: type || 'article' }
     });
     const tempCategories = categories.map((category) => {
-      console.log(category);
       return { value: category.id, label: category.name };
     });
     return { data: { data: tempCategories, pagination: {} }, message: "查询成功" };

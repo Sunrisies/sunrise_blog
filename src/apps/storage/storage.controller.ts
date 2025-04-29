@@ -28,7 +28,6 @@ export class StorageController {
     // }
     let fileName = file.originalname;
     const path = `uploads/${year}/${month}/${day}/${fileName}`;
-    console.log('Received file:', file); // Log the file object
     const data = await this.cloudStorage.upload(file, path);
     if (data.code !== 200) {
       return {
@@ -63,7 +62,6 @@ export class StorageController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   create(@Body() createStorageDto: CreateStorageDto) {
-    console.log('Received file:', createStorageDto); // Log the file object
     // return this.storageService.create(createStorageDto);
   }
 }

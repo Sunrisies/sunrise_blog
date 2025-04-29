@@ -30,7 +30,6 @@ export class TagsService {
     const tags = await this.tagsRepository.find({
       where: { type: type || 'article' }
     });
-    console.log(tags);
     const tempTags = tags.map((tag) => {
       return { value: tag.id, label: tag.name };
     });

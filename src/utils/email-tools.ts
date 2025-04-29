@@ -55,8 +55,6 @@ export class Email {
         text: `验证码为${code} 有效期为${time} 分钟`,
         html: html || `<p>您的验证码是：<strong>${code}</strong>，有效期${time}分钟</p>`
       });
-
-      console.log("邮件发送成功", info.messageId);
       return true;
     } catch (error) {
       console.error("邮件发送失败", {

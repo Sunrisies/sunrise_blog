@@ -52,7 +52,6 @@ export class AuthService {
       where: { user_name: createAuthDto.user_name },
       select: ['id', 'user_name', 'pass_word', 'email', 'phone']
     });
-    console.log(user, "createAuthDto");
     // 用户不存在校验
     if (!user) {
       throw new CustomUnauthorizedException('用户不存在', HttpStatus.NOT_FOUND);

@@ -7,7 +7,6 @@ export class AuthController {
   // 注册账号
   @Post("/register")
   async register(@Body() createAuthDto: AuthDto) {
-    console.log(createAuthDto, "createAuthDto");
     return this.authService.register(createAuthDto);
   }
 

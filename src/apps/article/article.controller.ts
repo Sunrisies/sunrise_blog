@@ -20,7 +20,6 @@ export class ArticleController {
   @Post()
   async create(@Body() createArticleDto: CreateArticleDto) {
     const data = await this.articleService.create(createArticleDto);
-    console.log(data);
     return data
   }
 

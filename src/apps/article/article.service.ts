@@ -26,7 +26,6 @@ export class ArticleService {
     private readonly tagRepository: Repository<Tag>
   ) { }
   async create(createArticleDto: CreateArticleDto) {
-    console.log(createArticleDto);
     // 先检测当前标题是否存在
     const isExist = await this.articleRepository.findOne({ where: { title: createArticleDto.title } });
     if (isExist) {
@@ -62,11 +61,9 @@ export class ArticleService {
         ...createArticleDto, category,
         tags
       });
-      console.log(article);
       await this.articleRepository.save(article);
       return { message: '创建成功', data: article };
     } catch (error) {
-      console.log(error, 'error');
       return { code: 500, message: '创建失败' };
     }
   }
