@@ -357,4 +357,35 @@ export class ArticleService {
       };
     }
   }
+  // 时间轴
+  async getTimeline() {
+    try {
+      const articles = await this.articleRepository
+        .createQueryBuilder('article')
+        .leftJoinAndSelect('article.tags', 'tags')
+        .select([
+          'article.id',
+          'article.title',
+          'article.description',
+          'article.publish_time',
+          'article.cover',
+          'tags.id',
+          'tags.name'
+        ])
+        .orderBy('article.publish_time', 'DESC')
+        .getMany();
+
+      return {
+        code: 200,
+        data: {data:articles}
+      };
+    } catch (error) {
+      console.error('获取时间轴数据失败:', error);
+      return {
+        code: 500,
+        data: [],
+        message: '获取数据失败'
+      };
+    }
+  }
 }

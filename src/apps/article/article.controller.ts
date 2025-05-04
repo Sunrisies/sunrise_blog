@@ -6,6 +6,11 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 @Controller('article')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) { }
+  // 时间轴
+  @Get("timeline")
+  async getTimeline() {
+    return this.articleService.getTimeline();
+  }
   /**
  * 获取上一篇和下一篇
  * @param id 文章id

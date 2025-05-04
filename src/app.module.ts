@@ -14,6 +14,7 @@ import { MysqlConnectionModule } from './config/mysql.module';
 import { RedisConnectionModule } from './config/redis.module';
 import { TransformInterceptor } from './interceptor/transform.interceptor';
 import { ConfigService } from '@nestjs/config';
+import { VisitLogModule } from './apps/visit-log/visit-log.module';
 @Module({
   imports: [
     GlobalConfigModule,
@@ -47,8 +48,8 @@ import { ConfigService } from '@nestjs/config';
     //     // region: "qiniu.zone.Zone_z2"
     //   }
     // }),
-    RedisConnectionModule
-
+    RedisConnectionModule,
+    VisitLogModule
   ],
   controllers: [],
   providers: [

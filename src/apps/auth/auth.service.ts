@@ -84,9 +84,11 @@ export class AuthService {
       code: 200,
       message: "登录成功",
       data: {
-        user: userInfo,
-        access_token: accessToken,
-        expires_in: 3600 // token有效期
+        data:{
+          user: userInfo,
+          access_token: accessToken,
+          expires_in: 3600 // token有效期
+        }
       }
     };
   }
