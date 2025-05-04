@@ -13,23 +13,27 @@ export class UserService {
     private userRepository: Repository<User>
   ) { }
 
-  async findAll(page: number, limit: number) {
-    const total = await this.userRepository.count();
+  async findAll(page: number, limit: number, user_name?: string) {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    
+    if (user_name) {
+      queryBuilder.where('user.user_name LIKE :user_name', { user_name: `%${user_name}%` });
+    }
+
+    const [users, total] = await queryBuilder
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
     const totalPage = Math.ceil(total / limit);
-    // 直接检查原始页码
-    if (page > totalPage && totalPage > 0) { // 添加 totalPage > 0 防止零数据误判
+    
+    if (page > totalPage && totalPage > 0) {
       return {
         code: 400,
         message: `请求页码超出范围，最大页数为 ${totalPage}`,
         data: null
       };
     }
-
-    const startIndex = (page - 1) * limit;
-    const users = await this.userRepository.find({
-      skip: startIndex,
-      take: limit,
-    });
 
     return {
       code: 200,

@@ -35,14 +35,23 @@ export class UserController {
     example: 10,
     type: Number
   })
+  @ApiQuery({
+    name: 'username',
+    required: false,
+    description: '用户名搜索关键词',
+    type: String
+  })
   @ApiOkResponse({
     description: '分页用户列表',
     type: PaginatedResponseDto<User>
   })
   @ApiResponse({ status: 401, description: '未经授权' })
-  findAll(@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number) {
-    return this.userService.findAll(page, limit);
+  findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('user_name') user_name?: string
+  ) {
+    return this.userService.findAll(page, limit, user_name);
   }
 
   @Get(':id')
