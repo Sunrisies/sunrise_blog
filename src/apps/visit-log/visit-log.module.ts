@@ -10,5 +10,6 @@ import { VisitLog } from './entities/visit-log.entity';
   ],
   controllers: [VisitLogController],
   providers: [VisitLogService],
+  exports:[VisitLogService]
 })
 export class VisitLogModule {}

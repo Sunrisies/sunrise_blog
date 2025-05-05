@@ -26,16 +26,18 @@ async function bootstrap() {
 	const app = await NestFactory.create(AppModule, {
 		logger: LoggerFactory("MyApp"),
 	});
-	app.use(
-		cors((req, callback) => {
-			const origin = req.headers.origin;
-			console.log("origin", origin);
-			callback(null, {
-				origin: true,
-				credentials: true,
-			});
-		}),
-	);
+  // CORS配置
+  app.use(
+    cors((req, callback) => {
+      const origin = req.headers.origin;
+      console.log("origin", origin);
+      callback(null, {
+        origin: true,
+        credentials: true,
+      });
+    }),
+  );
+
 	app.useGlobalPipes(validationPipe);
 	app.setGlobalPrefix("api");
 	const config = new DocumentBuilder()

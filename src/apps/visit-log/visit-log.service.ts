@@ -1,15 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { VisitLog } from './entities/visit-log.entity';
 import { CreateVisitLogDto } from './dto/create-visit-log.dto';
-
 @Injectable()
 export class VisitLogService {
   constructor(
     @InjectRepository(VisitLog)
     private visitLogRepository: Repository<VisitLog>
-  ) {}
+  ) { }
 
   async create(createVisitLogDto: CreateVisitLogDto) {
     try {
@@ -62,4 +61,5 @@ export class VisitLogService {
       };
     }
   }
+ 
 }

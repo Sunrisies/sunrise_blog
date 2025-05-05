@@ -5,7 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Article } from './entities/article.entity';
 import { Tag } from '../tags/entities/tag.entity';
 import { Category } from '../categories/entities/category.entity';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('文章管理')
 @Module({
   imports: [TypeOrmModule.forFeature([Article]), TypeOrmModule.forFeature([Category]), TypeOrmModule.forFeature([Tag])],
   controllers: [ArticleController],
