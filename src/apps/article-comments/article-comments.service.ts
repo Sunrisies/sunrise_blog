@@ -126,16 +126,20 @@ export class ArticleCommentsService {
   async findAll(articleId: number, page: number = 1, limit: number = 10) {
     try {
       const skip = (page - 1) * limit;
-      const [comments, total] = await this.articleCommentRepository.findAndCount({
-        where: {
-          article: { id: articleId },
-          parent: null
-        },
-        relations: ['replies', 'user'],
-        order: { created_at: 'DESC' },
-        skip,
-        take: limit
-      });
+
+      // 使用 QueryBuilder 构建查询
+      const [comments, total] = await this.articleCommentRepository
+        .createQueryBuilder('comment')
+        .leftJoinAndSelect('comment.replies', 'replies')
+        .leftJoinAndSelect('comment.user', 'user')
+        .leftJoinAndSelect('replies.user', 'replyUser')
+        .where('comment.article.id = :articleId', { articleId })
+        .andWhere('comment.parent IS NULL')  // 只查询顶层评论
+        .andWhere('comment.isDeleted = :isDeleted', { isDeleted: false })
+        .orderBy('comment.created_at', 'DESC')
+        .skip(skip)
+        .take(limit)
+        .getManyAndCount();
 
       // 格式化响应数据
       const formatted = comments.map(comment => ({
@@ -145,14 +149,17 @@ export class ArticleCommentsService {
         nickname: comment.nickname || comment.user?.user_name,
         avatar: comment.user?.image,
         email: comment.email,
-        replies: comment.replies.map(reply => ({
-          id: reply.id,
-          content: reply.content,
-          created_at: reply.created_at.toISOString(),
-          nickname: reply.nickname || reply.user?.user_name,
-          avatar: reply.user?.image,
-          email: comment.email,
-        }))
+        replies: comment.replies
+          .filter(reply => !reply.isDeleted)  // 过滤已删除的回复
+          .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())  // 回复按时间降序
+          .map(reply => ({
+            id: reply.id,
+            content: reply.content,
+            created_at: reply.created_at.toISOString(),
+            nickname: reply.nickname || reply.user?.user_name,
+            avatar: reply.user?.image,
+            email: reply.email,
+          }))
       }));
 
       return {
@@ -160,9 +167,9 @@ export class ArticleCommentsService {
         data: {
           data: formatted,
           pagination: {
-            page: page,
-            limit: limit,
-            total: total
+            page,
+            limit,
+            total
           }
         }
       };

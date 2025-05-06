@@ -109,5 +109,5 @@ export class MessageService {
       console.error('查询留言失败:', error);
       return { code: 500, message: '查询留言失败' };
     }
-}
+  }
 }
