@@ -18,6 +18,7 @@ import { TransformInterceptor } from './interceptor/transform.interceptor';
 import { ConfigService } from '@nestjs/config';
 
 import { VisitLogModule } from './apps/visit-log/visit-log.module';
+import { MessageModule } from './apps/message/message.module';
 @Module({
   imports: [
     GlobalConfigModule,
@@ -36,7 +37,8 @@ import { VisitLogModule } from './apps/visit-log/visit-log.module';
       inject: [ConfigService]
     }),
     RedisConnectionModule,
-    VisitLogModule
+    VisitLogModule,
+    MessageModule
   ],
   controllers: [],
   providers: [

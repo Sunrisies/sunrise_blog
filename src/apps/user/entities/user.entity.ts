@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { ArticleComment } from '../../article-comments/entities/article-comment.entity';
+import { ArticleComment } from '@/apps/article-comments/entities/article-comment.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Message } from '@/apps/message/entities/message.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -49,4 +50,14 @@ export class User {
         required: false
     })
     comments: ArticleComment[];
+
+    // 留言板的评论
+    @OneToMany(() => Message, message => message.user)
+    @ApiProperty({
+        description: '关联的留言列表',
+        type: () => Message,
+        isArray: true,
+        required: false
+    })
+    messages: Message[];
 }
