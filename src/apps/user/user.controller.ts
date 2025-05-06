@@ -1,18 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, DefaultValuePipe, ParseIntPipe, Put } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginatedResponseDto, ResponseDto } from '@/types/index';
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Put, Query } from '@nestjs/common';
 import {
-  ApiOperation,
-  ApiTags,
   ApiBearerAuth,
-  ApiResponse,
-  ApiQuery,
   ApiOkResponse,
-  ApiExtraModels,
-  ApiParam
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags
 } from '@nestjs/swagger';
-import { PaginatedResponseDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { UserService } from './user.service';
 @ApiTags('用户管理')
 @ApiBearerAuth()
 @Controller('user')
@@ -24,6 +23,7 @@ export class UserController {
   @ApiQuery({
     name: 'page',
     required: false,
+    default: 1,
     description: '页码，默认为1',
     example: 1,
     type: Number
@@ -31,12 +31,13 @@ export class UserController {
   @ApiQuery({
     name: 'limit',
     required: false,
+    default: 10,
     description: '每页数量，默认为10',
     example: 10,
     type: Number
   })
   @ApiQuery({
-    name: 'username',
+    name: 'user_name',
     required: false,
     description: '用户名搜索关键词',
     type: String
@@ -50,7 +51,7 @@ export class UserController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('user_name') user_name?: string
-  ) {
+  ): Promise<PaginatedResponseDto<User>> {
     return this.userService.findAll(page, limit, user_name);
   }
 
@@ -67,10 +68,10 @@ export class UserController {
   })
   @ApiOkResponse({
     description: '用户详细信息',
-    type: User
+    type: ResponseDto<User>
   })
   @ApiResponse({ status: 404, description: '用户不存在' })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<ResponseDto<User>> {
     return this.userService.findOne(+id);
   }
 
@@ -87,11 +88,11 @@ export class UserController {
   })
   @ApiOkResponse({
     description: '更新后的用户信息',
-    type: User
+    type: ResponseDto<User>
   })
   @ApiResponse({ status: 400, description: '请求参数错误' })
   @ApiResponse({ status: 404, description: '用户不存在' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<ResponseDto<User>> {
     return this.userService.update(+id, updateUserDto);
   }
 
@@ -104,14 +105,17 @@ export class UserController {
     name: 'id',
     description: '用户ID',
     example: 1,
-    type: Number
+    type: Number,
+    schema: {
+      default: 1
+    }
   })
   @ApiOkResponse({
     description: '已删除的用户信息',
-    type: User
+    type: ResponseDto<null>
   })
   @ApiResponse({ status: 404, description: '用户不存在' })
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<ResponseDto<null>> {
     return this.userService.remove(+id);
   }
 }

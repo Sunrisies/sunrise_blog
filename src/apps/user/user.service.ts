@@ -1,10 +1,10 @@
-import { Injectable, Param } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ResponseDto } from '@/types';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
 import * as bcrypt from 'bcryptjs';
+import { Repository } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -15,7 +15,7 @@ export class UserService {
 
   async findAll(page: number, limit: number, user_name?: string) {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
-    
+
     if (user_name) {
       queryBuilder.where('user.user_name LIKE :user_name', { user_name: `%${user_name}%` });
     }
@@ -26,7 +26,7 @@ export class UserService {
       .getManyAndCount();
 
     const totalPage = Math.ceil(total / limit);
-    
+
     if (page > totalPage && totalPage > 0) {
       return {
         code: 400,
@@ -44,15 +44,21 @@ export class UserService {
           limit: limit,
           total: total
         }
-      }
+      },
+      message: '查询成功'
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number): Promise<ResponseDto<User>> {
+    // 查询用户信息
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      return { code: 404, message: '没有找到该用户', data: null };
+    }
+    return { data: user, message: '查询成功', code: 200 };
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<ResponseDto<User>> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       return { code: 404, message: '没有找到该用户', data: null };
@@ -82,7 +88,7 @@ export class UserService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<ResponseDto<null>> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       return { code: 404, message: '没有找到该用户', data: null };

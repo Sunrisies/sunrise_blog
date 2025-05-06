@@ -1,0 +1,1631 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/user": {
+      "get": {
+        "operationId": "UserController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "页码，默认为1",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "每页数量，默认为10",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "user_name",
+            "required": false,
+            "in": "query",
+            "description": "用户名搜索关键词",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "分页用户列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未经授权"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "获取用户列表",
+        "tags": [
+          "用户管理"
+        ]
+      }
+    },
+    "/api/user/{id}": {
+      "get": {
+        "description": "根据用户ID获取用户详细信息",
+        "operationId": "UserController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "用户ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "用户详细信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "用户不存在"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "获取用户详情",
+        "tags": [
+          "用户管理"
+        ]
+      },
+      "put": {
+        "description": "根据用户ID更新用户资料",
+        "operationId": "UserController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "用户ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新后的用户信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误"
+          },
+          "404": {
+            "description": "用户不存在"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "更新用户信息",
+        "tags": [
+          "用户管理"
+        ]
+      },
+      "delete": {
+        "description": "根据用户ID永久删除用户账号",
+        "operationId": "UserController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "用户ID",
+            "schema": {
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "已删除的用户信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "用户不存在"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "删除用户",
+        "tags": [
+          "用户管理"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/tags": {
+      "post": {
+        "operationId": "TagsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTagDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tags"
+        ]
+      },
+      "get": {
+        "operationId": "TagsController_findAll",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tags"
+        ]
+      }
+    },
+    "/api/tags/{id}": {
+      "get": {
+        "operationId": "TagsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tags"
+        ]
+      },
+      "put": {
+        "operationId": "TagsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTagDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tags"
+        ]
+      },
+      "delete": {
+        "operationId": "TagsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tags"
+        ]
+      }
+    },
+    "/api/categories": {
+      "post": {
+        "operationId": "CategoriesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Categories"
+        ]
+      },
+      "get": {
+        "operationId": "CategoriesController_findAll",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Categories"
+        ]
+      }
+    },
+    "/api/categories/{id}": {
+      "put": {
+        "operationId": "CategoriesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Categories"
+        ]
+      },
+      "delete": {
+        "operationId": "CategoriesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Categories"
+        ]
+      }
+    },
+    "/api/article/timeline": {
+      "get": {
+        "operationId": "ArticleController_getTimeline",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Article"
+        ]
+      }
+    },
+    "/api/article/prevNext/{id}": {
+      "get": {
+        "operationId": "ArticleController_getPrevNext",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Article"
+        ]
+      }
+    },
+    "/api/article": {
+      "post": {
+        "operationId": "ArticleController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArticleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Article"
+        ]
+      },
+      "get": {
+        "operationId": "ArticleController_findAllByPages",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "category",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tag",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "title",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Article"
+        ]
+      }
+    },
+    "/api/article/uploadTime": {
+      "get": {
+        "operationId": "ArticleController_getUploadTime",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Article"
+        ]
+      }
+    },
+    "/api/article/{id}": {
+      "get": {
+        "operationId": "ArticleController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Article"
+        ]
+      },
+      "put": {
+        "operationId": "ArticleController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateArticleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Article"
+        ]
+      },
+      "delete": {
+        "operationId": "ArticleController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Article"
+        ]
+      }
+    },
+    "/api/articleComments": {
+      "post": {
+        "operationId": "ArticleCommentsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArticleCommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ArticleComments"
+        ]
+      },
+      "get": {
+        "operationId": "ArticleCommentsController_findAll",
+        "parameters": [
+          {
+            "name": "articleId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ArticleComments"
+        ]
+      }
+    },
+    "/api/articleComments/admin": {
+      "get": {
+        "operationId": "ArticleCommentsController_findAllForAdmin",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ArticleComments"
+        ]
+      }
+    },
+    "/api/articleComments/{id}": {
+      "get": {
+        "operationId": "ArticleCommentsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ArticleComments"
+        ]
+      },
+      "patch": {
+        "operationId": "ArticleCommentsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateArticleCommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ArticleComments"
+        ]
+      },
+      "delete": {
+        "operationId": "ArticleCommentsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ArticleComments"
+        ]
+      }
+    },
+    "/api/tools/email/code": {
+      "post": {
+        "operationId": "ToolsController_getEmailCode",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "邮箱验证码"
+          }
+        },
+        "summary": "获取邮箱验证码",
+        "tags": [
+          "Tools"
+        ]
+      }
+    },
+    "/api/tools": {
+      "get": {
+        "operationId": "ToolsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tools"
+        ]
+      }
+    },
+    "/api/tools/{id}": {
+      "get": {
+        "operationId": "ToolsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tools"
+        ]
+      },
+      "patch": {
+        "operationId": "ToolsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateToolDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tools"
+        ]
+      },
+      "delete": {
+        "operationId": "ToolsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tools"
+        ]
+      }
+    },
+    "/api/thirdPartyLibrary": {
+      "post": {
+        "operationId": "ThirdPartyLibraryController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateThirdPartyLibraryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ThirdPartyLibrary"
+        ]
+      },
+      "get": {
+        "operationId": "ThirdPartyLibraryController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tag",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ThirdPartyLibrary"
+        ]
+      }
+    },
+    "/api/thirdPartyLibrary/{id}": {
+      "get": {
+        "operationId": "ThirdPartyLibraryController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ThirdPartyLibrary"
+        ]
+      },
+      "put": {
+        "operationId": "ThirdPartyLibraryController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateThirdPartyLibraryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ThirdPartyLibrary"
+        ]
+      },
+      "delete": {
+        "operationId": "ThirdPartyLibraryController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ThirdPartyLibrary"
+        ]
+      }
+    },
+    "/api/storage": {
+      "post": {
+        "operationId": "StorageController_upload",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Storage"
+        ]
+      },
+      "get": {
+        "operationId": "StorageController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Storage"
+        ]
+      }
+    },
+    "/api/storage/{id}": {
+      "delete": {
+        "operationId": "StorageController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Storage"
+        ]
+      }
+    },
+    "/api/visitLog": {
+      "post": {
+        "operationId": "VisitLogController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVisitLogDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "创建访问日志",
+        "tags": [
+          "访问日志"
+        ]
+      },
+      "get": {
+        "operationId": "VisitLogController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "页码，默认为1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "每页数量，默认为10",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "获取访问日志列表",
+        "tags": [
+          "访问日志"
+        ]
+      }
+    },
+    "/api/messages": {
+      "post": {
+        "operationId": "MessageController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Message"
+        ]
+      },
+      "get": {
+        "operationId": "MessageController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Message"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "朝阳",
+    "description": "朝阳博客相关的Api",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "个人博客",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "PaginatedMetaDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "当前页码",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "每页数量",
+            "example": 10
+          },
+          "total": {
+            "type": "number",
+            "description": "总数据量",
+            "example": 100
+          }
+        },
+        "required": [
+          "page",
+          "limit",
+          "total"
+        ]
+      },
+      "PaginatedDataDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "分页数据",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginatedMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "pagination"
+        ]
+      },
+      "PaginatedResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number",
+            "description": "状态码",
+            "example": 200
+          },
+          "data": {
+            "description": "响应数据",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginatedDataDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "操作成功"
+          }
+        },
+        "required": [
+          "code",
+          "data",
+          "message"
+        ]
+      },
+      "ResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number",
+            "description": "状态码",
+            "example": 200
+          },
+          "data": {
+            "type": "object",
+            "description": "响应数据"
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "操作成功"
+          }
+        },
+        "required": [
+          "code",
+          "data",
+          "message"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateTagDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "article",
+              "library"
+            ],
+            "default": "article"
+          }
+        }
+      },
+      "UpdateTagDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "article",
+              "library"
+            ],
+            "default": "article"
+          }
+        }
+      },
+      "UpdateCategoryDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateArticleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateArticleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateArticleCommentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateArticleCommentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateToolDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateThirdPartyLibraryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "库名称",
+            "example": "Vue.js"
+          },
+          "officialUrl": {
+            "type": "string",
+            "description": "官方网址",
+            "example": "https://vuejs.org"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "渐进式JavaScript框架"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "元数据"
+          },
+          "categoryId": {
+            "type": "number",
+            "description": "关联分类ID",
+            "example": 1
+          },
+          "tagIds": {
+            "description": "标签ID数组",
+            "example": [
+              3,
+              4
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "officialUrl"
+        ]
+      },
+      "UpdateThirdPartyLibraryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "库名称",
+            "example": "Vue.js"
+          },
+          "officialUrl": {
+            "type": "string",
+            "description": "官方网址",
+            "example": "https://vuejs.org"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述",
+            "example": "渐进式JavaScript框架"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "元数据"
+          },
+          "categoryId": {
+            "type": "number",
+            "description": "关联分类ID",
+            "example": 1
+          },
+          "tagIds": {
+            "description": "标签ID数组",
+            "example": [
+              3,
+              4
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CreateVisitLogDto": {
+        "type": "object",
+        "properties": {
+          "ip": {
+            "type": "string",
+            "description": "访问IP"
+          },
+          "userAgent": {
+            "type": "string",
+            "description": "用户代理"
+          },
+          "referer": {
+            "type": "string",
+            "description": "来源页面"
+          },
+          "url": {
+            "type": "string",
+            "description": "访问URL"
+          },
+          "method": {
+            "type": "string",
+            "description": "请求方法"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "访问时间"
+          },
+          "browserName": {
+            "type": "string",
+            "description": "浏览器名称"
+          },
+          "browserVersion": {
+            "type": "string",
+            "description": "浏览器版本"
+          },
+          "browserMajor": {
+            "type": "string",
+            "description": "浏览器主版本"
+          },
+          "deviceType": {
+            "type": "string",
+            "description": "设备类型"
+          },
+          "deviceModel": {
+            "type": "string",
+            "description": "设备型号"
+          },
+          "deviceVendor": {
+            "type": "string",
+            "description": "设备厂商"
+          },
+          "osName": {
+            "type": "string",
+            "description": "操作系统名称"
+          },
+          "osVersion": {
+            "type": "string",
+            "description": "操作系统版本"
+          },
+          "country": {
+            "type": "string",
+            "description": "国家"
+          },
+          "region": {
+            "type": "string",
+            "description": "地区"
+          },
+          "city": {
+            "type": "string",
+            "description": "城市"
+          },
+          "loadTime": {
+            "type": "number",
+            "description": "加载时间"
+          },
+          "domReady": {
+            "type": "number",
+            "description": "DOM准备时间"
+          },
+          "firstPaint": {
+            "type": "number",
+            "description": "首次绘制时间"
+          }
+        },
+        "required": [
+          "url",
+          "method",
+          "timestamp",
+          "browserName",
+          "browserVersion",
+          "browserMajor",
+          "deviceType",
+          "deviceModel",
+          "deviceVendor",
+          "osName",
+          "osVersion"
+        ]
+      },
+      "CreateMessageDto": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}
