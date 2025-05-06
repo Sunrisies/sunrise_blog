@@ -10,6 +10,7 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto'
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 @ApiTags('用户管理')
@@ -44,14 +45,14 @@ export class UserController {
   })
   @ApiOkResponse({
     description: '分页用户列表',
-    type: PaginatedResponseDto<User>
+    type: PaginatedResponseDto<CreateUserDto>
   })
   @ApiResponse({ status: 401, description: '未经授权' })
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('user_name') user_name?: string
-  ): Promise<PaginatedResponseDto<User>> {
+  ): Promise<PaginatedResponseDto<CreateUserDto>> {
     return this.userService.findAll(page, limit, user_name);
   }
 
@@ -68,10 +69,10 @@ export class UserController {
   })
   @ApiOkResponse({
     description: '用户详细信息',
-    type: ResponseDto<User>
+    type: ResponseDto<CreateUserDto>
   })
   @ApiResponse({ status: 404, description: '用户不存在' })
-  findOne(@Param('id') id: string): Promise<ResponseDto<User>> {
+  findOne(@Param('id') id: string): Promise<ResponseDto<CreateUserDto>> {
     return this.userService.findOne(+id);
   }
 
@@ -88,11 +89,11 @@ export class UserController {
   })
   @ApiOkResponse({
     description: '更新后的用户信息',
-    type: ResponseDto<User>
+    type: ResponseDto<CreateUserDto>
   })
   @ApiResponse({ status: 400, description: '请求参数错误' })
   @ApiResponse({ status: 404, description: '用户不存在' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<ResponseDto<User>> {
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<ResponseDto<CreateUserDto>> {
     return this.userService.update(+id, updateUserDto);
   }
 
