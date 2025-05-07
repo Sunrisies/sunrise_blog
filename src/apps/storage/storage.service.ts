@@ -26,12 +26,17 @@ export class StorageService {
   }
 
 
-  async findAll(page: number, limit: number): Promise<PaginatedResponseDto<Storage>> {
-    // 获取所有媒体文件的总数
-    const total = await this.storageRepository.count();
+  async findAll(page: number, limit: number, type?: string): Promise<PaginatedResponseDto<Storage>> {
+    const queryBuilder = this.storageRepository.createQueryBuilder('storage');
+
+    if (type) {
+      queryBuilder.where('storage.type LIKE :type', { type: `%${type}%` });
+    }
+
+    const total = await queryBuilder.getCount();
     const totalPage = Math.ceil(total / limit);
-    // 直接检查原始页码
-    if (page > totalPage && totalPage > 0) { // 添加 totalPage > 0 防止零数据误判
+
+    if (page > totalPage && totalPage > 0) {
       return {
         code: 400,
         message: `请求页码超出范围，最大页数为 ${totalPage}`,
@@ -39,24 +44,23 @@ export class StorageService {
       };
     }
 
-    const startIndex = (page - 1) * limit;
+    const files = await queryBuilder
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy('storage.created_at', 'DESC')
+      .getMany();
 
-    const files = await this.storageRepository.find({
-      skip: startIndex,
-      take: limit,
-      order: { created_at: 'DESC' } // 按上传时间降序排列
-    })
     return {
       code: 200,
       data: {
         data: files,
         pagination: {
-          page: page, // 当前页码
-          limit: limit, // 每页显示的数量
-          // total_pages: totalPage,
-          total: total // 总数量
+          page: page,
+          limit: limit,
+          total: total
         }
-      }
+      },
+      message: '获取成功'
     };
   }
 

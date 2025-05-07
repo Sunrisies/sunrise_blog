@@ -4,7 +4,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { CloudStorage } from './storage.interface';
 import { StorageService } from './storage.service';
 import { fileSizeInBytes } from 'src/utils';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PaginatedResponseDto, ResponseDto } from '@/types';
 import { Storage } from './entities/storage.entity';
 @ApiTags('文件管理')
@@ -72,15 +72,14 @@ export class StorageController {
 
   @ApiOperation({ summary: '获取文件列表' })
   @ApiOkResponse({ description: '获取成功', type: ResponseDto<Storage> })
-  @ApiBody({
-    description: '文件信息',
-    type: ResponseDto<Storage>,
-  })
+  @ApiQuery({ name: 'type', required: false, description: '文件类型' })
   @Get()
-  async list(@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number
+  async list(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('type') type?: string
   ): Promise<PaginatedResponseDto<Storage>> {
-    return await this.storageService.findAll(page, limit)
+    return await this.storageService.findAll(page, limit, type)
   }
 
   @ApiOperation({ summary: '删除文件' })
