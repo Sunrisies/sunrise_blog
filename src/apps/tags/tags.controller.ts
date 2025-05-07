@@ -1,40 +1,56 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpCode, Query, ParseEnumPipe, BadRequestException, UseGuards } from '@nestjs/common';
-import { TagsService } from './tags.service';
-import { CreateTagDto } from './dto/create-tag.dto';
-import { UpdateTagDto } from './dto/update-tag.dto';
+import { PaginatedResponseDto, ResponseDto } from '@/types';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseEnumPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from 'src/guard/jwt.guard';
+import { CreateTagDto, ITag } from './dto/create-tag.dto';
+import { UpdateTagDto } from './dto/update-tag.dto';
+import { TagsService } from './tags.service';
+@ApiTags('标签管理')
+@ApiBearerAuth()
 @Controller('tags')
 export class TagsController {
   constructor(private readonly tagsService: TagsService) { }
 
   @Post()
-  // @HttpCode(200)
-  create(@Body() createTagDto: CreateTagDto) {
-    return this.tagsService.create(createTagDto);
+  @ApiOperation({ summary: '添加标签' })
+  @ApiOkResponse({ description: '添加成功', type: ResponseDto<CreateTagDto> })
+  @ApiBody({
+    description: '标签信息',
+    type: CreateTagDto,
+  })
+  async create(@Body() createTagDto: CreateTagDto): Promise<ResponseDto<CreateTagDto>> {
+    return await this.tagsService.create(createTagDto);
   }
 
+  @ApiOperation({ summary: '获取标签列表' })
+  @ApiOkResponse({ description: '获取成功', type: ResponseDto<CreateTagDto[]> })
+  @ApiQuery({ name: 'type', description: '标签类型', required: false, enum: ['article', 'library'] })
   @UseGuards(JwtGuard)
   @Get()
-  findAll(@Query('type', new ParseEnumPipe(['article', 'library'], {
+  async findAll(@Query('type', new ParseEnumPipe(['article', 'library'], {
     optional: true,// 添加可选配置
     exceptionFactory: () => new BadRequestException('type参数必须是 article 或 library')
-  })) type?: 'article' | 'library') {
-    return this.tagsService.findAll(type);
+  })) type?: 'article' | 'library'): Promise<PaginatedResponseDto<ITag>> {
+    return await this.tagsService.findAll(type);
   }
 
-
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.tagsService.findOne(+id);
-  }
-
+  @ApiOperation({ summary: '更新标签' })
+  @ApiOkResponse({ description: '更新成功', type: ResponseDto<CreateTagDto> })
+  @ApiParam({ name: 'id', description: '标签ID', required: true })
+  @ApiBody({
+    description: '标签信息',
+    type: UpdateTagDto,
+  })
   @Put(":id")
-  update(@Param("id") id: string, @Body() updateTagDto: UpdateTagDto) {
-    return this.tagsService.update(+id, updateTagDto);
+  async update(@Param("id") id: string, @Body() updateTagDto: UpdateTagDto): Promise<ResponseDto<null>> {
+    return await this.tagsService.update(+id, updateTagDto);
   }
 
+  @ApiOperation({ summary: '删除标签' })
+  @ApiOkResponse({ description: '删除成功', type: ResponseDto<CreateTagDto> })
+  @ApiParam({ name: 'id', description: '标签ID', required: true })
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.tagsService.remove(+id);
+  async remove(@Param("id") id: string): Promise<ResponseDto<null>> {
+    return await this.tagsService.remove(+id);
   }
 }

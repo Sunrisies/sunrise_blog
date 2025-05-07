@@ -1,4 +1,4 @@
-import { ResponseDto } from '@/types';
+import { PaginatedResponseDto, ResponseDto } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -13,7 +13,7 @@ export class UserService {
     private userRepository: Repository<User>
   ) { }
 
-  async findAll(page: number, limit: number, user_name?: string) {
+  async findAll(page: number, limit: number, user_name?: string): Promise<PaginatedResponseDto<User>> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
     if (user_name) {

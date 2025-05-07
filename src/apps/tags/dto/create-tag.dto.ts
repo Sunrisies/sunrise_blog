@@ -4,6 +4,11 @@ export class CreateTagDto {
     @IsString({ message: '标签名必须是字符串类型' })
     @IsNotEmpty({ message: '标签名不能为空' })
     @MaxLength(50, { message: '标签名不能超过50个字符' })
+    @ApiProperty({
+        description: '标签名',
+        example: '标签名',
+        required: true
+    })
     name: string;
 
 
@@ -17,4 +22,8 @@ export class CreateTagDto {
         required: false
     })
     type: string = 'article';
+}
+export interface ITag {
+    value: number;
+    label: string;
 }
