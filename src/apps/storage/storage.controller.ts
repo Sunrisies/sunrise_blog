@@ -4,13 +4,34 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { CloudStorage } from './storage.interface';
 import { StorageService } from './storage.service';
 import { fileSizeInBytes } from 'src/utils';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PaginatedResponseDto, ResponseDto } from '@/types';
+import { Storage } from './entities/storage.entity';
+@ApiTags('文件管理')
+@ApiBearerAuth()
 @Controller('storage')
 export class StorageController {
   constructor(@Inject('CLOUD_STORAGE') private readonly cloudStorage: CloudStorage,
     private readonly storageService: StorageService) { }
+  @ApiOperation({ summary: '添加文件' })
+  @ApiOkResponse({ description: '添加成功', type: ResponseDto<Storage> })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '文件信息',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary'
+        }
+      },
+      required: ['file']
+    }
+  })
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async upload(@UploadedFile() file: Express.Multer.File) {
+  async upload(@UploadedFile() file: Express.Multer.File): Promise<ResponseDto<Storage>> {
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
@@ -32,6 +53,7 @@ export class StorageController {
       return {
         code: HttpStatus.PRECONDITION_REQUIRED,
         message: "上传失败",
+        data: null,
       };
     }
     const storage = await this.storageService.create({
@@ -48,15 +70,27 @@ export class StorageController {
     }
   }
 
+  @ApiOperation({ summary: '获取文件列表' })
+  @ApiOkResponse({ description: '获取成功', type: ResponseDto<Storage> })
+  @ApiBody({
+    description: '文件信息',
+    type: ResponseDto<Storage>,
+  })
   @Get()
   async list(@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number
-  ) {
+  ): Promise<PaginatedResponseDto<Storage>> {
     return await this.storageService.findAll(page, limit)
   }
 
+  @ApiOperation({ summary: '删除文件' })
+  @ApiOkResponse({ description: '删除成功', type: ResponseDto<null> })
+  @ApiBody({
+    description: '文件信息',
+    type: ResponseDto<null>,
+  })
   @Delete(':id')
-  async delete(@Param("id") id: string) {
+  async delete(@Param("id") id: string): Promise<ResponseDto<null>> {
     return this.storageService.delete(+id);
   }
 }
