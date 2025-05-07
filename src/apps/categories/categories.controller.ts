@@ -1,32 +1,68 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, ParseEnumPipe, BadRequestException } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
+import { CreateCategoryDto, ICategory } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { PaginatedResponseDto, ResponseDto } from '@/types';
 
+@ApiTags('分类管理')
+@ApiBearerAuth()
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) { }
 
+  @ApiOperation({ summary: '添加分类' })
+  @ApiOkResponse({ description: '添加成功', type: ResponseDto<CreateCategoryDto> })
+  @ApiBody({
+    description: '分类信息',
+    type: CreateCategoryDto,
+  })
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoriesService.create(createCategoryDto);
+  async create(@Body() createCategoryDto: CreateCategoryDto): Promise<ResponseDto<CreateCategoryDto>> {
+    return await this.categoriesService.create(createCategoryDto);
   }
 
+  @ApiOperation({ summary: '获取分类列表' })
+  @ApiOkResponse({ description: '获取成功', type: PaginatedResponseDto<ICategory> })
+  @ApiQuery({
+    name: 'type',
+    description: '分类类型',
+    enum: ['article', 'library'],
+    required: false,
+  })
   @Get()
-  findAll(@Query('type', new ParseEnumPipe(['article', 'library'], {
+  async findAll(@Query('type', new ParseEnumPipe(['article', 'library'], {
     optional: true,// 添加可选配置
     exceptionFactory: () => new BadRequestException('type参数必须是 article 或 library')
-  })) type?: 'article' | 'library') {
-    return this.categoriesService.findAll(type);
+  })) type?: 'article' | 'library'): Promise<PaginatedResponseDto<ICategory>> {
+    return await this.categoriesService.findAll(type);
   }
 
+  @ApiOperation({ summary: '修改分类' })
+  @ApiOkResponse({ description: '修改成功', type: ResponseDto<null> })
+  @ApiParam({
+    name: 'id',
+    description: '分类id',
+    type: Number,
+  })
+  @ApiBody({
+    description: '分类信息',
+    type: UpdateCategoryDto,
+  })
   @Put(":id")
-  update(@Param("id") id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
-    return this.categoriesService.update(+id, updateCategoryDto);
+  async update(@Param("id") id: string, @Body() updateCategoryDto: UpdateCategoryDto): Promise<ResponseDto<null>> {
+    return await this.categoriesService.update(+id, updateCategoryDto);
   }
 
+  @ApiOperation({ summary: '删除分类' })
+  @ApiOkResponse({ description: '删除成功', type: ResponseDto<null> })
+  @ApiParam({
+    name: 'id',
+    description: '分类id',
+    type: Number,
+  })
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.categoriesService.remove(+id);
+  async remove(@Param("id") id: string): Promise<ResponseDto<null>> {
+    return await this.categoriesService.remove(+id);
   }
 }
