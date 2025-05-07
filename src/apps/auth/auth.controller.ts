@@ -1,8 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto as AuthDto } from '@/apps/user/dto/create-user.dto';
 import { AuthService } from './auth.service';
-import { ResponseDto } from '@/types';
+import { ILogin, ResponseDto } from '@/types';
+
 @ApiTags('权限管理')
 @ApiBearerAuth()
 @Controller('auth')
@@ -23,12 +24,13 @@ export class AuthController {
   // 登录账号
   @Post("/login")
   @ApiOperation({ summary: '登录账号' })
-  @ApiOkResponse({ description: '登录成功' })
+  @ApiOkResponse({ description: '登录成功', type: ResponseDto<ILogin> })
+  @ApiResponse({ status: 422, description: '密码错误', type: ResponseDto<null> })
   @ApiBody({
     description: '用户信息',
     type: AuthDto,
   })
-  async login(@Body() createAuthDto: AuthDto) {
+  async login(@Body() createAuthDto: AuthDto): Promise<ResponseDto<ILogin>> {
     return this.authService.login(createAuthDto);
   }
 }

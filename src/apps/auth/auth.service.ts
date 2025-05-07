@@ -8,6 +8,7 @@ import { CustomUnauthorizedException } from 'src/utils/custom-exceptions';
 import { JwtService } from '@nestjs/jwt';
 import Redis from "ioredis";
 import { InjectRedis } from '@nestjs-modules/ioredis';
+import { ILogin, ResponseDto } from '@/types';
 @Injectable()
 export class AuthService {
   constructor(
@@ -47,7 +48,7 @@ export class AuthService {
     }
   }
 
-  async login(createAuthDto: AuthDto) {
+  async login(createAuthDto: AuthDto): Promise<ResponseDto<ILogin>> {
     const user = await this.userRepository.findOne({
       where: { user_name: createAuthDto.user_name },
       select: ['id', 'user_name', 'pass_word', 'email', 'phone']
@@ -62,7 +63,7 @@ export class AuthService {
       user.pass_word
     );
     if (!isPasswordValid) {
-      throw new CustomUnauthorizedException('密码错误', HttpStatus.UNAUTHORIZED);
+      throw new CustomUnauthorizedException('密码错误', HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     // 生成JWT令牌（需要先安装@nestjs/jwt）
@@ -84,11 +85,9 @@ export class AuthService {
       code: 200,
       message: "登录成功",
       data: {
-        data:{
-          user: userInfo,
-          access_token: accessToken,
-          expires_in: 3600 // token有效期
-        }
+        user: userInfo,
+        access_token: accessToken,
+        expires_in: 3600 // token有效期
       }
     };
   }

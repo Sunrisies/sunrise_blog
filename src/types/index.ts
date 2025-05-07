@@ -1,3 +1,4 @@
+import { CreateUserDto as AuthDto } from '@/apps/user/dto/create-user.dto';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -48,4 +49,9 @@ export class ResponseDto<T> {
 
     @ApiProperty({ description: '提示信息', example: '操作成功' })
     message: string;
+}
+export interface ILogin {
+    user: Omit<AuthDto, 'pass_word'>;
+    access_token: string;
+    expires_in: number;
 }
