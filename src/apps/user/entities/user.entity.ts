@@ -3,6 +3,41 @@ import { ArticleComment } from '@/apps/article-comments/entities/article-comment
 import { ApiProperty } from '@nestjs/swagger';
 import { Message } from '@/apps/message/entities/message.entity';
 
+// 定义用户角色枚举
+export enum UserRole {
+    ADMIN = 'admin',
+    EDITOR = 'editor',
+    USER = 'user',
+    GUEST = 'guest'
+}
+
+// 使用二进制定义权限
+export enum Permission {
+    NONE = 0,                    // 0000 0000
+    READ_ARTICLE = 1 << 0,       // 0000 0001  文章读取权限
+    WRITE_ARTICLE = 1 << 1,      // 0000 0010  文章写入权限
+    DELETE_ARTICLE = 1 << 2,     // 0000 0100  文章删除权限
+    MANAGE_COMMENT = 1 << 3,     // 0000 1000  评论管理权限
+    MANAGE_USER = 1 << 4,        // 0001 0000  用户管理权限
+    MANAGE_SYSTEM = 1 << 5,      // 0010 0000  系统管理权限
+    MANAGE_FILE = 1 << 6,        // 0100 0000  文件管理权限
+    // 新增权限示例
+    MANAGE_TAG = 1 << 7,        // 1000 0000  标签管理权限
+    MANAGE_CATEGORY = 1 << 8,   // 0001 0000 0000  分类管理权限
+    MANAGE_MESSAGE = 1 << 9,    // 0010 0000 0000  留言管理权限
+    
+    // 更新 ALL 权限
+    ALL = 0xFFF                 // 1111 1111 1111  所有权限（12位）
+}
+
+// 预定义角色权限
+export const RolePermissions = {
+    [UserRole.ADMIN]: Permission.ALL,
+    [UserRole.EDITOR]: Permission.READ_ARTICLE | Permission.WRITE_ARTICLE | Permission.DELETE_ARTICLE | Permission.MANAGE_COMMENT,
+    [UserRole.USER]: Permission.READ_ARTICLE | Permission.WRITE_ARTICLE | Permission.MANAGE_COMMENT | Permission.MANAGE_MESSAGE,
+    [UserRole.GUEST]: Permission.READ_ARTICLE
+};
+
 @Entity({ name: 'users' })
 export class User {
     @PrimaryGeneratedColumn()
@@ -60,4 +95,25 @@ export class User {
         required: false
     })
     messages: Message[];
+
+    @Column({
+        type: 'enum',
+        enum: UserRole,
+        default: UserRole.USER
+    })
+    @ApiProperty({
+        description: '用户角色',
+        enum: UserRole,
+        example: UserRole.USER,
+        default: UserRole.USER
+    })
+    role: UserRole;
+
+    @Column('int', { default: RolePermissions[UserRole.USER] })
+    @ApiProperty({
+        description: '用户权限值',
+        example: RolePermissions[UserRole.USER],
+        default: RolePermissions[UserRole.USER]
+    })
+    permissions: number;
 }

@@ -28,8 +28,8 @@ export class StorageService {
 
   async findAll(page: number, limit: number, type?: string,search?:string): Promise<PaginatedResponseDto<Storage>> {
     const queryBuilder = this.storageRepository.createQueryBuilder('storage');
-
-    if (type) {
+    // type如果等于all的话，代表查询全部类型
+    if (type && type !== 'all') {
       queryBuilder.where('storage.type LIKE :type', { type: `%${type}%` });
     }
     if (search) {

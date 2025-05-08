@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { UserRole } from '../entities/user.entity';
 
 export class CreateUserDto {
     @IsString({ message: '用户名必须是字符串类型' })
@@ -37,4 +38,9 @@ export class CreateUserDto {
         required: false
     })
     email?: string;
+
+
+    @ApiProperty({ description: '用户角色', enum: UserRole, default: UserRole.USER })
+    @IsOptional()
+    role?: UserRole = UserRole.USER;
 }

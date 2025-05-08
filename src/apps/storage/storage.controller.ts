@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Inject, HttpStatus, Query, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Inject, HttpStatus, Query, DefaultValuePipe, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { CreateStorageDto } from './dto/create-storage.dto';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CloudStorage } from './storage.interface';
@@ -7,6 +7,9 @@ import { fileSizeInBytes } from 'src/utils';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PaginatedResponseDto, ResponseDto } from '@/types';
 import { Storage } from './entities/storage.entity';
+import { RequirePermissions } from '@/decorators/require-permissions.decorator';
+import { Permission } from '../user/entities/user.entity';
+import { JwtGuard } from '@/guard/jwt.guard';
 @ApiTags('文件管理')
 @ApiBearerAuth()
 @Controller('storage')
@@ -30,6 +33,8 @@ export class StorageController {
     }
   })
   @Post()
+  @UseGuards(JwtGuard)
+  @RequirePermissions(Permission.MANAGE_MESSAGE)
   @UseInterceptors(FileInterceptor('file'))
   async upload(@UploadedFile() file: Express.Multer.File): Promise<ResponseDto<Storage>> {
     const date = new Date();

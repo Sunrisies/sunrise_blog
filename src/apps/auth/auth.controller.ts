@@ -3,6 +3,8 @@ import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiResponse, ApiTa
 import { CreateUserDto as AuthDto } from '@/apps/user/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { ILogin, ResponseDto } from '@/types';
+import { RequirePermissions } from '@/decorators/require-permissions.decorator';
+import { Permission } from '../user/entities/user.entity';
 
 @ApiTags('权限管理')
 @ApiBearerAuth()
@@ -11,6 +13,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) { }
   // 注册账号
   @Post("/register")
+  // @RequirePermissions(Permission.WRITE_ARTICLE)
   @ApiOperation({ summary: '注册账号' })
   @ApiOkResponse({ description: '注册成功', type: ResponseDto<AuthDto> })
   @ApiBody({

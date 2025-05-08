@@ -4,14 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { RolePermissions, User, UserRole } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>
-  ) { }
+    private userRepository: Repository<User>,
+  ) {}
 
   async findAll(page: number, limit: number, user_name?: string): Promise<PaginatedResponseDto<User>> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
@@ -98,6 +98,46 @@ export class UserService {
       return { code: 200, message: '用户删除成功', data: null };
     } catch (error) {
       return { code: 500, message: '用户删除失败', data: null };
+    }
+  }
+
+  /**
+   * 更新所有用户的权限
+   */
+  async updateAllUsersPermissions(): Promise<void> {
+    // 更新管理员权限
+    await this.userRepository.update(
+      { role: UserRole.ADMIN },
+      { permissions: RolePermissions[UserRole.ADMIN] }
+    );
+
+    // 更新编辑者权限
+    await this.userRepository.update(
+      { role: UserRole.EDITOR },
+      { permissions: RolePermissions[UserRole.EDITOR] }
+    );
+
+    // 更新普通用户权限
+    await this.userRepository.update(
+      { role: UserRole.USER },
+      { permissions: RolePermissions[UserRole.USER] }
+    );
+
+    // 更新访客权限
+    await this.userRepository.update(
+      { role: UserRole.GUEST },
+      { permissions: RolePermissions[UserRole.GUEST] }
+    );
+  }
+
+  /**
+   * 更新单个用户的权限
+   */
+  async updateUserPermissions(userId: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (user) {
+      user.permissions = RolePermissions[user.role];
+      await this.userRepository.save(user);
     }
   }
 }
