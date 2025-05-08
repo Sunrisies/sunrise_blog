@@ -6,6 +6,7 @@ import { ThirdPartyLibrary } from './entities/third-party-library.entity';
 import { Repository } from 'typeorm';
 import { Category } from '../categories/entities/category.entity';
 import { Tag } from '../tags/entities/tag.entity';
+import { PaginatedResponseDto, ResponseDto } from '@/types';
 
 @Injectable()
 export class ThirdPartyLibraryService {
@@ -17,12 +18,12 @@ export class ThirdPartyLibraryService {
     @InjectRepository(Tag)
     private tagRepository: Repository<Tag>
   ) { }
-  async create(createThirdPartyLibraryDto: CreateThirdPartyLibraryDto) {
+  async create(createThirdPartyLibraryDto: CreateThirdPartyLibraryDto): Promise<ResponseDto<CreateThirdPartyLibraryDto>> {
     try {
       // 检查是否有重复的名称
       const existingLibrary = await this.libraryRepository.findOne({ where: { name: createThirdPartyLibraryDto.name } });
       if (existingLibrary) {
-        return { message: '名称已存在' };
+        return { message: '名称已存在', data: null };
       }
       // 获取并验证分类
       const category = createThirdPartyLibraryDto.categoryId
@@ -37,12 +38,12 @@ export class ThirdPartyLibraryService {
 
       // 详细错误检查
       if (createThirdPartyLibraryDto.categoryId && !category) {
-        return { message: `ID为 ${createThirdPartyLibraryDto.categoryId} 的分类不存在` }
+        return { message: `ID为 ${createThirdPartyLibraryDto.categoryId} 的分类不存在`, data: null };
       }
 
       if (tagIds.length > 0 && tags.length !== tagIds.length) {
         const missingTags = tagIds.filter(id => !tags.some(t => t.id === id));
-        return { message: `以下标签不存在: ${missingTags.join(', ')}` }
+        return { message: `以下标签不存在: ${missingTags.join(', ')}`, data: null }
       }
       // 如果都有那么开始保存数据
       const library = this.libraryRepository.create({ ...createThirdPartyLibraryDto, category, tags });
@@ -59,7 +60,7 @@ export class ThirdPartyLibraryService {
     categoryId?: string;
     tag?: string;
     name?: string;
-  }) {
+  }): Promise<PaginatedResponseDto<ThirdPartyLibrary>> {
     // 首先获取所有第三库的数量
     const total = await this.libraryRepository.count();
     const totalPage = Math.ceil(total / limit);
@@ -120,18 +121,16 @@ export class ThirdPartyLibraryService {
             limit: limit, // 每页显示的数量
             total: total // 总数量
           }
-        }
+        },
+        message: '获取第三方库成功'
       };
     } catch (error) {
-      return { code: 500, message: '获取文章失败' };
+      return { code: 500, message: '获取第三方库失败', data: null };
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} thirdPartyLibrary`;
-  }
 
-  async update(id: number, updateThirdPartyLibraryDto: UpdateThirdPartyLibraryDto) {
+  async update(id: number, updateThirdPartyLibraryDto: UpdateThirdPartyLibraryDto): Promise<ResponseDto<UpdateThirdPartyLibraryDto>> {
     // 先获取要更新的库
     const existingLibrary = await this.libraryRepository.findOne({
       where: { id },
@@ -139,7 +138,7 @@ export class ThirdPartyLibraryService {
     });
 
     if (!existingLibrary) {
-      return { message: '库不存在' };
+      return { message: '库不存在', data: null };
     }
 
     try {
@@ -149,7 +148,7 @@ export class ThirdPartyLibraryService {
           where: { name: updateThirdPartyLibraryDto.name }
         });
         if (nameExists) {
-          return { message: '名称已存在' };
+          return { message: '名称已存在', data: null };
         }
       }
 
@@ -182,16 +181,16 @@ export class ThirdPartyLibraryService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<ResponseDto<null>> {
     // 检查库是否存在
     const existingLibrary = this.libraryRepository.findOne({ where: { id } });
     if (!existingLibrary) {
-      return { message: '库不存在' };
+      return { message: '库不存在', data: null };
     }
     // 删除库
     try {
       await this.libraryRepository.delete(id);
-      return { message: '删除成功' };
+      return { message: '删除成功', data: null };
     } catch (error) {
       console.error('删除第三方库时出错:', error);
       throw new BadRequestException('删除第三方库时出错');
