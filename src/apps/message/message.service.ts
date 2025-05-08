@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from './entities/message.entity';
 import { User } from '../user/entities/user.entity';
-import { CreateMessageDto } from './dto/create-message.dto';
+import { CreateMessageDto, IMessage } from './dto/create-message.dto';
+import { PaginatedResponseDto, ResponseDto } from '@/types';
 
 @Injectable()
 export class MessageService {
@@ -14,7 +15,7 @@ export class MessageService {
     private userRepository: Repository<User>
   ) { }
 
-  async create(createMessageDto: CreateMessageDto) {
+  async create(createMessageDto: CreateMessageDto): Promise<ResponseDto<CreateMessageDto>> {
     try {
       let user: User = null;
       if (createMessageDto.userId) {
@@ -22,7 +23,7 @@ export class MessageService {
           where: { id: createMessageDto.userId }
         });
         if (!user) {
-          return { code: 404, message: '用户不存在' };
+          return { code: 404, message: '用户不存在', data: null };
         }
       }
 
@@ -32,7 +33,7 @@ export class MessageService {
           where: { id: createMessageDto.parentId }
         });
         if (!parentMessage) {
-          return { code: 404, message: '父级留言不存在' };
+          return { code: 404, message: '父级留言不存在', data: null };
         }
       }
 
@@ -48,15 +49,15 @@ export class MessageService {
       return {
         code: 200,
         message: '留言创建成功',
-        data: savedMessage
+        data: newMessage
       };
     } catch (error) {
       console.error('创建留言失败:', error);
-      return { code: 500, message: '留言创建失败' };
+      return { code: 500, message: '留言创建失败', data: null };
     }
   }
 
-  async findAll(page: number = 1, limit: number = 10) {
+  async findAll(page: number, limit: number): Promise<PaginatedResponseDto<IMessage>> {
     try {
       const skip = (page - 1) * limit;
 
@@ -103,11 +104,12 @@ export class MessageService {
             limit,
             total
           }
-        }
+        },
+        message: '查询留言成功'
       };
     } catch (error) {
       console.error('查询留言失败:', error);
-      return { code: 500, message: '查询留言失败' };
+      return { code: 500, message: '查询留言失败', data: null };
     }
   }
 }
