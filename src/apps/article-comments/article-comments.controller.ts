@@ -24,19 +24,4 @@ export class ArticleCommentsController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number) {
     return this.articleCommentsService.findAll(+articleId, page, limit);
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.articleCommentsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateArticleCommentDto: UpdateArticleCommentDto) {
-    return this.articleCommentsService.update(+id, updateArticleCommentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.articleCommentsService.remove(+id);
-  }
 }

@@ -178,15 +178,5 @@ export class ArticleCommentsService {
       return { code: 500, message: '查询评论失败' };
     }
   }
-  findOne(id: number) {
-    return `This action returns a #${id} articleComment`;
-  }
 
-  update(id: number, updateArticleCommentDto: UpdateArticleCommentDto) {
-    return `This action updates a #${id} articleComment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} articleComment`;
-  }
 }
