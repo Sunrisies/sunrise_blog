@@ -26,11 +26,14 @@ export class StorageService {
   }
 
 
-  async findAll(page: number, limit: number, type?: string): Promise<PaginatedResponseDto<Storage>> {
+  async findAll(page: number, limit: number, type?: string,search?:string): Promise<PaginatedResponseDto<Storage>> {
     const queryBuilder = this.storageRepository.createQueryBuilder('storage');
 
     if (type) {
       queryBuilder.where('storage.type LIKE :type', { type: `%${type}%` });
+    }
+    if (search) {
+      queryBuilder.andWhere('storage.title LIKE :search', { search: `%${search}%` });
     }
 
     const total = await queryBuilder.getCount();

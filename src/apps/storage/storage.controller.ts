@@ -73,13 +73,17 @@ export class StorageController {
   @ApiOperation({ summary: '获取文件列表' })
   @ApiOkResponse({ description: '获取成功', type: ResponseDto<Storage> })
   @ApiQuery({ name: 'type', required: false, description: '文件类型' })
+    @ApiQuery({ name: 'page', required: false, description: '页码' })
+  @ApiQuery({ name: 'limit', required: false, description: '每页数量' })
+    @ApiQuery({ name: 'search', required: false, description: '搜索文件名称' })
   @Get()
   async list(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query('type') type?: string
+    @Query('type') type?: string,
+    @Query('search') search?: string,
   ): Promise<PaginatedResponseDto<Storage>> {
-    return await this.storageService.findAll(page, limit, type)
+    return await this.storageService.findAll(page, limit, type, search)
   }
 
   @ApiOperation({ summary: '删除文件' })
