@@ -31,7 +31,7 @@ export class CreateThirdPartyLibraryDto {
     categoryId?: number; // 从数组改为单数字
 
     // 标签数组保持原样
-    @ApiProperty({ description: '标签ID数组', example: [3, 4], required: false })
+    @ApiProperty({ description: '标签ID数组', example: [3, 4], required: false, type: [Number] })
     @IsOptional()
     @IsArray({ message: '标签ID必须是数组格式' })
     @IsNumber({}, { each: true, message: '每个标签ID必须是数字' })

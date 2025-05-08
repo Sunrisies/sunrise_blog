@@ -53,6 +53,7 @@ export class UserController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('user_name') user_name?: string
   ): Promise<PaginatedResponseDto<CreateUserDto>> {
+    console.log(page, limit, user_name);
     return this.userService.findAll(page, limit, user_name);
   }
 
