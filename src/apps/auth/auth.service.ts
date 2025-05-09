@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto as AuthDto } from '../user/dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { RolePermissions, User, UserRole } from '../user/entities/user.entity';
 import * as bcrypt from 'bcryptjs';
 import { CustomUnauthorizedException } from 'src/utils/custom-exceptions';
@@ -16,27 +16,33 @@ export class AuthService {
     private userRepository: Repository<User>,
     private jwtService: JwtService,
     @InjectRedis() private readonly redis: Redis,
+    private dataSource: DataSource
   ) { }
   async register(createAuthDto: AuthDto) {
-    // 先确定是否有该用户
-    const findUser = await this.userRepository.findOne({ where: { user_name: createAuthDto.user_name } });
-    if (findUser) {
-      return {
-        code: 400,
-        message: "账号已存在",
-        data: null,
-      };
-    }
-    const saltRounds = 10; // 加密强度，数值越大，加密越慢，安全性越高
-    const hashedPassword = await bcrypt.hash(createAuthDto.pass_word, saltRounds);
-    // 这里假设注册成功
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
-      const newUser = await this.userRepository.create({
-        ...createAuthDto, pass_word: hashedPassword,
-        role: UserRole.USER, // 设置默认角色
-        permissions: RolePermissions[UserRole.USER] // 设置默认权限
+      const findUser = await queryRunner.manager.findOne(User, { where: { user_name: createAuthDto.user_name } });
+      if (findUser) {
+        await queryRunner.rollbackTransaction();
+        return {
+          code: 400,
+          message: "账号已存在",
+          data: null,
+        };
+      }
+      const saltRounds = 10; // 加密强度，数值越大，加密越慢，安全性越高
+      const hashedPassword = await bcrypt.hash(createAuthDto.pass_word, saltRounds);
+      const newUser = queryRunner.manager.create(User, {
+        ...createAuthDto,
+        pass_word: hashedPassword,
+        role: UserRole.USER,
+        permissions: RolePermissions[UserRole.USER]
       });
-      const savedUser = await this.userRepository.save(newUser);
+      const savedUser = await queryRunner.manager.save(newUser);
+      console.log(newUser, '=======');
+      await queryRunner.commitTransaction();
       return {
         code: 200,
         message: "注册成功",
@@ -46,8 +52,12 @@ export class AuthService {
         }
       };
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       console.error("注册失败:", error);
       throw new CustomUnauthorizedException("注册失败", HttpStatus.INTERNAL_SERVER_ERROR);
+    } finally {
+      console.log('释放资源');
+      await queryRunner.release();
     }
   }
   private async buildLoginCondition(loginDto: LoginType) {

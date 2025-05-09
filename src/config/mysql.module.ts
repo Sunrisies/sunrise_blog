@@ -51,7 +51,7 @@ import { Message } from '@/apps/message/entities/message.entity';
               if (data.pluginName === 'mysql_clear_password') {
                 cb(null, Buffer.from(value.database.password + '\0'));
               }
-            }
+            },
           };
         },
         inject: [ConfigService],
