@@ -38,7 +38,7 @@ export class AuthService {
         ...createAuthDto,
         pass_word: hashedPassword,
         role: UserRole.USER,
-        permissions: RolePermissions[UserRole.USER]
+        // permissions: RolePermissions[UserRole.USER]
       });
       const savedUser = await queryRunner.manager.save(newUser);
       console.log(newUser, '=======');

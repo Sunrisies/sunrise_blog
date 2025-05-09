@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Generated } from 'typeorm';
 import { ArticleComment } from '@/apps/article-comments/entities/article-comment.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Message } from '@/apps/message/entities/message.entity';
@@ -25,7 +25,7 @@ export enum Permission {
     MANAGE_TAG = 1 << 7,        // 1000 0000  标签管理权限
     MANAGE_CATEGORY = 1 << 8,   // 0001 0000 0000  分类管理权限
     MANAGE_MESSAGE = 1 << 9,    // 0010 0000 0000  留言管理权限
-    
+
     // 更新 ALL 权限
     ALL = 0xFFF                 // 1111 1111 1111  所有权限（12位）
 }
@@ -43,6 +43,10 @@ export class User {
     @PrimaryGeneratedColumn()
     @ApiProperty({ description: '用户ID', example: 1 })
     id: number;
+
+    @Column({ unique: true })
+    @Generated('uuid')
+    public_id: string;   // 对外暴露（UUID）
 
     @Column({ length: 50, unique: true })
     @ApiProperty({ description: '用户名', example: 'john_doe', maxLength: 50 })
