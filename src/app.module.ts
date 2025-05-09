@@ -19,10 +19,12 @@ import { ConfigService } from '@nestjs/config';
 
 import { VisitLogModule } from './apps/visit-log/visit-log.module';
 import { MessageModule } from './apps/message/message.module';
+import { PgConnectionModule } from './config/postgres.module';
 @Module({
   imports: [
     GlobalConfigModule,
     MysqlConnectionModule,
+    PgConnectionModule,
     UserModule,
     AuthModule,
     TagsModule,
@@ -49,4 +51,4 @@ import { MessageModule } from './apps/message/message.module';
     }
   ],
 })
-export class AppModule {}
+export class AppModule { }
