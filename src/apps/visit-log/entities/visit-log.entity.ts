@@ -1,89 +1,62 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'website_event', schema: 'public' })
+@Index('website_event_created_at_idx', ['created_at'])
+@Index('website_event_session_id_idx', ['session_id'])
+@Index('website_event_visit_id_idx', ['visit_id'])
+@Index('website_event_website_id_created_at_event_name_idx', ['website_id', 'created_at', 'event_name'])
+@Index('website_event_website_id_created_at_idx', ['website_id', 'created_at'])
+@Index('website_event_website_id_created_at_page_title_idx', ['website_id', 'created_at', 'page_title'])
+@Index('website_event_website_id_created_at_referrer_domain_idx', ['website_id', 'created_at', 'referrer_domain'])
+@Index('website_event_website_id_created_at_tag_idx', ['website_id', 'created_at', 'tag'])
+@Index('website_event_website_id_created_at_url_path_idx', ['website_id', 'created_at', 'url_path'])
+@Index('website_event_website_id_created_at_url_query_idx', ['website_id', 'created_at', 'url_query'])
+@Index('website_event_website_id_idx', ['website_id'])
+@Index('website_event_website_id_session_id_created_at_idx', ['website_id', 'session_id', 'created_at'])
+@Index('website_event_website_id_visit_id_created_at_idx', ['website_id', 'visit_id', 'created_at'])
 export class VisitLog {
-  @PrimaryGeneratedColumn()
-  @ApiProperty({ description: '访问日志ID' })
-  id: number;
+  @PrimaryColumn('uuid')
+  event_id: string;
 
-  @Column({ nullable: true })
-  @ApiProperty({ description: '访问IP' })
-  ip: string;
+  @Column('uuid')
+  website_id: string;
 
-  @Column({ nullable: true, type: 'text' })
-  @ApiProperty({ description: '用户代理' })
-  userAgent: string;
+  @Column('uuid')
+  session_id: string;
 
-  @Column({ nullable: true })
-  @ApiProperty({ description: '来源页面' })
-  referer: string;
+  @Column('uuid')
+  visit_id: string;
 
-  @Column()
-  @ApiProperty({ description: '访问URL' })
-  url: string;
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP'
+  })
+  created_at: Date;
 
-  @Column()
-  @ApiProperty({ description: '请求方法' })
-  method: string;
+  @Column({ type: 'varchar', length: 500 })
+  url_path: string;
 
-  @Column()
-  @ApiProperty({ description: '访问时间' })
-  timestamp: Date;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  url_query: string;
 
-  @Column()
-  @ApiProperty({ description: '浏览器名称' })
-  browserName: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  referrer_path: string;
 
-  @Column()
-  @ApiProperty({ description: '浏览器版本' })
-  browserVersion: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  referrer_query: string;
 
-  @Column()
-  @ApiProperty({ description: '浏览器主版本' })
-  browserMajor: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  referrer_domain: string;
 
-  @Column()
-  @ApiProperty({ description: '设备类型' })
-  deviceType: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  page_title: string;
 
-  @Column()
-  @ApiProperty({ description: '设备型号' })
-  deviceModel: string;
+  @Column({ type: 'integer', default: 1 })
+  event_type: number;
 
-  @Column()
-  @ApiProperty({ description: '设备厂商' })
-  deviceVendor: string;
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  event_name: string;
 
-  @Column()
-  @ApiProperty({ description: '操作系统名称' })
-  osName: string;
-
-  @Column()
-  @ApiProperty({ description: '操作系统版本' })
-  osVersion: string;
-
-  @Column({ nullable: true })
-  @ApiProperty({ description: '国家', required: false })
-  country?: string;
-
-  @Column({ nullable: true })
-  @ApiProperty({ description: '地区', required: false })
-  region?: string;
-
-  @Column({ nullable: true })
-  @ApiProperty({ description: '城市', required: false })
-  city?: string;
-
-  @Column({ nullable: true, type: 'float' })
-  @ApiProperty({ description: '加载时间', required: false })
-  loadTime?: number;
-
-  @Column({ nullable: true, type: 'float' })
-  @ApiProperty({ description: 'DOM准备时间', required: false })
-  domReady?: number;
-
-  @Column({ nullable: true, type: 'float' })
-  @ApiProperty({ description: '首次绘制时间', required: false })
-  firstPaint?: number;
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  tag: string;
 }
