@@ -1,5 +1,5 @@
 import { PaginatedResponseDto, ResponseDto } from '@/types/index';
-import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Put, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -9,16 +9,14 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateUserDto } from './dto/create-user.dto'
-import { Permission, User } from './entities/user.entity';
 import { UserService } from './user.service';
-import { RequirePermissions } from '@/decorators/require-permissions.decorator';
 @ApiTags('用户管理')
 @ApiBearerAuth()
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Get()
   @ApiOperation({ summary: "获取用户列表" })
@@ -120,29 +118,5 @@ export class UserController {
   @ApiResponse({ status: 404, description: '用户不存在' })
   remove(@Param('id') id: string): Promise<ResponseDto<null>> {
     return this.userService.remove(+id);
-  }
-
-  @Post('update-permissions')
-  // @UseGuards(JwtGuard)
-  // @RequirePermissions(Permission.MANAGE_USER)
-  async updateAllPermissions(): Promise<ResponseDto<null>> {
-    await this.userService.updateAllUsersPermissions();
-    return {
-      code: 200,
-      message: '权限更新成功',
-      data: null
-    };
-  }
-
-  @Post('update-permission/:id')
-  // @UseGuards(JwtGuard)
-  // @RequirePermissions(Permission.MANAGE_USER)
-  async updateUserPermission(@Param('id') id: string): Promise<ResponseDto<null>> {
-    await this.userService.updateUserPermissions(+id);
-    return {
-      code: 200,
-      message: '用户权限更新成功',
-      data: null
-    };
   }
 }

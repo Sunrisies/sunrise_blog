@@ -55,3 +55,44 @@ export interface ILogin {
     access_token: string;
     expires_in: number;
 }
+
+
+// 登录凭证基础接口
+interface LoginBase {
+    method: 'password' | 'phone' | 'email' | 'email-password' | 'phone-password';
+}
+
+// 密码登录类型
+interface PasswordLogin extends LoginBase {
+    method: 'password';
+    user_name: string;
+    pass_word: string;
+}
+
+// 手机验证码登录
+interface PhoneLogin extends LoginBase {
+    method: 'phone';
+    phone: string;
+    code: string;
+}
+
+// 邮箱验证码登录 
+interface EmailLogin extends LoginBase {
+    method: 'email';
+    email: string;
+    code: string;
+}
+// 新增两种复合登录方式
+interface EmailPasswordLogin extends LoginBase {
+    method: 'email-password';
+    email: string;
+    pass_word: string;
+}
+
+interface PhonePasswordLogin extends LoginBase {
+    method: 'phone-password';
+    phone: string;
+    pass_word: string;
+}
+
+export type LoginType = PasswordLogin | PhoneLogin | EmailLogin | EmailPasswordLogin | PhonePasswordLogin;

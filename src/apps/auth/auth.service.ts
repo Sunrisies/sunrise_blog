@@ -8,7 +8,7 @@ import { CustomUnauthorizedException } from 'src/utils/custom-exceptions';
 import { JwtService } from '@nestjs/jwt';
 import Redis from "ioredis";
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { ILogin, ResponseDto } from '@/types';
+import { ILogin, LoginType, ResponseDto } from '@/types';
 @Injectable()
 export class AuthService {
   constructor(
@@ -50,35 +50,54 @@ export class AuthService {
       throw new CustomUnauthorizedException("注册失败", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  private async buildLoginCondition(loginDto: LoginType) {
+    switch (loginDto.method) {
+      case 'password':
+        return { user_name: loginDto.user_name };
+      case 'phone-password':
+        return { phone: loginDto.phone };
+      case 'email-password':
+        return { email: loginDto.email };
+      default:
+        throw new CustomUnauthorizedException('不支持的登录方式', HttpStatus.BAD_REQUEST);
+    }
+  }
 
-  async login(createAuthDto: AuthDto): Promise<ResponseDto<ILogin>> {
-    const user = await this.userRepository.findOne({
-      where: { user_name: createAuthDto.user_name },
-      select: ['id', 'user_name', 'pass_word', 'email', 'phone', 'role', 'permissions'] // 添加 role 和 permissions
+  private async buildLogin(loginDto: LoginType) {
+    switch (loginDto.method) {
+      case 'password':
+        return { ...loginDto };
+      case 'phone-password':
+        return { ...loginDto };
+      case 'email-password':
+        return { ...loginDto };
+      default:
+        throw new CustomUnauthorizedException('不支持的登录方式', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  private async findUserByCondition(condition: object) {
+    return this.userRepository.findOne({
+      where: condition,
+      select: ['id', 'user_name', 'pass_word', 'email', 'phone', 'role', 'permissions']
     });
-    
-    // 用户不存在校验
-    if (!user) {
-      throw new CustomUnauthorizedException('用户不存在', HttpStatus.NOT_FOUND);
-    }
-    // 密码校验
-    const isPasswordValid = await bcrypt.compare(
-      createAuthDto.pass_word,
-      user.pass_word
-    );
-    if (!isPasswordValid) {
-      throw new CustomUnauthorizedException('密码错误', HttpStatus.UNPROCESSABLE_ENTITY);
-    }
+  }
 
-    // 生成JWT令牌（需要先安装@nestjs/jwt）
-    // 生成JWT令牌，添加角色和权限信息
+  private async validateCredentials(user: User, password: string) {
+    const isValid = await bcrypt.compare(password, user.pass_word);
+    if (!isValid) {
+      throw new CustomUnauthorizedException('密码错误', HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  private async generateAuthToken(user: User) {
     const payload = {
       sub: user.id,
       username: user.user_name,
       role: user.role,
       permissions: user.permissions
     };
-    const accessToken = await this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
 
     await this.redis.set(
       `access_token:${accessToken}`,
@@ -86,8 +105,27 @@ export class AuthService {
       'EX',
       3600
     );
-    
-    // 返回用户信息（排除密码）
+
+    return accessToken;
+  }
+
+  async login(loginDto: LoginType): Promise<ResponseDto<ILogin>> {
+    const condition = await this.buildLoginCondition(loginDto);
+    const user = await this.findUserByCondition(condition);
+    const login = await this.buildLogin(loginDto);
+    if (!user) {
+      const errorMessages = {
+        'password': '用户不存在',
+        'phone-password': '手机号未绑定',
+        'email-password': '邮箱未注册'
+      };
+      const message = errorMessages[loginDto.method] || '用户不存在';
+      throw new CustomUnauthorizedException(message, HttpStatus.NOT_FOUND);
+    }
+
+    await this.validateCredentials(user, login.pass_word);
+    const accessToken = await this.generateAuthToken(user);
+
     const { pass_word, ...userInfo } = user;
     return {
       code: 200,
@@ -98,5 +136,45 @@ export class AuthService {
         expires_in: 3600
       }
     };
+  }
+
+  /**
+  * 更新所有用户的权限
+  */
+  async updateAllUsersPermissions(): Promise<void> {
+    // 更新管理员权限
+    await this.userRepository.update(
+      { role: UserRole.ADMIN },
+      { permissions: RolePermissions[UserRole.ADMIN] }
+    );
+
+    // 更新编辑者权限
+    await this.userRepository.update(
+      { role: UserRole.EDITOR },
+      { permissions: RolePermissions[UserRole.EDITOR] }
+    );
+
+    // 更新普通用户权限
+    await this.userRepository.update(
+      { role: UserRole.USER },
+      { permissions: RolePermissions[UserRole.USER] }
+    );
+
+    // 更新访客权限
+    await this.userRepository.update(
+      { role: UserRole.GUEST },
+      { permissions: RolePermissions[UserRole.GUEST] }
+    );
+  }
+
+  /**
+   * 更新单个用户的权限
+   */
+  async updateUserPermissions(userId: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (user) {
+      user.permissions = RolePermissions[user.role];
+      await this.userRepository.save(user);
+    }
   }
 }
