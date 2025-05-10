@@ -6,6 +6,9 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import * as https from 'https';
 import { ConfigService } from '@nestjs/config';
 import { GithubRepository } from '../github-repositories/entities/github-repository.entity';
+import { PaginatedResponseDto, ResponseDto, SyncResult } from '@/types';
+
+
 
 @Injectable()
 export class GithubCommitService {
@@ -30,7 +33,7 @@ export class GithubCommitService {
   }
 
   // 新增手动同步方法
-  async manualSync() {
+  async manualSync(): Promise<ResponseDto<SyncResult[]>> {
     try {
       console.log('开始手动同步GitHub提交记录');
       const result = await this.syncAllEnabledRepositories();
@@ -44,13 +47,15 @@ export class GithubCommitService {
     }
   }
 
+
+
   // 抽取公共同步逻辑
-  private async syncAllEnabledRepositories() {
+  private async syncAllEnabledRepositories(): Promise<SyncResult[]> {
     const repos = await this.githubRepositoryRepository.find({
       where: { enabled: true }
     });
 
-    const results = [];
+    const results: SyncResult[] = [];
     for (const repo of repos) {
       try {
         await this.fetchAndSaveCommits({
@@ -148,18 +153,38 @@ export class GithubCommitService {
   }
 
   // 获取提交记录的API
-  async getCommits(page = 1, limit = 10) {
-    const [items, total] = await this.githubCommitRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { commit_date: 'DESC' }
-    });
+  async getCommits(page = 1, limit = 10, filters: { repository?: string; branch?: string }): Promise<PaginatedResponseDto<GithubCommit>> {
+    const queryBuilder = this.githubCommitRepository.createQueryBuilder('commit');
+
+    // 添加过滤条件
+    if (filters.repository) {
+      queryBuilder.andWhere('commit.repository = :repository', { repository: filters.repository });
+    }
+
+    if (filters.branch) {
+      queryBuilder.andWhere('commit.branch = :branch', { branch: filters.branch });
+    }
+
+
+    // 添加排序和分页
+    queryBuilder
+      .orderBy('commit.commit_date', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    const [items, total] = await queryBuilder.getManyAndCount();
 
     return {
-      items,
-      total,
-      page,
-      limit
+      code: 200,
+      data: {
+        data: items,
+        pagination: {
+          total,
+          page,
+          limit
+        },
+      },
+      message: '获取提交记录成功'
     };
   }
 }

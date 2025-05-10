@@ -96,3 +96,10 @@ interface PhonePasswordLogin extends LoginBase {
 }
 
 export type LoginType = PasswordLogin | PhoneLogin | EmailLogin | EmailPasswordLogin | PhonePasswordLogin;
+
+// 定义同步结果的接口
+export interface SyncResult {
+    repository: string;
+    status: 'success' | 'failed';
+    error?: string;
+}
