@@ -5,7 +5,7 @@ import { GithubCommit } from './entities/github-commit.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as https from 'https';
 import { ConfigService } from '@nestjs/config';
-import { GithubRepository } from './entities/github-repository.entity';
+import { GithubRepository } from '../github-repositories/entities/github-repository.entity';
 
 @Injectable()
 export class GithubCommitService {
