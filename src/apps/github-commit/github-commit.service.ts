@@ -5,6 +5,7 @@ import { GithubCommit } from './entities/github-commit.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as https from 'https';
 import { ConfigService } from '@nestjs/config';
+import { GithubRepository } from './entities/github-repository.entity';
 
 @Injectable()
 export class GithubCommitService {
@@ -13,20 +14,31 @@ export class GithubCommitService {
   constructor(
     @InjectRepository(GithubCommit)
     private githubCommitRepository: Repository<GithubCommit>,
+    @InjectRepository(GithubRepository)
+    private githubRepositoryRepository: Repository<GithubRepository>,
     private configService: ConfigService,
   ) { }
 
-  @Cron('0 04 16 * * *') // 每天凌晨2点执行
+  @Cron('0 25 16 * * *') // 每天凌晨2点执行
   async syncGithubCommits() {
     console.log('开始同步GitHub提交记录');
     try {
-      const repos = [
-        { owner: 'Sunrisies', repo: 'react-images', branch: 'admin' },
-        // 可以添加更多仓库配置
-      ];
+      // 从数据库获取启用的仓库配置
+      const repos = await this.githubRepositoryRepository.find({
+        where: { enabled: true }
+      });
 
       for (const repo of repos) {
-        await this.fetchAndSaveCommits(repo);
+        await this.fetchAndSaveCommits({
+          owner: repo.owner,
+          repo: repo.repository,
+          branch: repo.branch
+        });
+
+        // 更新最后同步时间
+        await this.githubRepositoryRepository.update(repo.id, {
+          last_sync_at: new Date()
+        });
       }
     } catch (error) {
       this.logger.error('同步GitHub提交记录失败:', error);
