@@ -20,6 +20,7 @@ import { ConfigService } from '@nestjs/config';
 import { VisitLogModule } from './apps/visit-log/visit-log.module';
 import { MessageModule } from './apps/message/message.module';
 import { PgConnectionModule } from './config/postgres.module';
+import { GithubCommitModule } from './apps/github-commit/github-commit.module';
 @Module({
   imports: [
     GlobalConfigModule,
@@ -40,7 +41,8 @@ import { PgConnectionModule } from './config/postgres.module';
     }),
     RedisConnectionModule,
     VisitLogModule,
-    MessageModule
+    MessageModule,
+    GithubCommitModule
   ],
   controllers: [],
   providers: [

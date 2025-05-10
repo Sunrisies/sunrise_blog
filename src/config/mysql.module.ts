@@ -11,6 +11,7 @@ import { User } from '../apps/user/entities/user.entity';
 import { Storage } from '../apps/storage/entities/storage.entity'
 import { VisitLog } from '../apps/visit-log/entities/visit-log.entity';
 import { Message } from '@/apps/message/entities/message.entity';
+import { GithubCommit } from '@/apps/github-commit/entities/github-commit.entity';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync(
@@ -44,7 +45,7 @@ import { Message } from '@/apps/message/entities/message.entity';
             username: value.database.username,
             password: value.database.password,
             database: value.database.database,
-            entities: [Tag, Article, Category, User, ThirdPartyLibrary, ArticleComment, Storage, VisitLog, Message],
+            entities: [Tag, Article, Category, User, ThirdPartyLibrary, ArticleComment, Storage, VisitLog, Message, GithubCommit],
             synchronize: configService.get('env') === 'development',
             insecureAuth: true, // 允许旧版认证协议
             authSwitchHandler: (data, cb) => {
