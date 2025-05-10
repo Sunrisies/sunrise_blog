@@ -23,12 +23,36 @@ export class GithubCommitService {
   async syncGithubCommits() {
     console.log('开始同步GitHub提交记录');
     try {
-      // 从数据库获取启用的仓库配置
-      const repos = await this.githubRepositoryRepository.find({
-        where: { enabled: true }
-      });
+      await this.syncAllEnabledRepositories();
+    } catch (error) {
+      this.logger.error('同步GitHub提交记录失败:', error);
+    }
+  }
 
-      for (const repo of repos) {
+  // 新增手动同步方法
+  async manualSync() {
+    try {
+      console.log('开始手动同步GitHub提交记录');
+      const result = await this.syncAllEnabledRepositories();
+      return {
+        message: '手动同步成功',
+        data: result
+      };
+    } catch (error) {
+      this.logger.error('手动同步GitHub提交记录失败:', error);
+      throw error;
+    }
+  }
+
+  // 抽取公共同步逻辑
+  private async syncAllEnabledRepositories() {
+    const repos = await this.githubRepositoryRepository.find({
+      where: { enabled: true }
+    });
+
+    const results = [];
+    for (const repo of repos) {
+      try {
         await this.fetchAndSaveCommits({
           owner: repo.owner,
           repo: repo.repository,
@@ -39,10 +63,21 @@ export class GithubCommitService {
         await this.githubRepositoryRepository.update(repo.id, {
           last_sync_at: new Date()
         });
+
+        results.push({
+          repository: repo.repository,
+          status: 'success'
+        });
+      } catch (error) {
+        results.push({
+          repository: repo.repository,
+          status: 'failed',
+          error: error.message
+        });
       }
-    } catch (error) {
-      this.logger.error('同步GitHub提交记录失败:', error);
     }
+
+    return results;
   }
 
   private async fetchAndSaveCommits({ owner, repo, branch }) {
