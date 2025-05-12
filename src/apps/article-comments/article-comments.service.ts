@@ -1,11 +1,10 @@
+import { Article } from '@/apps/article/entities/article.entity';
+import { User } from '@/apps/user/entities/user.entity';
 import { Injectable } from '@nestjs/common';
-import { CreateArticleCommentDto } from './dto/create-article-comment.dto';
-import { UpdateArticleCommentDto } from './dto/update-article-comment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CreateArticleCommentDto } from './dto/create-article-comment.dto';
 import { ArticleComment } from './entities/article-comment.entity';
-import { Article } from '../article/entities/article.entity';
-import { User } from '../user/entities/user.entity';
 @Injectable()
 export class ArticleCommentsService {
   constructor(@InjectRepository(ArticleComment)
@@ -78,7 +77,6 @@ export class ArticleCommentsService {
       return { code: 500, message: '评论创建失败' };
     }
   }
-  // ... existing code ...
 
   async findAllForAdmin(page: number = 1, limit: number = 10) {
     try {
