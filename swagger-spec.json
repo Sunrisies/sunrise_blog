@@ -729,16 +729,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "获取成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseDto"
-                }
-              }
-            }
+            "description": "获取时间轴成功"
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "获取时间轴",
         "tags": [
           "文章"
@@ -760,17 +758,14 @@
         ],
         "responses": {
           "200": {
-            "description": "获取成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateArticleDto"
-                }
-              }
-            }
+            "description": ""
           }
         },
-        "summary": "获取上一篇和下一篇",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "文章"
         ]
@@ -791,18 +786,15 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "添加成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseDto"
-                }
-              }
-            }
+          "201": {
+            "description": ""
           }
         },
-        "summary": "添加文档",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "文章"
         ]
@@ -853,17 +845,14 @@
         ],
         "responses": {
           "200": {
-            "description": "获取成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaginatedResponseDto"
-                }
-              }
-            }
+            "description": ""
           }
         },
-        "summary": "获取所有文档",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "文章"
         ]
@@ -875,17 +864,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "获取成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateArticleDto"
-                }
-              }
-            }
+            "description": ""
           }
         },
-        "summary": "获取所有文章的上传时间，根据上传时间排序",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "文章"
         ]
@@ -906,17 +892,14 @@
         ],
         "responses": {
           "200": {
-            "description": "获取成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateArticleDto"
-                }
-              }
-            }
+            "description": ""
           }
         },
-        "summary": "获取具体文章",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "文章"
         ]
@@ -945,17 +928,14 @@
         },
         "responses": {
           "200": {
-            "description": "修改成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateArticleDto"
-                }
-              }
-            }
+            "description": ""
           }
         },
-        "summary": "修改文档",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "文章"
         ]
@@ -974,17 +954,14 @@
         ],
         "responses": {
           "200": {
-            "description": "删除成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseDto"
-                }
-              }
-            }
+            "description": ""
           }
         },
-        "summary": "删除文档",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "文章"
         ]
@@ -1904,6 +1881,21 @@
         "summary": "删除GitHub仓库记录",
         "tags": [
           "GitHub仓库"
+        ]
+      }
+    },
+    "/api/sitemap": {
+      "get": {
+        "operationId": "SitemapController_getSitemap",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "获取站点地图数据",
+        "tags": [
+          "站点地图"
         ]
       }
     }

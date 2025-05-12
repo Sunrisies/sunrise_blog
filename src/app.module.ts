@@ -22,6 +22,7 @@ import { MessageModule } from './apps/message/message.module';
 import { PgConnectionModule } from './config/postgres.module';
 import { GithubCommitModule } from './apps/github-commit/github-commit.module';
 import { GithubRepositoriesModule } from './apps/github-repositories/github-repositories.module';
+import { SitemapModule } from './apps/sitemap/sitemap.module';
 @Module({
   imports: [
     GlobalConfigModule,
@@ -44,7 +45,8 @@ import { GithubRepositoriesModule } from './apps/github-repositories/github-repo
     VisitLogModule,
     MessageModule,
     GithubCommitModule,
-    GithubRepositoriesModule
+    GithubRepositoriesModule,
+    SitemapModule
   ],
   controllers: [],
   providers: [

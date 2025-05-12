@@ -11,5 +11,6 @@ import { ApiTags } from '@nestjs/swagger';
   imports: [TypeOrmModule.forFeature([Article]), TypeOrmModule.forFeature([Category]), TypeOrmModule.forFeature([Tag])],
   controllers: [ArticleController],
   providers: [ArticleService],
+  exports: [ArticleService]
 })
 export class ArticleModule { }

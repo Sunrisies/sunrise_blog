@@ -390,4 +390,32 @@ export class ArticleService {
       };
     }
   }
+
+  // 获取所有文章（用于站点地图）
+  async getAllArticles(): Promise<ResponseDto<Article[]>> {
+    try {
+      const articles = await this.articleRepository
+        .createQueryBuilder('article')
+        .select([
+          'article.id',
+          'article.title',
+          'article.publish_time'  // 使用 publish_time 替代 created_at 和 updated_at
+        ])
+        .orderBy('article.publish_time', 'DESC')
+        .getMany();
+
+      return {
+        code: 200,
+        data: articles,
+        message: '获取站点地图成功'
+      };
+    } catch (error) {
+      console.error('获取所有文章失败:', error);
+      return {
+        code: 500,
+        message: '获取所有文章失败',
+        data: null
+      };
+    }
+  }
 }

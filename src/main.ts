@@ -48,16 +48,16 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   // 导出 swagger 文档
-  // const fs = require('fs');
-  // const path = require('path');
+  const fs = require('fs');
+  const path = require('path');
 
-  // // 导出为 JSON 文件
-  // fs.writeFileSync(
-  //   path.join(__dirname, '../swagger-spec.json'),
-  //   JSON.stringify(document, null, 2)
-  // );
+  // 导出为 JSON 文件
+  fs.writeFileSync(
+    path.join(__dirname, '../swagger-spec.json'),
+    JSON.stringify(document, null, 2)
+  );
   SwaggerModule.setup("doc", app, document);
-  await app.listen(2345, () => {
+  await app.listen(12345, () => {
     console.log(`服务启动成功,端口号是:2345`);
   });
 }

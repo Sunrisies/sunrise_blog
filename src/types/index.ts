@@ -103,3 +103,10 @@ export interface SyncResult {
     status: 'success' | 'failed';
     error?: string;
 }
+
+export interface SitemapItem {
+    url: string;
+    lastModified: Date;
+    changeFrequency: string;
+    priority: number;
+  }
