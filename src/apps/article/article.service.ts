@@ -6,6 +6,7 @@ import { Article } from './entities/article.entity';
 import { Repository } from 'typeorm';
 import { Category } from '../categories/entities/category.entity';
 import { Tag } from '../tags/entities/tag.entity';
+import { PaginatedResponseDto, ResponseDto } from '@/types';
 const DEFAULT_COVERS = {
   1: "https://vip.chaoyang1024.top/img/前端.png",
   2: "https://vip.chaoyang1024.top/img/运维.png",
@@ -25,11 +26,11 @@ export class ArticleService {
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>
   ) { }
-  async create(createArticleDto: CreateArticleDto) {
+  async create(createArticleDto: CreateArticleDto): Promise<ResponseDto<Article>> {
     // 先检测当前标题是否存在
     const isExist = await this.articleRepository.findOne({ where: { title: createArticleDto.title } });
     if (isExist) {
-      return { code: 400, message: '标题已存在' };
+      return { code: 400, message: '标题已存在', data: null };
     }
     // 处理分类关联
     const category = await this.categoryRepository.findOne({
@@ -42,7 +43,7 @@ export class ArticleService {
     if (!createArticleDto.cover) {
       const defaultCover = DEFAULT_COVERS[createArticleDto.categoryId];
       if (!defaultCover) {
-        return { code: 400, message: '未找到默认封面' };
+        return { code: 400, message: '未找到默认封面', data: null };
         // throw new CustomException("未找到默认封面", HttpStatus.INTERNAL_SERVER_ERROR);
       }
       createArticleDto.cover = defaultCover; // 设置默认封面
@@ -54,7 +55,7 @@ export class ArticleService {
       )
     );
     if (tags.some(tag => !tag)) {
-      return { code: 400, message: '包含不存在的标签' }; // 或者抛出错误，取决于你的业务逻辑
+      return { code: 400, message: '包含不存在的标签', data: null }; // 或者抛出错误，取决于你的业务逻辑
     }
     try {
       const article = this.articleRepository.create({
@@ -64,7 +65,7 @@ export class ArticleService {
       await this.articleRepository.save(article);
       return { message: '创建成功', data: article };
     } catch (error) {
-      return { code: 500, message: '创建失败' };
+      return { code: 500, message: '创建失败', data: null };
     }
   }
 
@@ -72,7 +73,7 @@ export class ArticleService {
     category?: string;
     tag?: string;
     title?: string;
-  }) {
+  }): Promise<PaginatedResponseDto<Article>> {
     // 首先获取所有文章
     const total = await this.articleRepository.count();
     const totalPage = Math.ceil(total / limit);
@@ -137,11 +138,11 @@ export class ArticleService {
         }
       };
     } catch (error) {
-      return { code: 500, message: '获取文章失败' };
+      return { code: 500, message: '获取文章失败', data: null };
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<ResponseDto<Article>> {
     try {
       const queryBuilder = this.articleRepository
         .createQueryBuilder('article')
@@ -159,7 +160,7 @@ export class ArticleService {
       const article = await queryBuilder.getOne();
 
       if (!article) {
-        return { code: 404, message: '文章未找到' };
+        return { code: 404, message: '文章未找到', data: null };
       }
 
       // 更新浏览量
@@ -167,11 +168,12 @@ export class ArticleService {
 
       return {
         code: 200,
-        data: article
+        data: article,
+        message: '获取文章成功'
       };
     } catch (error) {
       console.error(error);
-      return { code: 500, message: '获取文章详情失败' };
+      return { code: 500, message: '获取文章详情失败', data: null };
     }
   }
   // 根据时间来生成数据
@@ -377,7 +379,7 @@ export class ArticleService {
 
       return {
         code: 200,
-        data: {data:articles}
+        data: { data: articles }
       };
     } catch (error) {
       console.error('获取时间轴数据失败:', error);
