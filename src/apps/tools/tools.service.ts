@@ -1,7 +1,6 @@
+import { Email } from '@/utils/email-tools';
 import { Injectable } from '@nestjs/common';
-import { CreateToolDto } from './dto/create-tool.dto';
 import { UpdateToolDto } from './dto/update-tool.dto';
-import { Email } from 'src/utils/email-tools';
 
 @Injectable()
 export class ToolsService {

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Article } from '../../article/entities/article.entity';
-import { ThirdPartyLibrary } from 'src/apps/third-party-library/entities/third-party-library.entity';
+import { Article } from '@/apps/article/entities/article.entity';
+import { ThirdPartyLibrary } from '@/apps/third-party-library/entities/third-party-library.entity';
 
 @Entity({ name: 'categories' })
 export class Category {

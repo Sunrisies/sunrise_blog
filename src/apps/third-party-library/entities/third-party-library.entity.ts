@@ -1,12 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, ManyToOne, JoinColumn } from 'typeorm';
-import { Category } from '../../categories/entities/category.entity';
-import { Tag } from '../../tags/entities/tag.entity';
+import { Category } from '@/apps/categories/entities/category.entity';
+import { Tag } from '@/apps/tags/entities/tag.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 @Entity({ name: 'third_party_libraries' })
 export class ThirdPartyLibrary {
     @ApiProperty({ description: '主键ID', example: 1 })
     @PrimaryGeneratedColumn()
-    // @PrimaryGeneratedColumn('uuid')
     id: number; // 主键ID
 
     @ApiProperty({ description: '库名称', example: 'lodash' })

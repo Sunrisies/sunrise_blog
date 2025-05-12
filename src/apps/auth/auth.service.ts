@@ -1,14 +1,14 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto as AuthDto } from '../user/dto/create-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-import { RolePermissions, User, UserRole } from '../user/entities/user.entity';
-import * as bcrypt from 'bcryptjs';
-import { CustomUnauthorizedException } from 'src/utils/custom-exceptions';
-import { JwtService } from '@nestjs/jwt';
-import Redis from "ioredis";
-import { InjectRedis } from '@nestjs-modules/ioredis';
+import { RolePermissions, User, UserRole } from '@/apps/user/entities/user.entity';
 import { ILogin, LoginType, ResponseDto } from '@/types';
+import { CustomUnauthorizedException } from '@/utils/custom-exceptions';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcryptjs';
+import Redis from "ioredis";
+import { DataSource, Repository } from 'typeorm';
+import { CreateUserDto as AuthDto } from '../user/dto/create-user.dto';
 @Injectable()
 export class AuthService {
   constructor(

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
+import { User } from '@/apps/user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'message' })

@@ -1,7 +1,7 @@
+import { JwtGuard } from '@/guard/jwt.guard';
 import { PaginatedResponseDto, ResponseDto } from '@/types';
 import { BadRequestException, Body, Controller, Delete, Get, Param, ParseEnumPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { JwtGuard } from 'src/guard/jwt.guard';
 import { CreateTagDto, ITag } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { TagsService } from './tags.service';

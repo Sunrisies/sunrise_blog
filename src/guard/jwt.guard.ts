@@ -1,12 +1,11 @@
+import { CustomUnauthorizedException } from '@/utils/custom-exceptions';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
-import { Observable } from 'rxjs';
-import { CustomUnauthorizedException } from 'src/utils/custom-exceptions';
-import Redis from "ioredis";
-import { Request } from "express";
-import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Reflector } from '@nestjs/core';
+import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { Request } from "express";
+import Redis from "ioredis";
 
 @Injectable()
 export class JwtGuard implements CanActivate {

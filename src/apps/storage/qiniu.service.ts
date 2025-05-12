@@ -1,7 +1,5 @@
-// src/storage/qiniu.provider.ts
-import { Inject } from '@nestjs/common';
-import { CloudStorage, FileListResponse, FileResponse } from './storage.interface';
 import * as qiniu from 'qiniu';
+import { CloudStorage } from './storage.interface';
 
 export class QiniuOSS implements CloudStorage {
   private mac: qiniu.auth.digest.Mac;

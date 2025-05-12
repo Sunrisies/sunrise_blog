@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, DefaultValuePipe, ParseIntPipe, Put, UseInterceptors } from '@nestjs/common';
+import { PaginatedResponseDto, ResponseDto } from '@/types';
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PaginatedResponseDto, ResponseDto } from '@/types';
 import { Article } from './entities/article.entity';
 
 @ApiTags('文章')

@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { JwtGuard } from 'src/guard/jwt.guard';
+import { JwtGuard } from '@/guard/jwt.guard';
 
 @Global()
 @Module({

@@ -4,8 +4,8 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Article } from './entities/article.entity';
 import { Repository } from 'typeorm';
-import { Category } from '../categories/entities/category.entity';
-import { Tag } from '../tags/entities/tag.entity';
+import { Category } from '@/apps/categories/entities/category.entity';
+import { Tag } from '@/apps/tags/entities/tag.entity';
 import { PaginatedResponseDto, ResponseDto } from '@/types';
 const DEFAULT_COVERS = {
   1: "https://vip.chaoyang1024.top/img/前端.png",

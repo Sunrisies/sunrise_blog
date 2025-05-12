@@ -1,9 +1,6 @@
 import { Inject } from '@nestjs/common';
-import { CloudStorage, FileListResponse, FileResponse } from './storage.interface';
 import OSS from 'ali-oss';
-import { fileSizeInBytes } from "../../utils";
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { CloudStorage } from './storage.interface';
 export class AliyunOSS implements CloudStorage {
   private client: OSS;
   constructor(

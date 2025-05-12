@@ -1,15 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Inject, HttpStatus, Query, DefaultValuePipe, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { CreateStorageDto } from './dto/create-storage.dto';
+import { RequirePermissions } from '@/decorators/require-permissions.decorator';
+import { JwtGuard } from '@/guard/jwt.guard';
+import { PaginatedResponseDto, ResponseDto } from '@/types';
+import { fileSizeInBytes } from '@/utils';
+import { Controller, DefaultValuePipe, Delete, Get, HttpStatus, Inject, Param, ParseIntPipe, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Permission } from '../user/entities/user.entity';
+import { Storage } from './entities/storage.entity';
 import { CloudStorage } from './storage.interface';
 import { StorageService } from './storage.service';
-import { fileSizeInBytes } from 'src/utils';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { PaginatedResponseDto, ResponseDto } from '@/types';
-import { Storage } from './entities/storage.entity';
-import { RequirePermissions } from '@/decorators/require-permissions.decorator';
-import { Permission } from '../user/entities/user.entity';
-import { JwtGuard } from '@/guard/jwt.guard';
 @ApiTags('文件管理')
 @ApiBearerAuth()
 @Controller('storage')
@@ -78,9 +77,9 @@ export class StorageController {
   @ApiOperation({ summary: '获取文件列表' })
   @ApiOkResponse({ description: '获取成功', type: ResponseDto<Storage> })
   @ApiQuery({ name: 'type', required: false, description: '文件类型' })
-    @ApiQuery({ name: 'page', required: false, description: '页码' })
+  @ApiQuery({ name: 'page', required: false, description: '页码' })
   @ApiQuery({ name: 'limit', required: false, description: '每页数量' })
-    @ApiQuery({ name: 'search', required: false, description: '搜索文件名称' })
+  @ApiQuery({ name: 'search', required: false, description: '搜索文件名称' })
   @Get()
   async list(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,

@@ -3,8 +3,8 @@ import { ArticleService } from './article.service';
 import { ArticleController } from './article.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Article } from './entities/article.entity';
-import { Tag } from '../tags/entities/tag.entity';
-import { Category } from '../categories/entities/category.entity';
+import { Tag } from '@/apps/tags/entities/tag.entity';
+import { Category } from '@/apps/categories/entities/category.entity';
 import { ApiTags } from '@nestjs/swagger';
 @ApiTags('文章管理')
 @Module({

@@ -1,9 +1,7 @@
-// src/storage/qiniu.provider.ts
+import { PaginatedResponseDto, ResponseDto } from '@/types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FileListResponse, FileResponse } from './storage.interface';
 import { Storage } from './entities/storage.entity'; // 假设你有一个实体类来表示文件信息
-import { PaginatedResponseDto, ResponseDto } from '@/types';
 export class StorageService {
   constructor(@InjectRepository(Storage)
   private readonly storageRepository: Repository<Storage>) { }
@@ -26,7 +24,7 @@ export class StorageService {
   }
 
 
-  async findAll(page: number, limit: number, type?: string,search?:string): Promise<PaginatedResponseDto<Storage>> {
+  async findAll(page: number, limit: number, type?: string, search?: string): Promise<PaginatedResponseDto<Storage>> {
     const queryBuilder = this.storageRepository.createQueryBuilder('storage');
     // type如果等于all的话，代表查询全部类型
     if (type && type !== 'all') {
