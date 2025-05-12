@@ -203,6 +203,7 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "用户信息",
           "content": {
             "application/json": {
               "schema": {
@@ -212,12 +213,25 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "注册成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "注册账号",
         "tags": [
-          "Auth"
+          "权限管理"
         ]
       }
     },
@@ -227,21 +241,165 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "登录凭证",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
+                "oneOf": [
+                  {
+                    "properties": {
+                      "method": {
+                        "type": "string",
+                        "example": "password",
+                        "default": "password"
+                      },
+                      "user_name": {
+                        "type": "string",
+                        "example": "john_doe"
+                      },
+                      "pass_word": {
+                        "type": "string",
+                        "example": "your_password"
+                      }
+                    },
+                    "required": [
+                      "method",
+                      "user_name",
+                      "pass_word"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "method": {
+                        "type": "string",
+                        "example": "phone-password"
+                      },
+                      "phone": {
+                        "type": "string",
+                        "example": "13800138000"
+                      },
+                      "pass_word": {
+                        "type": "string",
+                        "example": "your_password"
+                      }
+                    },
+                    "required": [
+                      "method",
+                      "phone",
+                      "pass_word"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "method": {
+                        "type": "string",
+                        "example": "email-password"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                      },
+                      "pass_word": {
+                        "type": "string",
+                        "example": "your_password"
+                      }
+                    },
+                    "required": [
+                      "method",
+                      "email",
+                      "pass_word"
+                    ]
+                  }
+                ]
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "登录成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "密码错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "登录账号",
         "tags": [
-          "Auth"
+          "权限管理"
+        ]
+      }
+    },
+    "/api/auth/update-permissions": {
+      "post": {
+        "operationId": "AuthController_updateAllPermissions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "权限更新成功"
+          },
+          "403": {
+            "description": "没有权限"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "更新所有用户的权限",
+        "tags": [
+          "权限管理"
+        ]
+      }
+    },
+    "/api/auth/update-permission/{id}": {
+      "post": {
+        "operationId": "AuthController_updateUserPermission",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "用户权限更新成功"
+          },
+          "403": {
+            "description": "没有权限"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "更新用户权限",
+        "tags": [
+          "权限管理"
         ]
       }
     },
@@ -251,6 +409,7 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "标签信息",
           "content": {
             "application/json": {
               "schema": {
@@ -260,12 +419,25 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "添加成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "添加标签",
         "tags": [
-          "Tags"
+          "标签管理"
         ]
       },
       "get": {
@@ -273,45 +445,42 @@
         "parameters": [
           {
             "name": "type",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "标签类型",
             "schema": {
+              "enum": [
+                "article",
+                "library"
+              ],
               "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "获取标签列表",
         "tags": [
-          "Tags"
+          "标签管理"
         ]
       }
     },
     "/api/tags/{id}": {
-      "get": {
-        "operationId": "TagsController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Tags"
-        ]
-      },
       "put": {
         "operationId": "TagsController_update",
         "parameters": [
@@ -319,6 +488,7 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "标签ID",
             "schema": {
               "type": "string"
             }
@@ -326,6 +496,7 @@
         ],
         "requestBody": {
           "required": true,
+          "description": "标签信息",
           "content": {
             "application/json": {
               "schema": {
@@ -336,11 +507,24 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "更新标签",
         "tags": [
-          "Tags"
+          "标签管理"
         ]
       },
       "delete": {
@@ -350,6 +534,7 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "标签ID",
             "schema": {
               "type": "string"
             }
@@ -357,11 +542,24 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "删除标签",
         "tags": [
-          "Tags"
+          "标签管理"
         ]
       }
     },
@@ -371,6 +569,7 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "分类信息",
           "content": {
             "application/json": {
               "schema": {
@@ -380,12 +579,25 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "添加成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "添加分类",
         "tags": [
-          "Categories"
+          "分类管理"
         ]
       },
       "get": {
@@ -393,20 +605,38 @@
         "parameters": [
           {
             "name": "type",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "分类类型",
             "schema": {
+              "enum": [
+                "article",
+                "library"
+              ],
               "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "获取分类列表",
         "tags": [
-          "Categories"
+          "分类管理"
         ]
       }
     },
@@ -418,13 +648,15 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "分类id",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
         "requestBody": {
           "required": true,
+          "description": "分类信息",
           "content": {
             "application/json": {
               "schema": {
@@ -435,11 +667,24 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "修改成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "修改分类",
         "tags": [
-          "Categories"
+          "分类管理"
         ]
       },
       "delete": {
@@ -449,18 +694,32 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "分类id",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "删除分类",
         "tags": [
-          "Categories"
+          "分类管理"
         ]
       }
     },
@@ -470,11 +729,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "summary": "获取时间轴",
         "tags": [
-          "Article"
+          "文章"
         ]
       }
     },
@@ -493,11 +760,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArticleDto"
+                }
+              }
+            }
           }
         },
+        "summary": "获取上一篇和下一篇",
         "tags": [
-          "Article"
+          "文章"
         ]
       }
     },
@@ -516,12 +791,20 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "添加成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "summary": "添加文档",
         "tags": [
-          "Article"
+          "文章"
         ]
       },
       "get": {
@@ -570,11 +853,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponseDto"
+                }
+              }
+            }
           }
         },
+        "summary": "获取所有文档",
         "tags": [
-          "Article"
+          "文章"
         ]
       }
     },
@@ -584,11 +875,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArticleDto"
+                }
+              }
+            }
           }
         },
+        "summary": "获取所有文章的上传时间，根据上传时间排序",
         "tags": [
-          "Article"
+          "文章"
         ]
       }
     },
@@ -607,11 +906,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArticleDto"
+                }
+              }
+            }
           }
         },
+        "summary": "获取具体文章",
         "tags": [
-          "Article"
+          "文章"
         ]
       },
       "put": {
@@ -638,11 +945,19 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "修改成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArticleDto"
+                }
+              }
+            }
           }
         },
+        "summary": "修改文档",
         "tags": [
-          "Article"
+          "文章"
         ]
       },
       "delete": {
@@ -659,11 +974,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "summary": "删除文档",
         "tags": [
-          "Article"
+          "文章"
         ]
       }
     },
@@ -682,12 +1005,13 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "添加评论成功"
           }
         },
+        "summary": "添加评论",
         "tags": [
-          "ArticleComments"
+          "文章评论"
         ]
       },
       "get": {
@@ -720,11 +1044,12 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取文章评论"
           }
         },
+        "summary": "根据文章id获取评论",
         "tags": [
-          "ArticleComments"
+          "文章评论"
         ]
       }
     },
@@ -751,86 +1076,12 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取所有文章评论"
           }
         },
+        "summary": "获取所有文章评论",
         "tags": [
-          "ArticleComments"
-        ]
-      }
-    },
-    "/api/articleComments/{id}": {
-      "get": {
-        "operationId": "ArticleCommentsController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "ArticleComments"
-        ]
-      },
-      "patch": {
-        "operationId": "ArticleCommentsController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateArticleCommentDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "ArticleComments"
-        ]
-      },
-      "delete": {
-        "operationId": "ArticleCommentsController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "ArticleComments"
+          "文章评论"
         ]
       }
     },
@@ -845,7 +1096,7 @@
         },
         "summary": "获取邮箱验证码",
         "tags": [
-          "Tools"
+          "工具"
         ]
       }
     },
@@ -859,7 +1110,7 @@
           }
         },
         "tags": [
-          "Tools"
+          "工具"
         ]
       }
     },
@@ -882,7 +1133,7 @@
           }
         },
         "tags": [
-          "Tools"
+          "工具"
         ]
       },
       "patch": {
@@ -913,7 +1164,7 @@
           }
         },
         "tags": [
-          "Tools"
+          "工具"
         ]
       },
       "delete": {
@@ -934,7 +1185,7 @@
           }
         },
         "tags": [
-          "Tools"
+          "工具"
         ]
       }
     },
@@ -944,6 +1195,7 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "第三方库信息",
           "content": {
             "application/json": {
               "schema": {
@@ -953,12 +1205,25 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "添加第三方库",
         "tags": [
-          "ThirdPartyLibrary"
+          "第三方库"
         ]
       },
       "get": {
@@ -966,77 +1231,81 @@
         "parameters": [
           {
             "name": "page",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "页码，默认为1",
             "schema": {
+              "default": 1,
+              "example": 1,
               "type": "number"
             }
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "每页数量，默认为10",
             "schema": {
+              "default": 10,
+              "example": 10,
               "type": "number"
             }
           },
           {
             "name": "categoryId",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "分类ID",
             "schema": {
-              "type": "string"
+              "example": 1,
+              "type": "number"
             }
           },
           {
             "name": "tag",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "标签",
             "schema": {
+              "example": "标签",
               "type": "string"
             }
           },
           {
             "name": "name",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "库名称",
             "schema": {
+              "example": "lodash",
               "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "获取第三方库列表",
         "tags": [
-          "ThirdPartyLibrary"
+          "第三方库"
         ]
       }
     },
     "/api/thirdPartyLibrary/{id}": {
-      "get": {
-        "operationId": "ThirdPartyLibraryController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "ThirdPartyLibrary"
-        ]
-      },
       "put": {
         "operationId": "ThirdPartyLibraryController_update",
         "parameters": [
@@ -1051,6 +1320,7 @@
         ],
         "requestBody": {
           "required": true,
+          "description": "第三方库信息",
           "content": {
             "application/json": {
               "schema": {
@@ -1061,11 +1331,24 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "修改成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "修改第三方库",
         "tags": [
-          "ThirdPartyLibrary"
+          "第三方库"
         ]
       },
       "delete": {
@@ -1080,13 +1363,37 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": ""
+        "requestBody": {
+          "required": true,
+          "description": "第三方库ID",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
           }
         },
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "删除第三方库",
         "tags": [
-          "ThirdPartyLibrary"
+          "第三方库"
         ]
       }
     },
@@ -1094,13 +1401,46 @@
       "post": {
         "operationId": "StorageController_upload",
         "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
+        "requestBody": {
+          "required": true,
+          "description": "文件信息",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
           }
         },
+        "responses": {
+          "200": {
+            "description": "添加成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "添加文件",
         "tags": [
-          "Storage"
+          "文件管理"
         ]
       },
       "get": {
@@ -1108,28 +1448,61 @@
         "parameters": [
           {
             "name": "page",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "页码",
             "schema": {
               "type": "number"
             }
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "每页数量",
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "description": "文件类型",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "搜索文件名称",
+            "schema": {
+              "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "获取文件列表",
         "tags": [
-          "Storage"
+          "文件管理"
         ]
       }
     },
@@ -1146,13 +1519,37 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": ""
+        "requestBody": {
+          "required": true,
+          "description": "文件信息",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponseDto"
+              }
+            }
           }
         },
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "删除文件",
         "tags": [
-          "Storage"
+          "文件管理"
         ]
       }
     },
@@ -1219,6 +1616,7 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "留言信息",
           "content": {
             "application/json": {
               "schema": {
@@ -1228,16 +1626,180 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "添加成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "添加留言",
         "tags": [
-          "Message"
+          "留言板管理"
         ]
       },
       "get": {
         "operationId": "MessageController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "页码",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "每页数量",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "获取留言列表",
+        "tags": [
+          "留言板管理"
+        ]
+      }
+    },
+    "/api/github-commits": {
+      "get": {
+        "operationId": "GithubCommitController_getCommits",
+        "parameters": [
+          {
+            "name": "repository",
+            "required": false,
+            "in": "query",
+            "description": "仓库名称",
+            "schema": {
+              "default": "nestjs/nest",
+              "type": "string"
+            }
+          },
+          {
+            "name": "branch",
+            "required": false,
+            "in": "query",
+            "description": "分支名称",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "获取GitHub提交记录",
+        "tags": [
+          "GitHub提交记录"
+        ]
+      }
+    },
+    "/api/github-commits/sync": {
+      "post": {
+        "operationId": "GithubCommitController_manualSync",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "手动同步GitHub提交记录",
+        "tags": [
+          "GitHub提交记录"
+        ]
+      }
+    },
+    "/api/github-repositories": {
+      "post": {
+        "operationId": "GithubRepositoriesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGithubRepositoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "创建GitHub仓库记录",
+        "tags": [
+          "GitHub仓库"
+        ]
+      },
+      "get": {
+        "operationId": "GithubRepositoriesController_findAll",
         "parameters": [
           {
             "name": "page",
@@ -1261,8 +1823,87 @@
             "description": ""
           }
         },
+        "summary": "获取GitHub仓库列表",
         "tags": [
-          "Message"
+          "GitHub仓库"
+        ]
+      }
+    },
+    "/api/github-repositories/{id}": {
+      "get": {
+        "operationId": "GithubRepositoriesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "获取指定GitHub仓库信息",
+        "tags": [
+          "GitHub仓库"
+        ]
+      },
+      "patch": {
+        "operationId": "GithubRepositoriesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGithubRepositoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "更新GitHub仓库信息",
+        "tags": [
+          "GitHub仓库"
+        ]
+      },
+      "delete": {
+        "operationId": "GithubRepositoriesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "删除GitHub仓库记录",
+        "tags": [
+          "GitHub仓库"
         ]
       }
     }
@@ -1384,11 +2025,61 @@
       },
       "CreateUserDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "user_name": {
+            "type": "string",
+            "description": "用户名",
+            "example": "john_doe",
+            "maxLength": 50
+          },
+          "pass_word": {
+            "type": "string",
+            "description": "密码",
+            "minLength": 6,
+            "maxLength": 255
+          },
+          "image": {
+            "type": "string",
+            "description": "用户头像URL",
+            "example": "https://example.com/avatar.jpg"
+          },
+          "phone": {
+            "type": "string",
+            "description": "手机号码",
+            "example": "13800138000"
+          },
+          "email": {
+            "type": "string",
+            "description": "电子邮箱",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "role": {
+            "type": "string",
+            "description": "用户角色",
+            "enum": [
+              "admin",
+              "editor",
+              "user",
+              "guest"
+            ],
+            "default": "user"
+          }
+        },
+        "required": [
+          "user_name",
+          "pass_word",
+          "role"
+        ]
       },
       "CreateTagDto": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string",
+            "description": "标签名",
+            "example": "标签名"
+          },
           "type": {
             "type": "string",
             "enum": [
@@ -1397,15 +2088,33 @@
             ],
             "default": "article"
           }
-        }
+        },
+        "required": [
+          "name"
+        ]
       },
       "UpdateTagDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "标签名",
+            "example": "标签名"
+          }
+        },
+        "required": [
+          "name"
+        ]
       },
       "CreateCategoryDto": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string",
+            "description": "分类名",
+            "example": "分类名",
+            "maxLength": 50
+          },
           "type": {
             "type": "string",
             "enum": [
@@ -1414,11 +2123,24 @@
             ],
             "default": "article"
           }
-        }
+        },
+        "required": [
+          "name"
+        ]
       },
       "UpdateCategoryDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "分类名",
+            "example": "分类名",
+            "maxLength": 50
+          }
+        },
+        "required": [
+          "name"
+        ]
       },
       "CreateArticleDto": {
         "type": "object",
@@ -1429,10 +2151,6 @@
         "properties": {}
       },
       "CreateArticleCommentDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateArticleCommentDto": {
         "type": "object",
         "properties": {}
       },
@@ -1475,7 +2193,7 @@
             ],
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "number"
             }
           }
         },
@@ -1519,7 +2237,7 @@
             ],
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "number"
             }
           }
         }
@@ -1624,7 +2342,90 @@
       },
       "CreateMessageDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "留言内容",
+            "example": "这是一条留言"
+          },
+          "userId": {
+            "type": "number",
+            "description": "用户ID",
+            "example": 1
+          },
+          "parentId": {
+            "type": "number",
+            "description": "父级留言ID",
+            "example": 1
+          },
+          "nickname": {
+            "type": "string",
+            "description": "用户昵称",
+            "example": "张三"
+          },
+          "email": {
+            "type": "string",
+            "description": "用户头像",
+            "example": "xxx.png"
+          }
+        },
+        "required": [
+          "content",
+          "userId",
+          "parentId",
+          "nickname",
+          "email"
+        ]
+      },
+      "CreateGithubRepositoryDto": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "仓库拥有者"
+          },
+          "repository": {
+            "type": "string",
+            "description": "仓库名称"
+          },
+          "branch": {
+            "type": "string",
+            "description": "分支名称"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "是否启用",
+            "default": true
+          }
+        },
+        "required": [
+          "owner",
+          "repository",
+          "branch",
+          "enabled"
+        ]
+      },
+      "UpdateGithubRepositoryDto": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "仓库拥有者"
+          },
+          "repository": {
+            "type": "string",
+            "description": "仓库名称"
+          },
+          "branch": {
+            "type": "string",
+            "description": "分支名称"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "是否启用",
+            "default": true
+          }
+        }
       }
     }
   }
