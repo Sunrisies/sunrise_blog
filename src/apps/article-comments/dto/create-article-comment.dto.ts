@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString, IsEmail, IsBoolean } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateArticleCommentDto {
     @IsNotEmpty({ message: '评论内容不能为空' })
     @IsString({ message: '评论内容必须是字符串类型' })
