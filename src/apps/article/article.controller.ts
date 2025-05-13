@@ -8,15 +8,13 @@ import { RequirePermissions } from '@/decorators/require-permissions.decorator';
 import { Permission } from '../user/entities/user.entity';
 
 @ApiTags("文章")
-  @ApiBearerAuth()
+@ApiBearerAuth()
 @Controller('article')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) { }
   // 时间轴
   @ApiOperation({ summary: '获取时间轴' })
   @ApiOkResponse({ description: '获取时间轴成功' })
-  @UseGuards(JwtGuard)
-  @RequirePermissions(Permission.ALL)
   @Get("timeline")
   async getTimeline() {
     return this.articleService.getTimeline();

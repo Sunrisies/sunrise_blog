@@ -1,9 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import { LoggerFactory } from './utils/my-logger';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cors from "cors";
+import { AppModule } from './app.module';
+import { LoggerFactory } from './utils/my-logger';
 const validationPipe = new ValidationPipe({
   disableErrorMessages: false, // 必须为false（默认值）
   transform: true,             // 启用自动类型转换
@@ -48,16 +48,16 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   // 导出 swagger 文档
-  const fs = require('fs');
-  const path = require('path');
+  // const fs = require('fs');
+  // const path = require('path');
 
-  // 导出为 JSON 文件
-  fs.writeFileSync(
-    path.join(__dirname, '../swagger-spec.json'),
-    JSON.stringify(document, null, 2)
-  );
+  // // 导出为 JSON 文件
+  // fs.writeFileSync(
+  //   path.join(__dirname, '../swagger-spec.json'),
+  //   JSON.stringify(document, null, 2)
+  // );
   SwaggerModule.setup("doc", app, document);
-  await app.listen(12345, () => {
+  await app.listen(2345, () => {
     console.log(`服务启动成功,端口号是:2345`);
   });
 }
