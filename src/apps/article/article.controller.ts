@@ -25,8 +25,6 @@ export class ArticleController {
    */
   @ApiOperation({ summary: '获取时间轴' })
   @ApiOkResponse({ description: '获取时间轴成功' })
-  @UseGuards(JwtGuard)
-  @RequirePermissions(Permission.ALL)
   @Get("timeline")
   async getTimeline() {
     return this.articleService.getTimeline();
