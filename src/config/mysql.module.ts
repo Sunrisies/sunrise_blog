@@ -13,6 +13,7 @@ import { VisitLog } from '../apps/visit-log/entities/visit-log.entity';
 import { Message } from '@/apps/message/entities/message.entity';
 import { GithubCommit } from '@/apps/github-commit/entities/github-commit.entity';
 import { GithubRepository } from '@/apps/github-repositories/entities/github-repository.entity';
+import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync(

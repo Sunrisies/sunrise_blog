@@ -2,7 +2,7 @@ import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } fr
 import { Request, Response } from 'express';
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-
+import { VisitLogService } from '@/apps/visit-log/visit-log.service';
 interface IResponse<T> {
   code: number;
   message?: string;
@@ -12,7 +12,7 @@ interface IResponse<T> {
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<T, IResponse<T>> {
   private logger = new Logger('TransformInterceptor');
-
+  constructor(private readonly visitLogService: VisitLogService) {}
   private getClientIp(request: Request): string {
     // 按优先级获取IP地址
     return (
@@ -55,25 +55,27 @@ export class TransformInterceptor<T> implements NestInterceptor<T, IResponse<T>>
       userAgent: request.headers['user-agent'],
       referer: request.headers.referer || '',
       host: request.headers.host,
-      timestamp: new Date().toISOString(),
-      forwardedFor: request.headers['x-forwarded-for'],
-      realIp: request.headers['x-real-ip'],
+      timestamp: new Date(),
+      forwardedFor: Array.isArray(request.headers['x-forwarded-for'])
+        ? request.headers['x-forwarded-for'].join(',')
+        : request.headers['x-forwarded-for'] || '',
+      realIp: Array.isArray(request.headers['x-real-ip']) ? request.headers['x-real-ip'].join(',') : request.headers['x-real-ip'] || '',
       // 添加其他请求头信息
       acceptLanguage: request.headers['accept-language'],
-      protocol: request.headers['protocol'],
-      secChUa: request.headers['sec-ch-ua'],
-      secChUaMobile: request.headers['sec-ch-ua-mobile'],
-      secChUaPlatform: request.headers['sec-ch-ua-platform'],
-      secFetchDest: request.headers['sec-fetch-dest'],
-      secFetchMode: request.headers['sec-fetch-mode'],
-      secFetchSite: request.headers['sec-fetch-site'],
-      secFetchUser: request.headers['sec-fetch-user'],
-      upgradeInsecureRequests: request.headers['upgrade-insecure-requests'],
+      protocol: Array.isArray(request.headers['protocol']) ? request.headers['protocol'].join(',') : request.headers['protocol'] || '',
+      secChUa: String(request.headers['sec-ch-ua'] ?? ''),
+      secChUaMobile: String(request.headers['sec-ch-ua-mobile'] ?? ''),
+      secChUaPlatform: String(request.headers['sec-ch-ua-platform'] ?? ''),
+      secFetchDest: String(request.headers['sec-fetch-dest'] ?? ''),
+      secFetchMode: String(request.headers['sec-fetch-mode'] ?? ''),
+      secFetchSite: String(request.headers['sec-fetch-site'] ?? ''),
+      secFetchUser: String(request.headers['sec-fetch-user'] ?? ''),
+      upgradeInsecureRequests: String(request.headers['upgrade-insecure-requests']),
       accept: request.headers['accept'],
       // 添加解析后的客户端信息
       clientInfo: clientInfo
     };
-
+this.visitLogService.saveRequestLog(requestInfo); // 新增：保存请求信息
     this.logger.log(`请求信息: ${JSON.stringify(requestInfo)}`);
 
     const response = context.switchToHttp().getResponse<Response>();

@@ -4,10 +4,11 @@ import { VisitLogController } from './visit-log.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { VisitLog } from './entities/visit-log.entity';
 import { Session } from './entities/session.entity';
+import { RequestLog } from './entities/request-log.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([VisitLog,Session],'postgres')
+    TypeOrmModule.forFeature([VisitLog, Session,RequestLog], 'postgres'),
   ],
   controllers: [VisitLogController],
   providers: [VisitLogService],

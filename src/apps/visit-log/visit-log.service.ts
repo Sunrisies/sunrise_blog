@@ -4,17 +4,23 @@ import { Repository } from 'typeorm';
 import { VisitLog } from './entities/visit-log.entity';
 import { CreateVisitLogDto } from './dto/create-visit-log.dto';
 import { Session } from './entities/session.entity';
+import { RequestLog } from './entities/request-log.entity';
 @Injectable()
 export class VisitLogService {
   constructor(
-    @InjectRepository(VisitLog,'postgres')
+    @InjectRepository(VisitLog, 'postgres')
     private visitLogRepository: Repository<VisitLog>,
     @InjectRepository(Session, 'postgres')
     private sessionRepository: Repository<Session>,
+    @InjectRepository(RequestLog, 'postgres')
+    private requestLogRepository: Repository<RequestLog>,
   ) { }
+  async saveRequestLog(requestInfo: Partial<RequestLog>) {
+    return this.requestLogRepository.save(requestInfo);
+  }
 
   async create(createVisitLogDto: CreateVisitLogDto) {
-    
+
   }
 
   async findAll(page: number, limit: number) {
@@ -63,5 +69,5 @@ export class VisitLogService {
       };
     }
   }
- 
+
 }
