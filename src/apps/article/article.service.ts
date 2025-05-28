@@ -124,7 +124,6 @@ export class ArticleService {
       const articles = await queryBuilder.getMany();
       // 获取筛选后的总数量
       const total = await queryBuilder.getCount();
-      const totalPage = Math.ceil(total / limit);
       return {
         code: 200,
         data: {
@@ -132,12 +131,12 @@ export class ArticleService {
           pagination: {
             page: page, // 当前页码
             limit: limit, // 每页显示的数量
-            // total_pages: totalPage,
             total: total // 总数量
           }
         }
       };
     } catch (error) {
+      console.error(error);
       return { code: 500, message: '获取文章失败', data: null };
     }
   }

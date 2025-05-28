@@ -2,13 +2,19 @@ import { ArticleComment } from '@/apps/article-comments/entities/article-comment
 import { Category } from '@/apps/categories/entities/category.entity';
 import { Tag } from '@/apps/tags/entities/tag.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
+import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 @Entity({ name: 'article' })
 export class Article {
     @ApiProperty({ description: '文章ID', example: 1 })
     @PrimaryGeneratedColumn()
     id: number;
+
+    // 添加一个uuid
+    @ApiProperty({ description: '文章UUID', example: '3-a456-426614174000' })
+    @PrimaryGeneratedColumn('uuid')
+    @Column({ type: 'uuid', unique: true })
+    uuid: string;
 
     @ApiProperty({ description: '文章标题', example: '这是一篇文章', maxLength: 50 })
     @Column({ length: 50 })
@@ -79,4 +85,6 @@ export class Article {
     @ApiProperty({ description: '文章评论', type: () => [ArticleComment] })
     @OneToMany(() => ArticleComment, comment => comment.article)
     comments: ArticleComment[];
+
+
 }
