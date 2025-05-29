@@ -141,7 +141,7 @@ export class ArticleService {
     }
   }
 
-  async findOne(id: number): Promise<ResponseDto<Article>> {
+  async findOne(uuid: string): Promise<ResponseDto<Article>> {
     try {
       const queryBuilder = this.articleRepository
         .createQueryBuilder('article')
@@ -154,7 +154,7 @@ export class ArticleService {
           'tags.id',
           'tags.name'
         ])
-        .where('article.id = :id', { id });
+        .where('article.uuid = :uuid', { uuid });
 
       const article = await queryBuilder.getOne();
 
@@ -163,7 +163,7 @@ export class ArticleService {
       }
 
       // 更新浏览量
-      await this.articleRepository.update(id, { views: () => 'views + 1' });
+      await this.articleRepository.update({ uuid }, { views: () => 'views + 1' });
 
       return {
         code: 200,
@@ -206,12 +206,12 @@ export class ArticleService {
   }
 
   // 获取文章的上一篇和下一篇
-  async getPrevNext(id: number) {
+  async getPrevNext(uuid: string) {
     try {
       // 获取当前文章信息
       const currentArticle = await this.articleRepository.findOne({
-        where: { id },
-        select: ['id', 'publish_time']
+        where: { uuid },
+        select: ['id', 'uuid', 'publish_time']
       });
 
       if (!currentArticle) {
@@ -221,19 +221,19 @@ export class ArticleService {
       // 查询上一篇（时间更早的文章）
       const prevArticle = await this.articleRepository
         .createQueryBuilder('article')
-        .select(['article.id', 'article.title'])
+        .select(['article.uuid', 'article.title'])
         .where('article.publish_time < :currentTime', { currentTime: currentArticle.publish_time })
         .orderBy('article.publish_time', 'DESC')
-        .addOrderBy('article.id', 'DESC')
+        .addOrderBy('article.uuid', 'DESC')
         .getOne();
 
       // 查询下一篇（时间更晚的文章）
       const nextArticle = await this.articleRepository
         .createQueryBuilder('article')
-        .select(['article.id', 'article.title'])
+        .select(['article.uuid', 'article.title'])
         .where('article.publish_time > :currentTime', { currentTime: currentArticle.publish_time })
         .orderBy('article.publish_time', 'ASC')
-        .addOrderBy('article.id', 'ASC')
+        .addOrderBy('article.uuid', 'ASC')
         .getOne();
 
       return {
@@ -256,10 +256,10 @@ export class ArticleService {
     }
   }
 
-  async update(id: number, updateArticleDto: UpdateArticleDto) {
+  async update(uuid: string, updateArticleDto: UpdateArticleDto) {
     try {
       const article = await this.articleRepository.findOne({
-        where: { id },
+        where: { uuid },
         relations: ['category', 'tags']
       });
 
@@ -293,14 +293,14 @@ export class ArticleService {
         await this.articleRepository
           .createQueryBuilder()
           .relation(Article, 'tags')
-          .of(id)
+          .of(uuid)
           .remove(article.tags.map(t => t.id));
 
         // 添加新关联
         await this.articleRepository
           .createQueryBuilder()
           .relation(Article, 'tags')
-          .of(id)
+          .of(uuid)
           .add(tags.map(t => t.id));
       }
 
@@ -320,10 +320,10 @@ export class ArticleService {
     }
   }
 
-  async remove(id: number) {
+  async remove(uuid: string) {
     try {
       const article = await this.articleRepository.findOne({
-        where: { id },
+        where: { uuid },
         relations: ['category', 'tags']
       });
 
@@ -335,7 +335,7 @@ export class ArticleService {
       await this.articleRepository
         .createQueryBuilder()
         .relation(Article, 'tags')
-        .of(id)
+        .of(uuid)
         .remove(article.tags.map(tag => tag.id));
 
       // 再删除文章
@@ -396,7 +396,7 @@ export class ArticleService {
       const articles = await this.articleRepository
         .createQueryBuilder('article')
         .select([
-          'article.id',
+          'article.uuid',
           'article.title',
           'article.publish_time'  // 使用 publish_time 替代 created_at 和 updated_at
         ])

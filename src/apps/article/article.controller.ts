@@ -40,7 +40,7 @@ export class ArticleController {
   @ApiOperation({ summary: '获取上一篇和下一篇' })
   @Get("prevNext/:id")
   async getPrevNext(@Param("id") id: string) {
-    return this.articleService.getPrevNext(+id);
+    return this.articleService.getPrevNext(id);
   }
 
   /**
@@ -106,7 +106,7 @@ export class ArticleController {
   @ApiOkResponse({ description: '获取文章详情成功' })
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.articleService.findOne(+id);
+    return this.articleService.findOne(id);
   }
 
   /**
@@ -120,7 +120,7 @@ export class ArticleController {
   @ApiOkResponse({ description: '更新文章成功' })
   @Put(':id')
   update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
-    return this.articleService.update(+id, updateArticleDto);
+    return this.articleService.update(id, updateArticleDto);
   }
 
   /**
@@ -133,6 +133,6 @@ export class ArticleController {
   @ApiOkResponse({ description: '删除文章成功' })
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.articleService.remove(+id);
+    return this.articleService.remove(id);
   }
 }
