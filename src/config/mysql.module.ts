@@ -40,6 +40,7 @@ import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
           if (error) {
             throw new Error(`Config validation error: ${error.message}`);
           }
+          console.log(configService.get('env'), 'configService.get')
           return {
             type: value.database.type,
             host: value.database.host,

@@ -12,9 +12,14 @@ export class Article {
 
     // 添加一个uuid
     @ApiProperty({ description: '文章UUID', example: '3-a456-426614174000' })
-    @PrimaryGeneratedColumn('uuid')
     @Column({ type: 'uuid', unique: true })
     uuid: string;
+
+
+    @BeforeInsert()
+    generateUuid() {
+        this.uuid = uuidv4();
+    }
 
     @ApiProperty({ description: '文章标题', example: '这是一篇文章', maxLength: 50 })
     @Column({ length: 50 })

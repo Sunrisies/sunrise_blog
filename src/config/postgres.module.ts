@@ -10,7 +10,7 @@ import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      name:"postgres",
+      name: "postgres",
       useFactory: async (configService: ConfigService) => {
         const validationSchema = Joi.object({
           postgres: Joi.object({
@@ -41,11 +41,11 @@ import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
           username: value.postgres.username,
           password: value.postgres.password,
           database: value.postgres.database,
-          entities: [VisitLog,Session,RequestLog], // 根据实际需要添加其他实体
+          entities: [VisitLog, Session, RequestLog], // 根据实际需要添加其他实体
           synchronize: configService.get('env') === 'development',
-          ssl: configService.get('env') === 'production' ? {
-            rejectUnauthorized: false
-          } : false,
+          // ssl: configService.get('env') === 'production' ? {
+          //   rejectUnauthorized: false
+          // } : false,
         };
       },
       inject: [ConfigService],
