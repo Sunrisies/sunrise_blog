@@ -9,6 +9,8 @@ import * as bcrypt from 'bcryptjs';
 import Redis from "ioredis";
 import { DataSource, Repository } from 'typeorm';
 import { CreateUserDto as AuthDto } from '../user/dto/create-user.dto';
+import { authenticator } from 'otplib';
+import QRCode from 'qrcode';
 @Injectable()
 export class AuthService {
   constructor(
@@ -186,5 +188,15 @@ export class AuthService {
       user.permissions = RolePermissions[user.role];
       await this.userRepository.save(user);
     }
+  }
+  //绑定端点：生成 OTP 密钥和二维码
+  async generateOtpSecret(user_name: string, app_name: string): Promise<{ secret: string; qrCodeUrl: string }> {
+    // 生成 OTP 密钥
+    const secret = authenticator.generateSecret();
+
+    // 生成二维码 URL
+    const otpUrl = authenticator.keyuri(user_name, app_name, secret);
+    const qrCodeUrl = await QRCode.toDataURL(otpUrl);
+    return { secret, qrCodeUrl };
   }
 }

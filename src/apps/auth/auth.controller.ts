@@ -122,4 +122,18 @@ export class AuthController {
       data: null
     };
   }
+
+  // 绑定端点：生成 OTP 密钥和二维码
+  @ApiOperation({ summary: '生成 OTP 密钥和二维码' })
+  @ApiOkResponse({ description: 'OTP 密钥和二维码生成成功' })
+  @ApiResponse({ status: 403, description: '没有权限' })
+  @Post('generate-otp-secret')
+  async generateOtpSecret(@Body() { user_name, app_name }: { user_name: string, app_name: string }): Promise<Promise<ResponseDto<{ secret: string; qrCodeUrl: string }>>> {
+    const { secret, qrCodeUrl } = await this.authService.generateOtpSecret(user_name, app_name);
+    return {
+      code: 200,
+      message: 'OTP 密钥和二维码生成成功',
+      data: { secret, qrCodeUrl }
+    }
+  }
 }
