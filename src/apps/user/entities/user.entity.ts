@@ -120,4 +120,9 @@ export class User {
         default: RolePermissions[UserRole.USER]
     })
     permissions: number;
+
+    // OTP 密钥
+    @Column({ nullable: true })
+    @ApiProperty({ description: 'OTP 密钥', required: false })
+    otp_secret: string;
 }

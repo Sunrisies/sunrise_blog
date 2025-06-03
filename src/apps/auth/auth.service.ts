@@ -199,4 +199,20 @@ export class AuthService {
     const qrCodeUrl = await QRCode.toDataURL(otpUrl);
     return { secret, qrCodeUrl };
   }
+
+
+  //验证端点：验证 OTP 码
+  async verifyOtpCode(user_name: string, otpCode: string): Promise<boolean> {
+    // 从数据库中获取用户的 OTP 密钥
+    const user = await this.userRepository.findOne({ where: { user_name } });
+    if (!user || !user.otp_secret) {
+      return false; // 用户不存在或未设置 OTP 密钥
+    }
+
+    // 验证 OTP 码
+    const isValid = authenticator.verify({
+      token: otpCode,
+      secret: user.otp_secret,
+    })
+  }
 }
