@@ -2,13 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ArticleService } from '@/apps/article/article.service';
 import { PaginatedResponseDto, SitemapItem } from '@/types';
 
-
-
 @Injectable()
 export class SitemapService {
   constructor(private readonly articleService: ArticleService) {}
 
-  async getSitemap():Promise<PaginatedResponseDto<SitemapItem>>  {
+  async getSitemap(): Promise<PaginatedResponseDto<SitemapItem>> {
     try {
       // 获取所有文章
       const articles = await this.articleService.getAllArticles();
@@ -44,7 +42,10 @@ export class SitemapService {
 
       return {
         code: 200,
-        data: {data:[...routes, ...articleRoutes],pagination:{total:articleRoutes.length,page:1,limit:100}},
+        data: {
+          data: [...routes, ...articleRoutes],
+          pagination: { total: articleRoutes.length, page: 1, limit: 100 },
+        },
       };
     } catch (error) {
       return {

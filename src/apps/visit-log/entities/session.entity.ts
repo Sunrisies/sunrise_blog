@@ -2,16 +2,52 @@ import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 
 @Entity({ name: 'session', schema: 'public' })
 @Index('session_created_at_idx', ['created_at'])
-@Index('session_website_id_created_at_browser_idx', ['website_id', 'created_at', 'browser'])
-@Index('session_website_id_created_at_city_idx', ['website_id', 'created_at', 'city'])
-@Index('session_website_id_created_at_country_idx', ['website_id', 'created_at', 'country'])
-@Index('session_website_id_created_at_device_idx', ['website_id', 'created_at', 'device'])
-@Index('session_website_id_created_at_hostname_idx', ['website_id', 'created_at', 'hostname'])
+@Index('session_website_id_created_at_browser_idx', [
+  'website_id',
+  'created_at',
+  'browser',
+])
+@Index('session_website_id_created_at_city_idx', [
+  'website_id',
+  'created_at',
+  'city',
+])
+@Index('session_website_id_created_at_country_idx', [
+  'website_id',
+  'created_at',
+  'country',
+])
+@Index('session_website_id_created_at_device_idx', [
+  'website_id',
+  'created_at',
+  'device',
+])
+@Index('session_website_id_created_at_hostname_idx', [
+  'website_id',
+  'created_at',
+  'hostname',
+])
 @Index('session_website_id_created_at_idx', ['website_id', 'created_at'])
-@Index('session_website_id_created_at_language_idx', ['website_id', 'created_at', 'language'])
-@Index('session_website_id_created_at_os_idx', ['website_id', 'created_at', 'os'])
-@Index('session_website_id_created_at_screen_idx', ['website_id', 'created_at', 'screen'])
-@Index('session_website_id_created_at_subdivision1_idx', ['website_id', 'created_at', 'subdivision1'])
+@Index('session_website_id_created_at_language_idx', [
+  'website_id',
+  'created_at',
+  'language',
+])
+@Index('session_website_id_created_at_os_idx', [
+  'website_id',
+  'created_at',
+  'os',
+])
+@Index('session_website_id_created_at_screen_idx', [
+  'website_id',
+  'created_at',
+  'screen',
+])
+@Index('session_website_id_created_at_subdivision1_idx', [
+  'website_id',
+  'created_at',
+  'subdivision1',
+])
 @Index('session_website_id_idx', ['website_id'])
 export class Session {
   @PrimaryColumn('uuid')
@@ -52,7 +88,7 @@ export class Session {
 
   @Column({
     type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP'
+    default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
 }

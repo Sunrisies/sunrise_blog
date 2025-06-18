@@ -11,6 +11,6 @@ export class SitemapController {
   @Get()
   @ApiOperation({ summary: '获取站点地图数据' })
   async getSitemap(): Promise<PaginatedResponseDto<SitemapItem>> {
-    return await  this.sitemapService.getSitemap();
+    return await this.sitemapService.getSitemap();
   }
 }

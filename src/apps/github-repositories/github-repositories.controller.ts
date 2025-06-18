@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { GithubRepositoriesService } from './github-repositories.service';
 import { CreateGithubRepositoryDto } from './dto/create-github-repository.dto';
 import { UpdateGithubRepositoryDto } from './dto/update-github-repository.dto';
@@ -7,7 +16,9 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 @ApiTags('GitHub仓库')
 @Controller('github-repositories')
 export class GithubRepositoriesController {
-  constructor(private readonly githubRepositoriesService: GithubRepositoriesService) { }
+  constructor(
+    private readonly githubRepositoriesService: GithubRepositoriesService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: '创建GitHub仓库记录' })
@@ -29,8 +40,14 @@ export class GithubRepositoriesController {
 
   @Patch(':id')
   @ApiOperation({ summary: '更新GitHub仓库信息' })
-  update(@Param('id') id: string, @Body() updateGithubRepositoryDto: UpdateGithubRepositoryDto) {
-    return this.githubRepositoriesService.update(+id, updateGithubRepositoryDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateGithubRepositoryDto: UpdateGithubRepositoryDto,
+  ) {
+    return this.githubRepositoriesService.update(
+      +id,
+      updateGithubRepositoryDto,
+    );
   }
 
   @Delete(':id')

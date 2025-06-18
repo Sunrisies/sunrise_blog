@@ -6,8 +6,11 @@ import { Message } from './entities/message.entity';
 import { User } from '../user/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message]), TypeOrmModule.forFeature([User])],
+  imports: [
+    TypeOrmModule.forFeature([Message]),
+    TypeOrmModule.forFeature([User]),
+  ],
   controllers: [MessageController],
   providers: [MessageService],
 })
-export class MessageModule { }
+export class MessageModule {}

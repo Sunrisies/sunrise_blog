@@ -13,17 +13,21 @@ import { JwtGuard } from '@/guard/jwt.guard';
     TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => {
-        console.log('Received config:jwt', configService.get('JWT_SECRET'), configService.get('jwt').secret);
+        console.log(
+          'Received config:jwt',
+          configService.get('JWT_SECRET'),
+          configService.get('jwt').secret,
+        );
         return {
           secret: configService.get('jwt').secret,
-          signOptions: { expiresIn: configService.get('jwt').expiresIn }
-        }
+          signOptions: { expiresIn: configService.get('jwt').expiresIn },
+        };
       },
-      inject: [ConfigService]
-    })
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtGuard],
-  exports: [JwtModule]
+  exports: [JwtModule],
 })
-export class AuthModule { }
+export class AuthModule {}

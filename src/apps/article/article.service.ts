@@ -8,13 +8,13 @@ import { Category } from '@/apps/categories/entities/category.entity';
 import { Tag } from '@/apps/tags/entities/tag.entity';
 import { PaginatedResponseDto, ResponseDto } from '@/types';
 const DEFAULT_COVERS = {
-  1: "https://vip.chaoyang1024.top/img/前端.png",
-  2: "https://vip.chaoyang1024.top/img/运维.png",
-  3: "https://vip.chaoyang1024.top/img/后端.png",
-  4: "https://vip.chaoyang1024.top/img/dokcer.png", // category_id 为 1 时使用
-  5: "https://vip.chaoyang1024.top/img/js.png", // category_id 为 2 时使用
-  6: "https://vip.chaoyang1024.top/img/react.png", // category_id 为 3 时使用
-  7: "https://vip.chaoyang1024.top/img/vue.png", // category_id 为 4 时使用
+  1: 'https://vip.chaoyang1024.top/img/前端.png',
+  2: 'https://vip.chaoyang1024.top/img/运维.png',
+  3: 'https://vip.chaoyang1024.top/img/后端.png',
+  4: 'https://vip.chaoyang1024.top/img/dokcer.png', // category_id 为 1 时使用
+  5: 'https://vip.chaoyang1024.top/img/js.png', // category_id 为 2 时使用
+  6: 'https://vip.chaoyang1024.top/img/react.png', // category_id 为 3 时使用
+  7: 'https://vip.chaoyang1024.top/img/vue.png', // category_id 为 4 时使用
 };
 @Injectable()
 export class ArticleService {
@@ -24,18 +24,22 @@ export class ArticleService {
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
     @InjectRepository(Tag)
-    private readonly tagRepository: Repository<Tag>
-  ) { }
-  async create(createArticleDto: CreateArticleDto): Promise<ResponseDto<Article>> {
+    private readonly tagRepository: Repository<Tag>,
+  ) {}
+  async create(
+    createArticleDto: CreateArticleDto,
+  ): Promise<ResponseDto<Article>> {
     // 先检测当前标题是否存在
-    const isExist = await this.articleRepository.findOne({ where: { title: createArticleDto.title } });
+    const isExist = await this.articleRepository.findOne({
+      where: { title: createArticleDto.title },
+    });
     if (isExist) {
       return { code: 400, message: '标题已存在', data: null };
     }
     // 处理分类关联
     const category = await this.categoryRepository.findOne({
       select: ['id', 'name'],
-      where: { id: createArticleDto.categoryId }
+      where: { id: createArticleDto.categoryId },
     });
     if (!category) {
       throw new Error('分类不存在');
@@ -50,17 +54,21 @@ export class ArticleService {
     }
     // 处理标签关联
     const tags = await Promise.all(
-      createArticleDto.tagIds.map(tagId =>
-        this.tagRepository.findOne({ select: ['id', 'name'], where: { id: tagId } })
-      )
+      createArticleDto.tagIds.map((tagId) =>
+        this.tagRepository.findOne({
+          select: ['id', 'name'],
+          where: { id: tagId },
+        }),
+      ),
     );
-    if (tags.some(tag => !tag)) {
+    if (tags.some((tag) => !tag)) {
       return { code: 400, message: '包含不存在的标签', data: null }; // 或者抛出错误，取决于你的业务逻辑
     }
     try {
       const article = this.articleRepository.create({
-        ...createArticleDto, category,
-        tags
+        ...createArticleDto,
+        category,
+        tags,
       });
       await this.articleRepository.save(article);
       return { message: '创建成功', data: article };
@@ -69,20 +77,25 @@ export class ArticleService {
     }
   }
 
-  async findAll(page: number, limit: number, filters?: {
-    category?: string;
-    tag?: string;
-    title?: string;
-  }): Promise<PaginatedResponseDto<Article>> {
+  async findAll(
+    page: number,
+    limit: number,
+    filters?: {
+      category?: string;
+      tag?: string;
+      title?: string;
+    },
+  ): Promise<PaginatedResponseDto<Article>> {
     // 首先获取所有文章
     const total = await this.articleRepository.count();
     const totalPage = Math.ceil(total / limit);
     // 直接检查原始页码
-    if (page > totalPage && totalPage > 0) { // 添加 totalPage > 0 防止零数据误判
+    if (page > totalPage && totalPage > 0) {
+      // 添加 totalPage > 0 防止零数据误判
       return {
         code: 400,
         message: `请求页码超出范围，最大页数为 ${totalPage}`,
-        data: null
+        data: null,
       };
     }
 
@@ -97,29 +110,27 @@ export class ArticleService {
           'category.id',
           'category.name',
           'tags.id',
-          'tags.name'
-        ])
+          'tags.name',
+        ]);
       // 动态添加筛选条件
       if (filters?.category) {
         queryBuilder.andWhere('category.id = :categoryId', {
-          categoryId: Number(filters.category)
+          categoryId: Number(filters.category),
         });
       }
 
       if (filters?.tag) {
         queryBuilder.andWhere('tags.id = :tagId', {
-          tagId: Number(filters.tag)
+          tagId: Number(filters.tag),
         });
       }
 
       if (filters?.title) {
         queryBuilder.andWhere('article.title LIKE :title', {
-          title: `%${filters.title}%`
+          title: `%${filters.title}%`,
         });
       }
-      queryBuilder
-        .skip(startIndex)
-        .take(limit);
+      queryBuilder.skip(startIndex).take(limit);
 
       const articles = await queryBuilder.getMany();
       // 获取筛选后的总数量
@@ -131,9 +142,9 @@ export class ArticleService {
           pagination: {
             page: page, // 当前页码
             limit: limit, // 每页显示的数量
-            total: total // 总数量
-          }
-        }
+            total: total, // 总数量
+          },
+        },
       };
     } catch (error) {
       console.error(error);
@@ -152,7 +163,7 @@ export class ArticleService {
           'category.id',
           'category.name',
           'tags.id',
-          'tags.name'
+          'tags.name',
         ])
         .where('article.uuid = :uuid', { uuid });
 
@@ -163,12 +174,15 @@ export class ArticleService {
       }
 
       // 更新浏览量
-      await this.articleRepository.update({ uuid }, { views: () => 'views + 1' });
+      await this.articleRepository.update(
+        { uuid },
+        { views: () => 'views + 1' },
+      );
 
       return {
         code: 200,
         data: article,
-        message: '获取文章成功'
+        message: '获取文章成功',
       };
     } catch (error) {
       console.error(error);
@@ -182,25 +196,28 @@ export class ArticleService {
         .createQueryBuilder('article')
         .select([
           "DATE_FORMAT(article.publish_time, '%Y-%m-%d') as date",
-          "COUNT(*) as count"
+          'COUNT(*) as count',
         ])
         .groupBy('date')
         .orderBy('date', 'DESC')
         .getRawMany();
 
       // 转换结果为要求的数组格式
-      const formatted = results.map(item => [item.date, parseInt(item.count)]);
+      const formatted = results.map((item) => [
+        item.date,
+        parseInt(item.count),
+      ]);
 
       return {
         code: 200,
-        data: formatted
+        data: formatted,
       };
     } catch (error) {
       console.error('获取上传时间分布失败:', error);
       return {
         code: 500,
         data: [],
-        message: '获取数据失败'
+        message: '获取数据失败',
       };
     }
   }
@@ -211,7 +228,7 @@ export class ArticleService {
       // 获取当前文章信息
       const currentArticle = await this.articleRepository.findOne({
         where: { uuid },
-        select: ['id', 'uuid', 'publish_time']
+        select: ['id', 'uuid', 'publish_time'],
       });
 
       if (!currentArticle) {
@@ -222,7 +239,9 @@ export class ArticleService {
       const prevArticle = await this.articleRepository
         .createQueryBuilder('article')
         .select(['article.uuid', 'article.title'])
-        .where('article.publish_time < :currentTime', { currentTime: currentArticle.publish_time })
+        .where('article.publish_time < :currentTime', {
+          currentTime: currentArticle.publish_time,
+        })
         .orderBy('article.publish_time', 'DESC')
         .addOrderBy('article.uuid', 'DESC')
         .getOne();
@@ -231,7 +250,9 @@ export class ArticleService {
       const nextArticle = await this.articleRepository
         .createQueryBuilder('article')
         .select(['article.uuid', 'article.title'])
-        .where('article.publish_time > :currentTime', { currentTime: currentArticle.publish_time })
+        .where('article.publish_time > :currentTime', {
+          currentTime: currentArticle.publish_time,
+        })
         .orderBy('article.publish_time', 'ASC')
         .addOrderBy('article.uuid', 'ASC')
         .getOne();
@@ -240,8 +261,8 @@ export class ArticleService {
         code: 200,
         data: {
           prevArticle: prevArticle || null,
-          nextArticle: nextArticle || null
-        }
+          nextArticle: nextArticle || null,
+        },
       };
     } catch (error) {
       console.error('获取相邻文章失败:', error);
@@ -250,8 +271,8 @@ export class ArticleService {
         message: '获取相邻文章失败',
         data: {
           prevArticle: null,
-          nextArticle: null
-        }
+          nextArticle: null,
+        },
       };
     }
   }
@@ -260,7 +281,7 @@ export class ArticleService {
     try {
       const article = await this.articleRepository.findOne({
         where: { uuid },
-        relations: ['category', 'tags']
+        relations: ['category', 'tags'],
       });
 
       if (!article) {
@@ -270,7 +291,7 @@ export class ArticleService {
       // 处理分类更新
       if (updateArticleDto.categoryId) {
         const newCategory = await this.categoryRepository.findOne({
-          where: { id: updateArticleDto.categoryId }
+          where: { id: updateArticleDto.categoryId },
         });
         if (!newCategory) {
           return { code: 400, message: '分类不存在' };
@@ -281,11 +302,11 @@ export class ArticleService {
       // 处理标签更新
       if (updateArticleDto.tagIds) {
         const tags = await Promise.all(
-          updateArticleDto.tagIds.map(tagId =>
-            this.tagRepository.findOne({ where: { id: tagId } })
-          )
+          updateArticleDto.tagIds.map((tagId) =>
+            this.tagRepository.findOne({ where: { id: tagId } }),
+          ),
         );
-        if (tags.some(tag => !tag)) {
+        if (tags.some((tag) => !tag)) {
           return { code: 400, message: '包含不存在的标签' };
         }
 
@@ -294,14 +315,14 @@ export class ArticleService {
           .createQueryBuilder()
           .relation(Article, 'tags')
           .of(uuid)
-          .remove(article.tags.map(t => t.id));
+          .remove(article.tags.map((t) => t.id));
 
         // 添加新关联
         await this.articleRepository
           .createQueryBuilder()
           .relation(Article, 'tags')
           .of(uuid)
-          .add(tags.map(t => t.id));
+          .add(tags.map((t) => t.id));
       }
 
       // 合并更新数据
@@ -324,7 +345,7 @@ export class ArticleService {
     try {
       const article = await this.articleRepository.findOne({
         where: { uuid },
-        relations: ['category', 'tags']
+        relations: ['category', 'tags'],
       });
 
       if (!article) {
@@ -336,7 +357,7 @@ export class ArticleService {
         .createQueryBuilder()
         .relation(Article, 'tags')
         .of(uuid)
-        .remove(article.tags.map(tag => tag.id));
+        .remove(article.tags.map((tag) => tag.id));
 
       // 再删除文章
       await this.articleRepository.remove(article);
@@ -346,15 +367,15 @@ export class ArticleService {
         message: '删除成功',
         data: {
           id: article.id,
-          title: article.title
-        }
+          title: article.title,
+        },
       };
     } catch (error) {
       console.error('删除文章失败:', error);
       return {
         code: 500,
         message: '删除失败',
-        data: null
+        data: null,
       };
     }
   }
@@ -371,21 +392,21 @@ export class ArticleService {
           'article.publish_time',
           'article.cover',
           'tags.id',
-          'tags.name'
+          'tags.name',
         ])
         .orderBy('article.publish_time', 'DESC')
         .getMany();
 
       return {
         code: 200,
-        data: { data: articles }
+        data: { data: articles },
       };
     } catch (error) {
       console.error('获取时间轴数据失败:', error);
       return {
         code: 500,
         data: [],
-        message: '获取数据失败'
+        message: '获取数据失败',
       };
     }
   }
@@ -398,7 +419,7 @@ export class ArticleService {
         .select([
           'article.uuid',
           'article.title',
-          'article.publish_time'  // 使用 publish_time 替代 created_at 和 updated_at
+          'article.publish_time', // 使用 publish_time 替代 created_at 和 updated_at
         ])
         .orderBy('article.publish_time', 'DESC')
         .getMany();
@@ -406,14 +427,14 @@ export class ArticleService {
       return {
         code: 200,
         data: articles,
-        message: '获取站点地图成功'
+        message: '获取站点地图成功',
       };
     } catch (error) {
       console.error('获取所有文章失败:', error);
       return {
         code: 500,
         message: '获取所有文章失败',
-        data: null
+        data: null,
       };
     }
   }

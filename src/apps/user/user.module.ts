@@ -11,4 +11,4 @@ import { ApiExtraModels } from '@nestjs/swagger';
   controllers: [UserController],
   providers: [UserService],
 })
-export class UserModule { }
+export class UserModule {}

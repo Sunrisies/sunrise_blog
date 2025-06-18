@@ -1,8 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, DefaultValuePipe, ParseIntPipe, Put, UseInterceptors, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Put,
+  UseInterceptors,
+  UseGuards,
+} from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtGuard } from '@/guard/jwt.guard';
 import { RequirePermissions } from '@/decorators/require-permissions.decorator';
 import { Permission } from '../user/entities/user.entity';
@@ -11,11 +30,11 @@ import { Permission } from '../user/entities/user.entity';
  * 文章控制器
  * 处理所有与文章相关的HTTP请求
  */
-@ApiTags("文章")
+@ApiTags('文章')
 @ApiBearerAuth()
 @Controller('article')
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) { }
+  constructor(private readonly articleService: ArticleService) {}
 
   /**
    * 获取文章时间轴
@@ -25,7 +44,7 @@ export class ArticleController {
    */
   @ApiOperation({ summary: '获取时间轴' })
   @ApiOkResponse({ description: '获取时间轴成功' })
-  @Get("timeline")
+  @Get('timeline')
   async getTimeline() {
     return this.articleService.getTimeline();
   }
@@ -38,8 +57,8 @@ export class ArticleController {
    */
   @ApiOkResponse({ description: '获取上一篇和下一篇成功' })
   @ApiOperation({ summary: '获取上一篇和下一篇' })
-  @Get("prevNext/:id")
-  async getPrevNext(@Param("id") id: string) {
+  @Get('prevNext/:id')
+  async getPrevNext(@Param('id') id: string) {
     return this.articleService.getPrevNext(id);
   }
 
@@ -54,7 +73,7 @@ export class ArticleController {
   @Post()
   async create(@Body() createArticleDto: CreateArticleDto) {
     const data = await this.articleService.create(createArticleDto);
-    return data
+    return data;
   }
 
   /**
@@ -75,12 +94,12 @@ export class ArticleController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('category') category?: string,
     @Query('tag') tag?: string,
-    @Query('title') title?: string
+    @Query('title') title?: string,
   ) {
     return await this.articleService.findAll(page, limit, {
       category,
       tag,
-      title
+      title,
     });
   }
 
@@ -91,7 +110,7 @@ export class ArticleController {
    */
   @ApiOperation({ summary: '获取文章上传时间列表' })
   @ApiOkResponse({ description: '获取文章上传时间列表成功' })
-  @Get("uploadTime")
+  @Get('uploadTime')
   getUploadTime() {
     return this.articleService.getUploadTime();
   }

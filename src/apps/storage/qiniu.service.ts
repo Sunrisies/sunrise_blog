@@ -5,7 +5,12 @@ export class QiniuOSS implements CloudStorage {
   private mac: qiniu.auth.digest.Mac;
   private config: qiniu.conf.Config;
   private bucketManager: qiniu.rs.BucketManager;
-  private newConfig: { accessKey: string; secretKey: string; bucket: string; region: qiniu.conf.Zone };
+  private newConfig: {
+    accessKey: string;
+    secretKey: string;
+    bucket: string;
+    region: qiniu.conf.Zone;
+  };
   constructor(
     // @Inject('STORAGE_CONFIG')
     config: {
@@ -13,7 +18,8 @@ export class QiniuOSS implements CloudStorage {
       secretKey: string;
       bucket: string;
       region: qiniu.conf.Zone;
-    }) {
+    },
+  ) {
     this.newConfig = config;
     this.mac = new qiniu.auth.digest.Mac(config.accessKey, config.secretKey);
     this.config = new qiniu.conf.Config();
@@ -40,17 +46,14 @@ export class QiniuOSS implements CloudStorage {
             url: `https://vip.chaoyang1024.top/${info.data.key}`,
             code: 200,
             storage_provider: 'qiniu',
-          }
+          };
           resolve(data);
         } else {
           reject(body);
         }
       });
-    })
-
+    });
   }
-
-
 
   async delete(filename: string): Promise<void> {
     // 实现删除逻辑

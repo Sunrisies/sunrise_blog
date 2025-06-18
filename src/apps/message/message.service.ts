@@ -12,15 +12,17 @@ export class MessageService {
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
     @InjectRepository(User)
-    private userRepository: Repository<User>
-  ) { }
+    private userRepository: Repository<User>,
+  ) {}
 
-  async create(createMessageDto: CreateMessageDto): Promise<ResponseDto<CreateMessageDto>> {
+  async create(
+    createMessageDto: CreateMessageDto,
+  ): Promise<ResponseDto<CreateMessageDto>> {
     try {
       let user: User = null;
       if (createMessageDto.userId) {
         user = await this.userRepository.findOne({
-          where: { id: createMessageDto.userId }
+          where: { id: createMessageDto.userId },
         });
         if (!user) {
           return { code: 404, message: '用户不存在', data: null };
@@ -30,7 +32,7 @@ export class MessageService {
       let parentMessage: Message = null;
       if (createMessageDto.parentId) {
         parentMessage = await this.messageRepository.findOne({
-          where: { id: createMessageDto.parentId }
+          where: { id: createMessageDto.parentId },
         });
         if (!parentMessage) {
           return { code: 404, message: '父级留言不存在', data: null };
@@ -42,14 +44,14 @@ export class MessageService {
         user,
         parent: parentMessage,
         nickname: createMessageDto.nickname,
-        email: createMessageDto.email
+        email: createMessageDto.email,
       });
 
       const savedMessage = await this.messageRepository.save(newMessage);
       return {
         code: 200,
         message: '留言创建成功',
-        data: newMessage
+        data: newMessage,
       };
     } catch (error) {
       console.error('创建留言失败:', error);
@@ -57,7 +59,10 @@ export class MessageService {
     }
   }
 
-  async findAll(page: number, limit: number): Promise<PaginatedResponseDto<IMessage>> {
+  async findAll(
+    page: number,
+    limit: number,
+  ): Promise<PaginatedResponseDto<IMessage>> {
     try {
       const skip = (page - 1) * limit;
 
@@ -67,7 +72,7 @@ export class MessageService {
         .leftJoinAndSelect('message.replies', 'replies')
         .leftJoinAndSelect('message.user', 'user')
         .leftJoinAndSelect('replies.user', 'replyUser')
-        .where('message.parent IS NULL')  // 只查询顶层留言
+        .where('message.parent IS NULL') // 只查询顶层留言
         .andWhere('message.isDeleted = :isDeleted', { isDeleted: false })
         .orderBy('message.created_at', 'DESC')
         .skip(skip)
@@ -75,7 +80,7 @@ export class MessageService {
         .getManyAndCount();
 
       // 格式化返回数据
-      const formatted = messages.map(message => ({
+      const formatted = messages.map((message) => ({
         id: message.id,
         content: message.content,
         created_at: message.created_at.toISOString(),
@@ -83,16 +88,16 @@ export class MessageService {
         avatar: message.user?.image,
         email: message.email,
         replies: message.replies
-          .filter(reply => !reply.isDeleted)  // 过滤已删除的回复
-          .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())  // 回复按时间降序
-          .map(reply => ({
+          .filter((reply) => !reply.isDeleted) // 过滤已删除的回复
+          .sort((a, b) => b.created_at.getTime() - a.created_at.getTime()) // 回复按时间降序
+          .map((reply) => ({
             id: reply.id,
             content: reply.content,
             created_at: reply.created_at.toISOString(),
             nickname: reply.nickname || reply.user?.user_name,
             avatar: reply.user?.image,
             email: reply.email,
-          }))
+          })),
       }));
 
       return {
@@ -102,10 +107,10 @@ export class MessageService {
           pagination: {
             page,
             limit,
-            total
-          }
+            total,
+          },
         },
-        message: '查询留言成功'
+        message: '查询留言成功',
       };
     } catch (error) {
       console.error('查询留言失败:', error);

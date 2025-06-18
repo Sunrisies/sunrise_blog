@@ -2,9 +2,31 @@ import { RequirePermissions } from '@/decorators/require-permissions.decorator';
 import { JwtGuard } from '@/guard/jwt.guard';
 import { PaginatedResponseDto, ResponseDto } from '@/types';
 import { fileSizeInBytes } from '@/utils';
-import { Controller, DefaultValuePipe, Delete, Get, HttpStatus, Inject, Param, ParseIntPipe, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  DefaultValuePipe,
+  Delete,
+  Get,
+  HttpStatus,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Permission } from '../user/entities/user.entity';
 import { Storage } from './entities/storage.entity';
 import { CloudStorage } from './storage.interface';
@@ -13,8 +35,10 @@ import { StorageService } from './storage.service';
 @ApiBearerAuth()
 @Controller('storage')
 export class StorageController {
-  constructor(@Inject('CLOUD_STORAGE') private readonly cloudStorage: CloudStorage,
-    private readonly storageService: StorageService) { }
+  constructor(
+    @Inject('CLOUD_STORAGE') private readonly cloudStorage: CloudStorage,
+    private readonly storageService: StorageService,
+  ) {}
   @ApiOperation({ summary: '添加文件' })
   @ApiOkResponse({ description: '添加成功', type: ResponseDto<Storage> })
   @ApiConsumes('multipart/form-data')
@@ -25,17 +49,19 @@ export class StorageController {
       properties: {
         file: {
           type: 'string',
-          format: 'binary'
-        }
+          format: 'binary',
+        },
       },
-      required: ['file']
-    }
+      required: ['file'],
+    },
   })
   @Post()
   @UseGuards(JwtGuard)
   @RequirePermissions(Permission.MANAGE_MESSAGE)
   @UseInterceptors(FileInterceptor('file'))
-  async upload(@UploadedFile() file: Express.Multer.File): Promise<ResponseDto<Storage>> {
+  async upload(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ResponseDto<Storage>> {
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
@@ -49,14 +75,14 @@ export class StorageController {
     //     message: "文件名包含非英文字符",
     //   };
     // }
-    let fileName = file.originalname;
+    const fileName = file.originalname;
     const path = `uploads/${year}/${month}/${day}/${fileName}`;
     const data = await this.cloudStorage.upload(file, path);
     console.log(data); // 假设云存储返回访问URL
     if (data.code !== 200) {
       return {
         code: HttpStatus.PRECONDITION_REQUIRED,
-        message: "上传失败",
+        message: '上传失败',
         data: null,
       };
     }
@@ -69,9 +95,9 @@ export class StorageController {
     });
     return {
       code: HttpStatus.OK,
-      message: "上传成功",
+      message: '上传成功',
       data: storage, // 返回存储的文件信息
-    }
+    };
   }
 
   @ApiOperation({ summary: '获取文件列表' })
@@ -87,7 +113,7 @@ export class StorageController {
     @Query('type') type?: string,
     @Query('search') search?: string,
   ): Promise<PaginatedResponseDto<Storage>> {
-    return await this.storageService.findAll(page, limit, type, search)
+    return await this.storageService.findAll(page, limit, type, search);
   }
 
   @ApiOperation({ summary: '删除文件' })
@@ -97,7 +123,7 @@ export class StorageController {
     type: ResponseDto<null>,
   })
   @Delete(':id')
-  async delete(@Param("id") id: string): Promise<ResponseDto<null>> {
+  async delete(@Param('id') id: string): Promise<ResponseDto<null>> {
     return this.storageService.delete(+id);
   }
 }

@@ -4,16 +4,48 @@ import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 @Index('website_event_created_at_idx', ['created_at'])
 @Index('website_event_session_id_idx', ['session_id'])
 @Index('website_event_visit_id_idx', ['visit_id'])
-@Index('website_event_website_id_created_at_event_name_idx', ['website_id', 'created_at', 'event_name'])
+@Index('website_event_website_id_created_at_event_name_idx', [
+  'website_id',
+  'created_at',
+  'event_name',
+])
 @Index('website_event_website_id_created_at_idx', ['website_id', 'created_at'])
-@Index('website_event_website_id_created_at_page_title_idx', ['website_id', 'created_at', 'page_title'])
-@Index('website_event_website_id_created_at_referrer_domain_idx', ['website_id', 'created_at', 'referrer_domain'])
-@Index('website_event_website_id_created_at_tag_idx', ['website_id', 'created_at', 'tag'])
-@Index('website_event_website_id_created_at_url_path_idx', ['website_id', 'created_at', 'url_path'])
-@Index('website_event_website_id_created_at_url_query_idx', ['website_id', 'created_at', 'url_query'])
+@Index('website_event_website_id_created_at_page_title_idx', [
+  'website_id',
+  'created_at',
+  'page_title',
+])
+@Index('website_event_website_id_created_at_referrer_domain_idx', [
+  'website_id',
+  'created_at',
+  'referrer_domain',
+])
+@Index('website_event_website_id_created_at_tag_idx', [
+  'website_id',
+  'created_at',
+  'tag',
+])
+@Index('website_event_website_id_created_at_url_path_idx', [
+  'website_id',
+  'created_at',
+  'url_path',
+])
+@Index('website_event_website_id_created_at_url_query_idx', [
+  'website_id',
+  'created_at',
+  'url_query',
+])
 @Index('website_event_website_id_idx', ['website_id'])
-@Index('website_event_website_id_session_id_created_at_idx', ['website_id', 'session_id', 'created_at'])
-@Index('website_event_website_id_visit_id_created_at_idx', ['website_id', 'visit_id', 'created_at'])
+@Index('website_event_website_id_session_id_created_at_idx', [
+  'website_id',
+  'session_id',
+  'created_at',
+])
+@Index('website_event_website_id_visit_id_created_at_idx', [
+  'website_id',
+  'visit_id',
+  'created_at',
+])
 export class VisitLog {
   @PrimaryColumn('uuid')
   event_id: string;
@@ -29,7 +61,7 @@ export class VisitLog {
 
   @Column({
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP'
+    default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
 

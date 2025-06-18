@@ -10,26 +10,29 @@ export class GithubRepositoriesService {
   constructor(
     @InjectRepository(GithubRepository)
     private readonly githubRepositoryRepository: Repository<GithubRepository>,
-  ) { }
+  ) {}
 
   async create(createGithubRepositoryDto: CreateGithubRepositoryDto) {
-    const repository = this.githubRepositoryRepository.create(createGithubRepositoryDto);
+    const repository = this.githubRepositoryRepository.create(
+      createGithubRepositoryDto,
+    );
     await this.githubRepositoryRepository.save(repository);
     return {
       message: '创建成功',
-      data: repository
+      data: repository,
     };
   }
 
   async findAll(page: number, limit: number) {
-    const [repositories, total] = await this.githubRepositoryRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-      // relations: ['commits'],
-      order: {
-        created_at: 'DESC'
-      }
-    });
+    const [repositories, total] =
+      await this.githubRepositoryRepository.findAndCount({
+        skip: (page - 1) * limit,
+        take: limit,
+        // relations: ['commits'],
+        order: {
+          created_at: 'DESC',
+        },
+      });
 
     return {
       data: {
@@ -37,16 +40,16 @@ export class GithubRepositoriesService {
         pagination: {
           page,
           limit,
-          total
-        }
-      }
+          total,
+        },
+      },
     };
   }
 
   async findOne(id: number) {
     const repository = await this.githubRepositoryRepository.findOne({
       where: { id },
-      relations: ['commits']
+      relations: ['commits'],
     });
 
     if (!repository) {
@@ -54,11 +57,14 @@ export class GithubRepositoriesService {
     }
 
     return {
-      data: repository
+      data: repository,
     };
   }
 
-  async update(id: number, updateGithubRepositoryDto: UpdateGithubRepositoryDto) {
+  async update(
+    id: number,
+    updateGithubRepositoryDto: UpdateGithubRepositoryDto,
+  ) {
     const repository = await this.githubRepositoryRepository.findOneBy({ id });
 
     if (!repository) {
@@ -68,12 +74,12 @@ export class GithubRepositoriesService {
     await this.githubRepositoryRepository.update(id, updateGithubRepositoryDto);
     const updated = await this.githubRepositoryRepository.findOne({
       where: { id },
-      relations: ['commits']
+      relations: ['commits'],
     });
 
     return {
       message: '更新成功',
-      data: updated
+      data: updated,
     };
   }
 
@@ -86,7 +92,7 @@ export class GithubRepositoriesService {
 
     await this.githubRepositoryRepository.remove(repository);
     return {
-      message: '删除成功'
+      message: '删除成功',
     };
   }
 }

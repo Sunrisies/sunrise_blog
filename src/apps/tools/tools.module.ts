@@ -7,4 +7,4 @@ import { ToolsService } from './tools.service';
   controllers: [ToolsController],
   providers: [ToolsService, Email],
 })
-export class ToolsModule { }
+export class ToolsModule {}

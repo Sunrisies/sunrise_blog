@@ -1,6 +1,9 @@
-import { transports, format } from "winston";
-import { WinstonModule, utilities as nestWinstonModuleUtilities } from "nest-winston";
-import "winston-daily-rotate-file";
+import { transports, format } from 'winston';
+import {
+  WinstonModule,
+  utilities as nestWinstonModuleUtilities,
+} from 'nest-winston';
+import 'winston-daily-rotate-file';
 // 自定义时间格式化函数
 const customTimestamp = format((info) => {
   const now = new Date();
@@ -12,8 +15,12 @@ export const LoggerFactory = (appName: string) => {
 
   const DEBUG = process.env.DEBUG;
   const USE_JSON_LOGGER = process.env.USE_JSON_LOGGER;
-  if (USE_JSON_LOGGER === "true") {
-    consoleFormat = format.combine(customTimestamp(), format.ms(), format.json());
+  if (USE_JSON_LOGGER === 'true') {
+    consoleFormat = format.combine(
+      customTimestamp(),
+      format.ms(),
+      format.json(),
+    );
   } else {
     consoleFormat = format.combine(
       customTimestamp(),
@@ -26,12 +33,12 @@ export const LoggerFactory = (appName: string) => {
   }
 
   return WinstonModule.createLogger({
-    level: DEBUG ? "debug" : "info",
+    level: DEBUG ? 'debug' : 'info',
     transports: [
       new transports.DailyRotateFile({
         // %DATE will be replaced by the current date
         filename: `logs/%DATE%-error.log`,
-        level: "error",
+        level: 'error',
         format: format.combine(
           customTimestamp(),
           format.printf((info) => {
@@ -45,9 +52,9 @@ export const LoggerFactory = (appName: string) => {
             return JSON.stringify(logEntry);
           }),
         ),
-        datePattern: "YYYY-MM-DD",
+        datePattern: 'YYYY-MM-DD',
         zippedArchive: false, // don't want to zip our logs
-        maxFiles: "30d", // will keep log until they are older than 30 days
+        maxFiles: '30d', // will keep log until they are older than 30 days
       }),
       new transports.DailyRotateFile({
         filename: `logs/%DATE%-combined.log`,
@@ -64,9 +71,9 @@ export const LoggerFactory = (appName: string) => {
             return JSON.stringify(logEntry);
           }),
         ),
-        datePattern: "YYYY-MM-DD",
+        datePattern: 'YYYY-MM-DD',
         zippedArchive: false,
-        maxFiles: "30d",
+        maxFiles: '30d',
       }),
       new transports.Console({ format: consoleFormat }),
     ],

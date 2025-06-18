@@ -26,11 +26,11 @@ export class StorageModule {
         useFactory: (configService: ConfigService) => {
           const config = {
             storage: configService.get('storage'),
-          }
+          };
           const StorageClass = this.getStorageClass(config.storage.type);
           return new StorageClass(config.storage[config.storage.type]);
         },
-        inject: [ConfigService]
+        inject: [ConfigService],
       },
     ];
 

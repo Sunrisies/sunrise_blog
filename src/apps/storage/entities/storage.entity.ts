@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Storage {
@@ -30,7 +35,7 @@ export class Storage {
   @ApiProperty({
     description: '存储提供商',
     example: 'qiniu',
-    enum: ['local', 'aliyun', 'tencent', 'qiniu']
+    enum: ['local', 'aliyun', 'tencent', 'qiniu'],
   })
   @Column({ length: 50, nullable: true }) // 假设最大长度为50，你可以根据实际情况调整
   storage_provider?: string;

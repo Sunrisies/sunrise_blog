@@ -13,8 +13,8 @@ import Joi from 'joi';
             type: Joi.string().required(), // 类型为字符串，必填
             url: Joi.string().required(), // URL 为字符串，必填
           }),
-        })
-        const config = { redis: configService.get('redis') } // 从 ConfigService 获取 redis configuration
+        });
+        const config = { redis: configService.get('redis') }; // 从 ConfigService 获取 redis configuration
         const { error, value } = validationSchema.validate(config);
         if (error) {
           throw new Error(`Config validation error: ${error.message}`);
@@ -22,11 +22,11 @@ import Joi from 'joi';
         return {
           type: value.redis.type,
           url: value.redis.url,
-        }
+        };
       },
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
   ],
-  exports: [RedisModule]
+  exports: [RedisModule],
 })
-export class RedisConnectionModule { }
+export class RedisConnectionModule {}

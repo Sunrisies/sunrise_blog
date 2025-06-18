@@ -14,4 +14,4 @@ import { GithubRepository } from '../github-repositories/entities/github-reposit
   providers: [GithubCommitService],
   controllers: [GithubCommitController],
 })
-export class GithubCommitModule { }
+export class GithubCommitModule {}

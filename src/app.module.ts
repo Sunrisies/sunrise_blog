@@ -1,6 +1,4 @@
-import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { VisitLog } from './apps/visit-log/entities/visit-log.entity';
+import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ArticleCommentsModule } from './apps/article-comments/article-comments.module';
 import { ArticleModule } from './apps/article/article.module';
@@ -39,14 +37,14 @@ import { SitemapModule } from './apps/sitemap/sitemap.module';
     StorageModule.forRoot({
       type: 'qiniu',
       useFactory: (configService: ConfigService) => ({}), // 保留工厂函数结构,
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
     RedisConnectionModule,
     VisitLogModule,
     MessageModule,
     GithubCommitModule,
     GithubRepositoriesModule,
-    SitemapModule
+    SitemapModule,
   ],
   controllers: [],
   providers: [
@@ -54,7 +52,7 @@ import { SitemapModule } from './apps/sitemap/sitemap.module';
       // 全局拦截器
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
-    }
+    },
   ],
 })
-export class AppModule { }
+export class AppModule {}

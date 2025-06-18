@@ -7,8 +7,12 @@ import { Category } from '../categories/entities/category.entity';
 import { Tag } from '../tags/entities/tag.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ThirdPartyLibrary]), TypeOrmModule.forFeature([Category]), TypeOrmModule.forFeature([Tag])],
+  imports: [
+    TypeOrmModule.forFeature([ThirdPartyLibrary]),
+    TypeOrmModule.forFeature([Category]),
+    TypeOrmModule.forFeature([Tag]),
+  ],
   controllers: [ThirdPartyLibraryController],
   providers: [ThirdPartyLibraryService],
 })
-export class ThirdPartyLibraryModule { }
+export class ThirdPartyLibraryModule {}

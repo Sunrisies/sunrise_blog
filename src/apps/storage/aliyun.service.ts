@@ -10,7 +10,7 @@ export class AliyunOSS implements CloudStorage {
       accessKeyId: string;
       accessKeySecret: string;
       bucket: string;
-    }
+    },
   ) {
     this.client = new OSS(this.config);
   }
@@ -18,9 +18,14 @@ export class AliyunOSS implements CloudStorage {
   async upload(file: Express.Multer.File, path: string) {
     try {
       const result = await this.client.put(path, file.buffer);
-      return { url: result.url, name: result.name, code: 200, storage_provider: 'aliyun', };
+      return {
+        url: result.url,
+        name: result.name,
+        code: 200,
+        storage_provider: 'aliyun',
+      };
     } catch (error) {
-      return { url: "", name: "", code: 400 }; // 处理上传错误，返回空对象或其他错误信息
+      return { url: '', name: '', code: 400 }; // 处理上传错误，返回空对象或其他错误信息
     }
   }
 }

@@ -25,7 +25,7 @@ export class RequestLog {
 
   @Column({
     type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP'
+    default: () => 'CURRENT_TIMESTAMP',
   })
   timestamp: Date;
 

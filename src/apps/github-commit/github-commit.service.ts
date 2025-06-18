@@ -8,8 +8,6 @@ import { ConfigService } from '@nestjs/config';
 import { GithubRepository } from '../github-repositories/entities/github-repository.entity';
 import { PaginatedResponseDto, ResponseDto, SyncResult } from '@/types';
 
-
-
 @Injectable()
 export class GithubCommitService {
   private readonly logger = new Logger(GithubCommitService.name);
@@ -20,7 +18,7 @@ export class GithubCommitService {
     @InjectRepository(GithubRepository)
     private githubRepositoryRepository: Repository<GithubRepository>,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   @Cron('0 25 16 * * *') // 每天凌晨2点执行
   async syncGithubCommits() {
@@ -39,7 +37,7 @@ export class GithubCommitService {
       const result = await this.syncAllEnabledRepositories();
       return {
         message: '手动同步成功',
-        data: result
+        data: result,
       };
     } catch (error) {
       this.logger.error('手动同步GitHub提交记录失败:', error);
@@ -47,12 +45,10 @@ export class GithubCommitService {
     }
   }
 
-
-
   // 抽取公共同步逻辑
   private async syncAllEnabledRepositories(): Promise<SyncResult[]> {
     const repos = await this.githubRepositoryRepository.find({
-      where: { enabled: true }
+      where: { enabled: true },
     });
 
     const results: SyncResult[] = [];
@@ -61,23 +57,23 @@ export class GithubCommitService {
         await this.fetchAndSaveCommits({
           owner: repo.owner,
           repo: repo.repository,
-          branch: repo.branch
+          branch: repo.branch,
         });
 
         // 更新最后同步时间
         await this.githubRepositoryRepository.update(repo.id, {
-          last_sync_at: new Date()
+          last_sync_at: new Date(),
         });
 
         results.push({
           repository: repo.repository,
-          status: 'success'
+          status: 'success',
         });
       } catch (error) {
         results.push({
           repository: repo.repository,
           status: 'failed',
-          error: error.message
+          error: error.message,
         });
       }
     }
@@ -90,22 +86,26 @@ export class GithubCommitService {
 
     try {
       const response = await new Promise((resolve, reject) => {
-        const req = https.get(url, {
-          headers: {
-            'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'Node.js'
-          }
-        }, (res) => {
-          let data = '';
+        const req = https.get(
+          url,
+          {
+            headers: {
+              Accept: 'application/vnd.github.v3+json',
+              'User-Agent': 'Node.js',
+            },
+          },
+          (res) => {
+            let data = '';
 
-          res.on('data', (chunk) => {
-            data += chunk;
-          });
+            res.on('data', (chunk) => {
+              data += chunk;
+            });
 
-          res.on('end', () => {
-            resolve(JSON.parse(data));
-          });
-        });
+            res.on('end', () => {
+              resolve(JSON.parse(data));
+            });
+          },
+        );
 
         req.on('error', (error) => {
           reject(error);
@@ -117,7 +117,7 @@ export class GithubCommitService {
       const commits = response as any[];
       for (const commit of commits) {
         const existingCommit = await this.githubCommitRepository.findOne({
-          where: { sha: commit.sha }
+          where: { sha: commit.sha },
         });
 
         if (!existingCommit) {
@@ -153,18 +153,26 @@ export class GithubCommitService {
   }
 
   // 获取提交记录的API
-  async getCommits(page = 1, limit = 10, filters: { repository?: string; branch?: string }): Promise<PaginatedResponseDto<GithubCommit>> {
-    const queryBuilder = this.githubCommitRepository.createQueryBuilder('commit');
+  async getCommits(
+    page = 1,
+    limit = 10,
+    filters: { repository?: string; branch?: string },
+  ): Promise<PaginatedResponseDto<GithubCommit>> {
+    const queryBuilder =
+      this.githubCommitRepository.createQueryBuilder('commit');
 
     // 添加过滤条件
     if (filters.repository) {
-      queryBuilder.andWhere('commit.repository = :repository', { repository: filters.repository });
+      queryBuilder.andWhere('commit.repository = :repository', {
+        repository: filters.repository,
+      });
     }
 
     if (filters.branch) {
-      queryBuilder.andWhere('commit.branch = :branch', { branch: filters.branch });
+      queryBuilder.andWhere('commit.branch = :branch', {
+        branch: filters.branch,
+      });
     }
-
 
     // 添加排序和分页
     queryBuilder
@@ -181,10 +189,10 @@ export class GithubCommitService {
         pagination: {
           total,
           page,
-          limit
+          limit,
         },
       },
-      message: '获取提交记录成功'
+      message: '获取提交记录成功',
     };
   }
 }

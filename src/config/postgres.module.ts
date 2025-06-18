@@ -10,14 +10,13 @@ import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      name: "postgres",
+      name: 'postgres',
       useFactory: async (configService: ConfigService) => {
         const validationSchema = Joi.object({
           postgres: Joi.object({
-            host: Joi.alternatives().try(
-              Joi.string().ip(),
-              Joi.string().hostname()
-            ).required(),
+            host: Joi.alternatives()
+              .try(Joi.string().ip(), Joi.string().hostname())
+              .required(),
             port: Joi.number().default(5432),
             username: Joi.string().required(),
             password: Joi.string().required(),
@@ -26,7 +25,7 @@ import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
         });
 
         const config = {
-          postgres: configService.get('postgres')
+          postgres: configService.get('postgres'),
         };
 
         const { error, value } = validationSchema.validate(config);
@@ -51,6 +50,6 @@ import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
       inject: [ConfigService],
     }),
   ],
-  exports: [TypeOrmModule]
+  exports: [TypeOrmModule],
 })
-export class PgConnectionModule { }
+export class PgConnectionModule {}

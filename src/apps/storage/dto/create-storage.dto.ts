@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export enum StorageProvider {
   QINIU = 'qiniu',
-  ALIYUN = 'aliyun'
+  ALIYUN = 'aliyun',
 }
 export class CreateStorageDto {
   @ApiProperty({ description: '文件存储路径' })
@@ -25,9 +25,13 @@ export class CreateStorageDto {
   @IsString()
   type?: string;
 
-  @ApiProperty({ required: false, description: '云存储提供商', enum: StorageProvider, example: StorageProvider.QINIU })
+  @ApiProperty({
+    required: false,
+    description: '云存储提供商',
+    enum: StorageProvider,
+    example: StorageProvider.QINIU,
+  })
   @IsOptional()
   @IsString()
   storage_provider?: StorageProvider;
 }
-

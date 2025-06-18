@@ -8,9 +8,13 @@ import { Category } from '@/apps/categories/entities/category.entity';
 import { ApiTags } from '@nestjs/swagger';
 @ApiTags('文章管理')
 @Module({
-  imports: [TypeOrmModule.forFeature([Article]), TypeOrmModule.forFeature([Category]), TypeOrmModule.forFeature([Tag])],
+  imports: [
+    TypeOrmModule.forFeature([Article]),
+    TypeOrmModule.forFeature([Category]),
+    TypeOrmModule.forFeature([Tag]),
+  ],
   controllers: [ArticleController],
   providers: [ArticleService],
-  exports: [ArticleService]
+  exports: [ArticleService],
 })
-export class ArticleModule { }
+export class ArticleModule {}

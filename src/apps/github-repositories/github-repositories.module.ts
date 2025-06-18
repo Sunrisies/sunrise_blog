@@ -10,4 +10,4 @@ import { GithubRepository } from './entities/github-repository.entity';
   providers: [GithubRepositoriesService],
   exports: [GithubRepositoriesService],
 })
-export class GithubRepositoriesModule { }
+export class GithubRepositoriesModule {}

@@ -4,29 +4,29 @@ import { ThirdPartyLibrary } from '@/apps/third-party-library/entities/third-par
 
 @Entity({ name: 'categories' })
 export class Category {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ length: 50 })
-    name: string;
+  @Column({ length: 50 })
+  name: string;
 
-    // 新增分类类型字段
-    @Column({
-        type: 'enum',
-        enum: ['article', 'library'],
-        default: 'article'
-    })
-    type: string;
+  // 新增分类类型字段
+  @Column({
+    type: 'enum',
+    enum: ['article', 'library'],
+    default: 'article',
+  })
+  type: string;
 
-    @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
-    created_at: Date;
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
 
-    @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
-    updated_at: Date;
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
 
-    @OneToMany(() => Article, article => article.category)
-    articles: Article[];
+  @OneToMany(() => Article, (article) => article.category)
+  articles: Article[];
 
-    @OneToMany(() => ThirdPartyLibrary, lib => lib.category)
-    libraries: ThirdPartyLibrary[];
+  @OneToMany(() => ThirdPartyLibrary, (lib) => lib.category)
+  libraries: ThirdPartyLibrary[];
 }

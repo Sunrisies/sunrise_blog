@@ -11,13 +11,19 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
+  ) {}
 
-  async findAll(page: number, limit: number, user_name?: string): Promise<PaginatedResponseDto<User>> {
+  async findAll(
+    page: number,
+    limit: number,
+    user_name?: string,
+  ): Promise<PaginatedResponseDto<User>> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
     if (user_name) {
-      queryBuilder.where('user.user_name LIKE :user_name', { user_name: `%${user_name}%` });
+      queryBuilder.where('user.user_name LIKE :user_name', {
+        user_name: `%${user_name}%`,
+      });
     }
 
     const [users, total] = await queryBuilder
@@ -31,7 +37,7 @@ export class UserService {
       return {
         code: 400,
         message: `请求页码超出范围，最大页数为 ${totalPage}`,
-        data: null
+        data: null,
       };
     }
 
@@ -42,10 +48,10 @@ export class UserService {
         pagination: {
           page: page,
           limit: limit,
-          total: total
-        }
+          total: total,
+        },
       },
-      message: '查询成功'
+      message: '查询成功',
     };
   }
 
@@ -58,7 +64,10 @@ export class UserService {
     return { data: user, message: '查询成功', code: 200 };
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<ResponseDto<User>> {
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<ResponseDto<User>> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       return { code: 404, message: '没有找到该用户', data: null };
@@ -72,13 +81,13 @@ export class UserService {
       user.user_name = updateUserDto.user_name; // 假设用户名可以直接更新
     }
     if (updateUserDto.image) {
-      user.image = updateUserDto.image; // 假设头像可以直接更新 
+      user.image = updateUserDto.image; // 假设头像可以直接更新
     }
     if (updateUserDto.phone) {
-      user.phone = updateUserDto.phone; // 假设手机号可以直接更新 
+      user.phone = updateUserDto.phone; // 假设手机号可以直接更新
     }
     if (updateUserDto.email) {
-      user.email = updateUserDto.email; // 假设邮箱可以直接更新 
+      user.email = updateUserDto.email; // 假设邮箱可以直接更新
     }
     try {
       await this.userRepository.save(user);

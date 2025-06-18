@@ -14,14 +14,12 @@ export class VisitLogService {
     private sessionRepository: Repository<Session>,
     @InjectRepository(RequestLog, 'postgres')
     private requestLogRepository: Repository<RequestLog>,
-  ) { }
+  ) {}
   async saveRequestLog(requestInfo: Partial<RequestLog>) {
     return this.requestLogRepository.save(requestInfo);
   }
 
-  async create(createVisitLogDto: CreateVisitLogDto) {
-
-  }
+  async create(createVisitLogDto: CreateVisitLogDto) {}
 
   async findAll(page: number, limit: number) {
     try {
@@ -30,23 +28,25 @@ export class VisitLogService {
         skip: (page - 1) * limit,
         take: limit,
         order: {
-          created_at: 'DESC'
-        }
+          created_at: 'DESC',
+        },
       });
 
       // 2. 收集所有的 session_id
-      const sessionIds = logs.map(log => log.session_id);
+      const sessionIds = logs.map((log) => log.session_id);
 
       // 3. 批量查询相关的 session 信息
       const sessions = await this.sessionRepository.findByIds(sessionIds);
 
       // 4. 创建一个 session_id 到 session 的映射
-      const sessionMap = new Map(sessions.map(session => [session.session_id, session]));
+      const sessionMap = new Map(
+        sessions.map((session) => [session.session_id, session]),
+      );
 
       // 5. 组合访问日志和 session 信息
-      const combinedData = logs.map(log => ({
+      const combinedData = logs.map((log) => ({
         ...log,
-        session: sessionMap.get(log.session_id) || null
+        session: sessionMap.get(log.session_id) || null,
       }));
 
       return {
@@ -56,18 +56,17 @@ export class VisitLogService {
           pagination: {
             page,
             limit,
-            total
-          }
-        }
+            total,
+          },
+        },
       };
     } catch (error) {
       console.error('获取访问日志失败:', error);
       return {
         code: 500,
         message: '获取访问日志失败',
-        data: null
+        data: null,
       };
     }
   }
-
 }
