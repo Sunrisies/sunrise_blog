@@ -1,29 +1,9 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Put,
-  Query,
-  ParseEnumPipe,
-  BadRequestException,
-} from '@nestjs/common';
-import { CategoriesService } from './categories.service';
-import { CreateCategoryDto, ICategory } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
-import { PaginatedResponseDto, ResponseDto } from '@/types';
+import { PaginatedResponseDto, ResponseDto } from '@/types'
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseEnumPipe, Post, Put, Query } from '@nestjs/common'
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { CategoriesService } from './categories.service'
+import { CreateCategoryDto, ICategory } from './dto/create-category.dto'
+import { UpdateCategoryDto } from './dto/update-category.dto'
 
 @ApiTags('分类管理')
 @ApiBearerAuth()
@@ -34,29 +14,27 @@ export class CategoriesController {
   @ApiOperation({ summary: '添加分类' })
   @ApiOkResponse({
     description: '添加成功',
-    type: ResponseDto<CreateCategoryDto>,
+    type: ResponseDto<CreateCategoryDto>
   })
   @ApiBody({
     description: '分类信息',
-    type: CreateCategoryDto,
+    type: CreateCategoryDto
   })
   @Post()
-  async create(
-    @Body() createCategoryDto: CreateCategoryDto,
-  ): Promise<ResponseDto<CreateCategoryDto>> {
-    return await this.categoriesService.create(createCategoryDto);
+  async create(@Body() createCategoryDto: CreateCategoryDto): Promise<ResponseDto<CreateCategoryDto>> {
+    return await this.categoriesService.create(createCategoryDto)
   }
 
   @ApiOperation({ summary: '获取分类列表' })
   @ApiOkResponse({
     description: '获取成功',
-    type: PaginatedResponseDto<ICategory>,
+    type: PaginatedResponseDto<ICategory>
   })
   @ApiQuery({
     name: 'type',
     description: '分类类型',
     enum: ['article', 'library'],
-    required: false,
+    required: false
   })
   @Get()
   async findAll(
@@ -64,13 +42,12 @@ export class CategoriesController {
       'type',
       new ParseEnumPipe(['article', 'library'], {
         optional: true, // 添加可选配置
-        exceptionFactory: () =>
-          new BadRequestException('type参数必须是 article 或 library'),
-      }),
+        exceptionFactory: () => new BadRequestException('type参数必须是 article 或 library')
+      })
     )
-    type?: 'article' | 'library',
+    type?: 'article' | 'library'
   ): Promise<PaginatedResponseDto<ICategory>> {
-    return await this.categoriesService.findAll(type);
+    return await this.categoriesService.findAll(type)
   }
 
   @ApiOperation({ summary: '修改分类' })
@@ -78,18 +55,15 @@ export class CategoriesController {
   @ApiParam({
     name: 'id',
     description: '分类id',
-    type: Number,
+    type: Number
   })
   @ApiBody({
     description: '分类信息',
-    type: UpdateCategoryDto,
+    type: UpdateCategoryDto
   })
   @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateCategoryDto: UpdateCategoryDto,
-  ): Promise<ResponseDto<null>> {
-    return await this.categoriesService.update(+id, updateCategoryDto);
+  async update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto): Promise<ResponseDto<null>> {
+    return await this.categoriesService.update(+id, updateCategoryDto)
   }
 
   @ApiOperation({ summary: '删除分类' })
@@ -97,10 +71,10 @@ export class CategoriesController {
   @ApiParam({
     name: 'id',
     description: '分类id',
-    type: Number,
+    type: Number
   })
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<ResponseDto<null>> {
-    return await this.categoriesService.remove(+id);
+    return await this.categoriesService.remove(+id)
   }
 }

@@ -1,31 +1,25 @@
-import {
-  IsEmail,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 export class CreateArticleCommentDto {
   @IsNotEmpty({ message: '评论内容不能为空' })
   @IsString({ message: '评论内容必须是字符串类型' })
-  content: string;
+  content: string
 
   @IsInt({ message: '文章ID必须是数字类型' })
-  articleId: number;
+  articleId: number
 
   @IsInt({ message: '用户ID必须是数字类型' })
   @IsOptional()
-  userId?: number;
+  userId?: number
 
   @IsInt({ message: '父级评论ID必须是数字类型' })
   @IsOptional()
-  parentId?: number;
+  parentId?: number
 
   @IsOptional()
   @IsString()
-  nickname?: string;
+  nickname?: string
 
   @IsOptional()
   @IsEmail()
-  email?: string;
+  email?: string
 }

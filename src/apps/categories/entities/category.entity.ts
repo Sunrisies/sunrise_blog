@@ -1,32 +1,32 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Article } from '@/apps/article/entities/article.entity';
-import { ThirdPartyLibrary } from '@/apps/third-party-library/entities/third-party-library.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm'
+import { Article } from '@/apps/article/entities/article.entity'
+import { ThirdPartyLibrary } from '@/apps/third-party-library/entities/third-party-library.entity'
 
 @Entity({ name: 'categories' })
 export class Category {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Column({ length: 50 })
-  name: string;
+  name: string
 
   // 新增分类类型字段
   @Column({
     type: 'enum',
     enum: ['article', 'library'],
-    default: 'article',
+    default: 'article'
   })
-  type: string;
+  type: string
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
-  created_at: Date;
+  created_at: Date
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
-  updated_at: Date;
+  updated_at: Date
 
   @OneToMany(() => Article, (article) => article.category)
-  articles: Article[];
+  articles: Article[]
 
   @OneToMany(() => ThirdPartyLibrary, (lib) => lib.category)
-  libraries: ThirdPartyLibrary[];
+  libraries: ThirdPartyLibrary[]
 }

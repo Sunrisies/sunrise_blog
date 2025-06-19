@@ -1,19 +1,18 @@
-import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import * as Joi from 'joi';
-import { Tag } from '@/apps/tags/entities/tag.entity';
-import { Article } from '@/apps/article/entities/article.entity';
-import { Category } from '@/apps/categories/entities/category.entity';
-import { ArticleComment } from '@/apps/article-comments/entities/article-comment.entity';
-import { ThirdPartyLibrary } from '@/apps/third-party-library/entities/third-party-library.entity';
-import { User } from '@/apps/user/entities/user.entity';
-import { Storage } from '@/apps/storage/entities/storage.entity';
-import { VisitLog } from '@/apps/visit-log/entities/visit-log.entity';
-import { Message } from '@/apps/message/entities/message.entity';
-import { GithubCommit } from '@/apps/github-commit/entities/github-commit.entity';
-import { GithubRepository } from '@/apps/github-repositories/entities/github-repository.entity';
-import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
+import { ArticleComment } from '@/apps/article-comments/entities/article-comment.entity'
+import { Article } from '@/apps/article/entities/article.entity'
+import { Category } from '@/apps/categories/entities/category.entity'
+import { GithubCommit } from '@/apps/github-commit/entities/github-commit.entity'
+import { GithubRepository } from '@/apps/github-repositories/entities/github-repository.entity'
+import { Message } from '@/apps/message/entities/message.entity'
+import { Storage } from '@/apps/storage/entities/storage.entity'
+import { Tag } from '@/apps/tags/entities/tag.entity'
+import { ThirdPartyLibrary } from '@/apps/third-party-library/entities/third-party-library.entity'
+import { User } from '@/apps/user/entities/user.entity'
+import { VisitLog } from '@/apps/visit-log/entities/visit-log.entity'
+import { Module } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import * as Joi from 'joi'
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -25,7 +24,7 @@ import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
             host: Joi.alternatives()
               .try(
                 Joi.string().ip(), // 允许 IP 地址
-                Joi.string().pattern(/^[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}$/), // 允许域名
+                Joi.string().pattern(/^[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}$/) // 允许域名
               )
               .required(),
             port: Joi.number().default(3306),
@@ -33,17 +32,17 @@ import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
               .pattern(/^[a-zA-Z0-9_]+$/)
               .required(),
             password: Joi.string().required(),
-            database: Joi.string().required(),
-          }),
-        });
+            database: Joi.string().required()
+          })
+        })
         const config = {
-          database: configService.get('database'), // 从 ConfigService 获取 database configuratio
-        };
-        const { error, value } = validationSchema.validate(config);
-        if (error) {
-          throw new Error(`Config validation error: ${error.message}`);
+          database: configService.get('database') // 从 ConfigService 获取 database configuratio
         }
-        console.log(configService.get('env'), 'configService.get');
+        const { error, value } = validationSchema.validate(config)
+        if (error) {
+          throw new Error(`Config validation error: ${error.message}`)
+        }
+        console.log(configService.get('env'), 'configService.get')
         return {
           type: value.database.type,
           host: value.database.host,
@@ -62,20 +61,20 @@ import { RequestLog } from '@/apps/visit-log/entities/request-log.entity';
             VisitLog,
             Message,
             GithubCommit,
-            GithubRepository,
+            GithubRepository
           ],
           synchronize: configService.get('env') === 'development',
           insecureAuth: true, // 允许旧版认证协议
           authSwitchHandler: (data, cb) => {
             if (data.pluginName === 'mysql_clear_password') {
-              cb(null, Buffer.from(value.database.password + '\0'));
+              cb(null, Buffer.from(value.database.password + '\0'))
             }
-          },
-        };
+          }
+        }
       },
-      inject: [ConfigService],
-    }),
+      inject: [ConfigService]
+    })
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule]
 })
 export class MysqlConnectionModule {}

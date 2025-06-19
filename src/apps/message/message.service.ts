@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Message } from './entities/message.entity';
-import { User } from '../user/entities/user.entity';
-import { CreateMessageDto, IMessage } from './dto/create-message.dto';
-import { PaginatedResponseDto, ResponseDto } from '@/types';
+import { PaginatedResponseDto, ResponseDto } from '@/types'
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { User } from '../user/entities/user.entity'
+import { CreateMessageDto, IMessage } from './dto/create-message.dto'
+import { Message } from './entities/message.entity'
 
 @Injectable()
 export class MessageService {
@@ -12,30 +12,28 @@ export class MessageService {
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userRepository: Repository<User>
   ) {}
 
-  async create(
-    createMessageDto: CreateMessageDto,
-  ): Promise<ResponseDto<CreateMessageDto>> {
+  async create(createMessageDto: CreateMessageDto): Promise<ResponseDto<CreateMessageDto>> {
     try {
-      let user: User = null;
+      let user: User = null
       if (createMessageDto.userId) {
         user = await this.userRepository.findOne({
-          where: { id: createMessageDto.userId },
-        });
+          where: { id: createMessageDto.userId }
+        })
         if (!user) {
-          return { code: 404, message: '用户不存在', data: null };
+          return { code: 404, message: '用户不存在', data: null }
         }
       }
 
-      let parentMessage: Message = null;
+      let parentMessage: Message = null
       if (createMessageDto.parentId) {
         parentMessage = await this.messageRepository.findOne({
-          where: { id: createMessageDto.parentId },
-        });
+          where: { id: createMessageDto.parentId }
+        })
         if (!parentMessage) {
-          return { code: 404, message: '父级留言不存在', data: null };
+          return { code: 404, message: '父级留言不存在', data: null }
         }
       }
 
@@ -44,27 +42,25 @@ export class MessageService {
         user,
         parent: parentMessage,
         nickname: createMessageDto.nickname,
-        email: createMessageDto.email,
-      });
+        email: createMessageDto.email
+      })
 
-      const savedMessage = await this.messageRepository.save(newMessage);
+      const savedMessage = await this.messageRepository.save(newMessage)
+      console.log('新留言已保存:', savedMessage)
       return {
         code: 200,
         message: '留言创建成功',
-        data: newMessage,
-      };
+        data: newMessage
+      }
     } catch (error) {
-      console.error('创建留言失败:', error);
-      return { code: 500, message: '留言创建失败', data: null };
+      console.error('创建留言失败:', error)
+      return { code: 500, message: '留言创建失败', data: null }
     }
   }
 
-  async findAll(
-    page: number,
-    limit: number,
-  ): Promise<PaginatedResponseDto<IMessage>> {
+  async findAll(page: number, limit: number): Promise<PaginatedResponseDto<IMessage>> {
     try {
-      const skip = (page - 1) * limit;
+      const skip = (page - 1) * limit
 
       // 修改查询条件，只获取顶层留言及其回复
       const [messages, total] = await this.messageRepository
@@ -77,7 +73,7 @@ export class MessageService {
         .orderBy('message.created_at', 'DESC')
         .skip(skip)
         .take(limit)
-        .getManyAndCount();
+        .getManyAndCount()
 
       // 格式化返回数据
       const formatted = messages.map((message) => ({
@@ -96,9 +92,9 @@ export class MessageService {
             created_at: reply.created_at.toISOString(),
             nickname: reply.nickname || reply.user?.user_name,
             avatar: reply.user?.image,
-            email: reply.email,
-          })),
-      }));
+            email: reply.email
+          }))
+      }))
 
       return {
         code: 200,
@@ -107,14 +103,14 @@ export class MessageService {
           pagination: {
             page,
             limit,
-            total,
-          },
+            total
+          }
         },
-        message: '查询留言成功',
-      };
+        message: '查询留言成功'
+      }
     } catch (error) {
-      console.error('查询留言失败:', error);
-      return { code: 500, message: '查询留言失败', data: null };
+      console.error('查询留言失败:', error)
+      return { code: 500, message: '查询留言失败', data: null }
     }
   }
 }

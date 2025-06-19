@@ -1,88 +1,88 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { GithubCommit } from './entities/github-commit.entity';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import * as https from 'https';
-import { ConfigService } from '@nestjs/config';
-import { GithubRepository } from '../github-repositories/entities/github-repository.entity';
-import { PaginatedResponseDto, ResponseDto, SyncResult } from '@/types';
+import { PaginatedResponseDto, ResponseDto, SyncResult } from '@/types'
+import { Injectable, Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { Cron } from '@nestjs/schedule'
+import { InjectRepository } from '@nestjs/typeorm'
+import * as https from 'https'
+import { Repository } from 'typeorm'
+import { GithubRepository } from '../github-repositories/entities/github-repository.entity'
+import { GithubCommit } from './entities/github-commit.entity'
 
 @Injectable()
 export class GithubCommitService {
-  private readonly logger = new Logger(GithubCommitService.name);
+  private readonly logger = new Logger(GithubCommitService.name)
 
   constructor(
     @InjectRepository(GithubCommit)
     private githubCommitRepository: Repository<GithubCommit>,
     @InjectRepository(GithubRepository)
     private githubRepositoryRepository: Repository<GithubRepository>,
-    private configService: ConfigService,
+    private configService: ConfigService
   ) {}
 
   @Cron('0 25 16 * * *') // 每天凌晨2点执行
   async syncGithubCommits() {
-    console.log('开始同步GitHub提交记录');
+    console.log('开始同步GitHub提交记录')
     try {
-      await this.syncAllEnabledRepositories();
+      await this.syncAllEnabledRepositories()
     } catch (error) {
-      this.logger.error('同步GitHub提交记录失败:', error);
+      this.logger.error('同步GitHub提交记录失败:', error)
     }
   }
 
   // 新增手动同步方法
   async manualSync(): Promise<ResponseDto<SyncResult[]>> {
     try {
-      console.log('开始手动同步GitHub提交记录');
-      const result = await this.syncAllEnabledRepositories();
+      console.log('开始手动同步GitHub提交记录')
+      const result = await this.syncAllEnabledRepositories()
       return {
         message: '手动同步成功',
-        data: result,
-      };
+        data: result
+      }
     } catch (error) {
-      this.logger.error('手动同步GitHub提交记录失败:', error);
-      throw error;
+      this.logger.error('手动同步GitHub提交记录失败:', error)
+      throw error
     }
   }
 
   // 抽取公共同步逻辑
   private async syncAllEnabledRepositories(): Promise<SyncResult[]> {
     const repos = await this.githubRepositoryRepository.find({
-      where: { enabled: true },
-    });
+      where: { enabled: true }
+    })
 
-    const results: SyncResult[] = [];
+    const results: SyncResult[] = []
     for (const repo of repos) {
       try {
         await this.fetchAndSaveCommits({
           owner: repo.owner,
           repo: repo.repository,
-          branch: repo.branch,
-        });
+          branch: repo.branch
+        })
 
         // 更新最后同步时间
         await this.githubRepositoryRepository.update(repo.id, {
-          last_sync_at: new Date(),
-        });
+          last_sync_at: new Date()
+        })
 
         results.push({
           repository: repo.repository,
-          status: 'success',
-        });
+          status: 'success'
+        })
       } catch (error) {
         results.push({
           repository: repo.repository,
           status: 'failed',
-          error: error.message,
-        });
+          error: error.message
+        })
       }
     }
 
-    return results;
+    return results
   }
 
   private async fetchAndSaveCommits({ owner, repo, branch }) {
-    const url = `https://api.github.com/repos/${owner}/${repo}/commits?sha=${branch}&page=1&per_page=100`;
+    const url = `https://api.github.com/repos/${owner}/${repo}/commits?sha=${branch}&page=1&per_page=100`
 
     try {
       const response = await new Promise((resolve, reject) => {
@@ -91,64 +91,64 @@ export class GithubCommitService {
           {
             headers: {
               Accept: 'application/vnd.github.v3+json',
-              'User-Agent': 'Node.js',
-            },
+              'User-Agent': 'Node.js'
+            }
           },
           (res) => {
-            let data = '';
+            let data = ''
 
             res.on('data', (chunk) => {
-              data += chunk;
-            });
+              data += chunk
+            })
 
             res.on('end', () => {
-              resolve(JSON.parse(data));
-            });
-          },
-        );
+              resolve(JSON.parse(data))
+            })
+          }
+        )
 
         req.on('error', (error) => {
-          reject(error);
-        });
+          reject(error)
+        })
 
-        req.end();
-      });
+        req.end()
+      })
 
-      const commits = response as any[];
+      const commits = response as any[]
       for (const commit of commits) {
         const existingCommit = await this.githubCommitRepository.findOne({
-          where: { sha: commit.sha },
-        });
+          where: { sha: commit.sha }
+        })
 
         if (!existingCommit) {
-          const newCommit = new GithubCommit();
-          newCommit.sha = commit.sha;
-          newCommit.node_id = commit.node_id;
-          newCommit.author_name = commit.commit.author.name;
-          newCommit.author_email = commit.commit.author.email;
-          newCommit.commit_date = new Date(commit.commit.author.date);
-          newCommit.message = commit.commit.message;
-          newCommit.tree_sha = commit.commit.tree.sha;
-          newCommit.url = commit.url;
-          newCommit.html_url = commit.html_url;
-          newCommit.comments_url = commit.comments_url;
-          newCommit.comment_count = commit.commit.comment_count;
-          newCommit.parent_sha = commit.parents[0]?.sha || null;
-          newCommit.parent_url = commit.parents[0]?.url || null;
-          newCommit.verified = commit.commit.verification.verified;
-          newCommit.verify_reason = commit.commit.verification.reason;
-          newCommit.repository = repo;
-          newCommit.branch = branch;
+          const newCommit = new GithubCommit()
+          newCommit.sha = commit.sha
+          newCommit.node_id = commit.node_id
+          newCommit.author_name = commit.commit.author.name
+          newCommit.author_email = commit.commit.author.email
+          newCommit.commit_date = new Date(commit.commit.author.date)
+          newCommit.message = commit.commit.message
+          newCommit.tree_sha = commit.commit.tree.sha
+          newCommit.url = commit.url
+          newCommit.html_url = commit.html_url
+          newCommit.comments_url = commit.comments_url
+          newCommit.comment_count = commit.commit.comment_count
+          newCommit.parent_sha = commit.parents[0]?.sha || null
+          newCommit.parent_url = commit.parents[0]?.url || null
+          newCommit.verified = commit.commit.verification.verified
+          newCommit.verify_reason = commit.commit.verification.reason
+          newCommit.repository = repo
+          newCommit.branch = branch
 
-          await this.githubCommitRepository.save(newCommit);
-          console.log(`成功保存提交记录: ${commit.sha}`);
+          await this.githubCommitRepository.save(newCommit)
+          console.log(`成功保存提交记录: ${commit.sha}`)
         } else {
-          console.log(`提交记录已存在: ${commit.sha}`);
+          console.log(`提交记录已存在: ${commit.sha}`)
         }
       }
     } catch (error) {
-      this.logger.error(`获取 ${owner}/${repo} 提交记录失败:`, error);
-      throw error;
+      this.logger.error(`获取 ${owner}/${repo} 提交记录失败:`, error)
+      throw error
     }
   }
 
@@ -156,31 +156,30 @@ export class GithubCommitService {
   async getCommits(
     page = 1,
     limit = 10,
-    filters: { repository?: string; branch?: string },
+    filters: { repository?: string; branch?: string }
   ): Promise<PaginatedResponseDto<GithubCommit>> {
-    const queryBuilder =
-      this.githubCommitRepository.createQueryBuilder('commit');
+    const queryBuilder = this.githubCommitRepository.createQueryBuilder('commit')
 
     // 添加过滤条件
     if (filters.repository) {
       queryBuilder.andWhere('commit.repository = :repository', {
-        repository: filters.repository,
-      });
+        repository: filters.repository
+      })
     }
 
     if (filters.branch) {
       queryBuilder.andWhere('commit.branch = :branch', {
-        branch: filters.branch,
-      });
+        branch: filters.branch
+      })
     }
 
     // 添加排序和分页
     queryBuilder
       .orderBy('commit.commit_date', 'DESC')
       .skip((page - 1) * limit)
-      .take(limit);
+      .take(limit)
 
-    const [items, total] = await queryBuilder.getManyAndCount();
+    const [items, total] = await queryBuilder.getManyAndCount()
 
     return {
       code: 200,
@@ -189,10 +188,10 @@ export class GithubCommitService {
         pagination: {
           total,
           page,
-          limit,
-        },
+          limit
+        }
       },
-      message: '获取提交记录成功',
-    };
+      message: '获取提交记录成功'
+    }
   }
 }

@@ -1,35 +1,28 @@
-import { transports, format } from 'winston';
-import {
-  WinstonModule,
-  utilities as nestWinstonModuleUtilities,
-} from 'nest-winston';
-import 'winston-daily-rotate-file';
+import { transports, format } from 'winston'
+import { WinstonModule, utilities as nestWinstonModuleUtilities } from 'nest-winston'
+import 'winston-daily-rotate-file'
 // 自定义时间格式化函数
 const customTimestamp = format((info) => {
-  const now = new Date();
-  info.timestamp = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-  return info;
-});
+  const now = new Date()
+  info.timestamp = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+  return info
+})
 export const LoggerFactory = (appName: string) => {
-  let consoleFormat;
+  let consoleFormat
 
-  const DEBUG = process.env.DEBUG;
-  const USE_JSON_LOGGER = process.env.USE_JSON_LOGGER;
+  const DEBUG = process.env.DEBUG
+  const USE_JSON_LOGGER = process.env.USE_JSON_LOGGER
   if (USE_JSON_LOGGER === 'true') {
-    consoleFormat = format.combine(
-      customTimestamp(),
-      format.ms(),
-      format.json(),
-    );
+    consoleFormat = format.combine(customTimestamp(), format.ms(), format.json())
   } else {
     consoleFormat = format.combine(
       customTimestamp(),
       format.ms(),
       nestWinstonModuleUtilities.format.nestLike(appName, {
         colors: true,
-        prettyPrint: true,
-      }),
-    );
+        prettyPrint: true
+      })
+    )
   }
 
   return WinstonModule.createLogger({
@@ -47,14 +40,14 @@ export const LoggerFactory = (appName: string) => {
               context: info.context,
               level: info.level,
               message: info.message,
-              ...info, // 保留其他字段
-            };
-            return JSON.stringify(logEntry);
-          }),
+              ...info // 保留其他字段
+            }
+            return JSON.stringify(logEntry)
+          })
         ),
         datePattern: 'YYYY-MM-DD',
         zippedArchive: false, // don't want to zip our logs
-        maxFiles: '30d', // will keep log until they are older than 30 days
+        maxFiles: '30d' // will keep log until they are older than 30 days
       }),
       new transports.DailyRotateFile({
         filename: `logs/%DATE%-combined.log`,
@@ -66,16 +59,16 @@ export const LoggerFactory = (appName: string) => {
               context: info.context,
               level: info.level,
               message: info.message,
-              ...info, // 保留其他字段
-            };
-            return JSON.stringify(logEntry);
-          }),
+              ...info // 保留其他字段
+            }
+            return JSON.stringify(logEntry)
+          })
         ),
         datePattern: 'YYYY-MM-DD',
         zippedArchive: false,
-        maxFiles: '30d',
+        maxFiles: '30d'
       }),
-      new transports.Console({ format: consoleFormat }),
-    ],
-  });
-};
+      new transports.Console({ format: consoleFormat })
+    ]
+  })
+}

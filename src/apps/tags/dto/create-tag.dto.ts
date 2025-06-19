@@ -1,11 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
 export class CreateTagDto {
   @IsString({ message: '标签名必须是字符串类型' })
   @IsNotEmpty({ message: '标签名不能为空' })
@@ -13,22 +7,22 @@ export class CreateTagDto {
   @ApiProperty({
     description: '标签名',
     example: '标签名',
-    required: true,
+    required: true
   })
-  name: string;
+  name: string
 
   @IsOptional()
   @IsEnum(['article', 'library'], {
-    message: '类型必须是 article 或 library',
+    message: '类型必须是 article 或 library'
   })
   @ApiProperty({
     enum: ['article', 'library'],
     default: 'article',
-    required: false,
+    required: false
   })
-  type: string = 'article';
+  type: string = 'article'
 }
 export interface ITag {
-  value: number;
-  label: string;
+  value: number
+  label: string
 }

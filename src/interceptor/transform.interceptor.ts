@@ -1,25 +1,17 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  Logger,
-  NestInterceptor,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { VisitLogService } from '@/apps/visit-log/visit-log.service';
+import { VisitLogService } from '@/apps/visit-log/visit-log.service'
+import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from '@nestjs/common'
+import { Request, Response } from 'express'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
 interface IResponse<T> {
-  code: number;
-  message?: string;
-  data?: T;
+  code: number
+  message?: string
+  data?: T
 }
 
 @Injectable()
-export class TransformInterceptor<T>
-  implements NestInterceptor<T, IResponse<T>>
-{
-  private logger = new Logger('TransformInterceptor');
+export class TransformInterceptor<T> implements NestInterceptor<T, IResponse<T>> {
+  private logger = new Logger('TransformInterceptor')
   constructor(private readonly visitLogService: VisitLogService) {}
   private getClientIp(request: Request): string {
     // 按优先级获取IP地址
@@ -37,27 +29,25 @@ export class TransformInterceptor<T>
       // 最后的后备选项
       request.socket.remoteAddress ||
       'unknown'
-    );
+    )
   }
 
   private parseClientInfo(request: Request) {
-    const clientInfoStr = request.headers['clientinfo'];
+    const clientInfoStr = request.headers['clientinfo']
     try {
-      return clientInfoStr ? JSON.parse(clientInfoStr as string) : null;
+      return clientInfoStr ? JSON.parse(clientInfoStr as string) : null
     } catch (e) {
-      this.logger.warn('解析客户端信息失败');
-      return null;
+      this.logger.error('解析客户端信息失败', e)
+      this.logger.warn('解析客户端信息失败')
+      return null
     }
   }
 
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler<T>,
-  ): Observable<IResponse<T>> | Promise<Observable<IResponse<T>>> {
-    const request = context.switchToHttp().getRequest<Request>();
+  intercept(context: ExecutionContext, next: CallHandler<T>): Observable<IResponse<T>> | Promise<Observable<IResponse<T>>> {
+    const request = context.switchToHttp().getRequest<Request>()
 
     // 解析客户端信息
-    const clientInfo = this.parseClientInfo(request);
+    const clientInfo = this.parseClientInfo(request)
 
     const requestInfo = {
       method: request.method,
@@ -85,27 +75,25 @@ export class TransformInterceptor<T>
       secFetchMode: String(request.headers['sec-fetch-mode'] ?? ''),
       secFetchSite: String(request.headers['sec-fetch-site'] ?? ''),
       secFetchUser: String(request.headers['sec-fetch-user'] ?? ''),
-      upgradeInsecureRequests: String(
-        request.headers['upgrade-insecure-requests'],
-      ),
+      upgradeInsecureRequests: String(request.headers['upgrade-insecure-requests']),
       accept: request.headers['accept'],
       // 添加解析后的客户端信息
-      clientInfo: clientInfo,
-    };
-    this.visitLogService.saveRequestLog(requestInfo); // 新增：保存请求信息
-    this.logger.log(`请求信息: ${JSON.stringify(requestInfo)}`);
+      clientInfo: clientInfo
+    }
+    this.visitLogService.saveRequestLog(requestInfo) // 新增：保存请求信息
+    this.logger.log(`请求信息: ${JSON.stringify(requestInfo)}`)
 
-    const response = context.switchToHttp().getResponse<Response>();
+    const response = context.switchToHttp().getResponse<Response>()
     return next.handle().pipe(
       map((data) => {
         if (request.method === 'POST' && response.statusCode === 201) {
-          response.statusCode = 200;
+          response.statusCode = 200
         }
         return {
           code: 200,
-          ...data,
-        };
-      }),
-    );
+          ...data
+        }
+      })
+    )
   }
 }

@@ -1,38 +1,33 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-} from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm'
+import { ApiProperty } from '@nestjs/swagger'
 
 @Entity('github_repositories')
 export class GithubRepository {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: '主键ID' })
-  id: number;
+  id: number
 
   @Column({ length: 100 })
   @ApiProperty({ description: '仓库拥有者' })
-  owner: string;
+  owner: string
 
   @Column({ length: 100 })
   @ApiProperty({ description: '仓库名称' })
-  repository: string;
+  repository: string
 
   @Column({ length: 100 })
   @ApiProperty({ description: '分支名称' })
-  branch: string;
+  branch: string
 
   @Column({ default: true })
   @ApiProperty({ description: '是否启用' })
-  enabled: boolean;
+  enabled: boolean
 
   @CreateDateColumn()
   @ApiProperty({ description: '创建时间' })
-  created_at: Date;
+  created_at: Date
 
   @Column({ type: 'datetime', nullable: true })
   @ApiProperty({ description: '最后同步时间' })
-  last_sync_at: Date;
+  last_sync_at: Date
 }

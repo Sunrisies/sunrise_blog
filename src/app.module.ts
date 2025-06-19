@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { ArticleCommentsModule } from './apps/article-comments/article-comments.module'
 import { ArticleModule } from './apps/article/article.module'
@@ -13,14 +14,13 @@ import { GlobalConfigModule } from './config/config.module'
 import { MysqlConnectionModule } from './config/mysql.module'
 import { RedisConnectionModule } from './config/redis.module'
 import { TransformInterceptor } from './interceptor/transform.interceptor'
-import { ConfigService } from '@nestjs/config'
 
-import { VisitLogModule } from './apps/visit-log/visit-log.module'
-import { MessageModule } from './apps/message/message.module'
-import { PgConnectionModule } from './config/postgres.module'
 import { GithubCommitModule } from './apps/github-commit/github-commit.module'
 import { GithubRepositoriesModule } from './apps/github-repositories/github-repositories.module'
+import { MessageModule } from './apps/message/message.module'
 import { SitemapModule } from './apps/sitemap/sitemap.module'
+import { VisitLogModule } from './apps/visit-log/visit-log.module'
+import { PgConnectionModule } from './config/postgres.module'
 @Module({
   imports: [
     GlobalConfigModule,
@@ -55,4 +55,4 @@ import { SitemapModule } from './apps/sitemap/sitemap.module'
     }
   ]
 })
-export class AppModule { }
+export class AppModule {}

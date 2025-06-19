@@ -1,11 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
 export class CreateCategoryDto {
   @IsString({ message: '分类名必须是字符串类型' })
   @IsNotEmpty({ message: '分类名不能为空' })
@@ -13,23 +7,23 @@ export class CreateCategoryDto {
   @ApiProperty({
     description: '分类名',
     example: '分类名',
-    maxLength: 50,
+    maxLength: 50
   })
-  name: string;
+  name: string
 
   @IsOptional()
   @IsEnum(['article', 'library'], {
-    message: '类型必须是 article 或 library',
+    message: '类型必须是 article 或 library'
   })
   @ApiProperty({
     enum: ['article', 'library'],
     default: 'article',
-    required: false,
+    required: false
   })
-  type: string = 'article';
+  type: string = 'article'
 }
 
 export interface ICategory {
-  value: number;
-  label: string;
+  value: number
+  label: string
 }

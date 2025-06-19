@@ -1,15 +1,13 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
-import { CreateArticleCommentDto } from './create-article-comment.dto';
+import { PartialType } from '@nestjs/mapped-types'
+import { IsBoolean, IsOptional, IsString } from 'class-validator'
+import { CreateArticleCommentDto } from './create-article-comment.dto'
 
-export class UpdateArticleCommentDto extends PartialType(
-  CreateArticleCommentDto,
-) {
+export class UpdateArticleCommentDto extends PartialType(CreateArticleCommentDto) {
   @IsOptional()
   @IsString()
-  content?: string;
+  content?: string
 
   @IsOptional()
   @IsBoolean()
-  isDeleted?: boolean;
+  isDeleted?: boolean
 }

@@ -1,5 +1,5 @@
-import { Global, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { Global, Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
 @Global()
 @Module({
   imports: [
@@ -8,16 +8,16 @@ import { ConfigModule } from '@nestjs/config';
       envFilePath: `.env.${process.env.NODE_ENV || 'development'}.local`,
       load: [
         () => {
-          const env = process.env.NODE_ENV || 'development';
-          const configPath = `${env === 'development' ? 'src' : 'src'}/config/config.${env}.yaml`;
-          console.log(configPath, 'configPath---------');
-          const configContent = require('fs').readFileSync(configPath, 'utf8');
-          console.log(configContent, 'configContent');
-          return { ...require('yaml').parse(configContent), env };
-        },
-      ],
-    }),
+          const env = process.env.NODE_ENV || 'development'
+          const configPath = `${env === 'development' ? 'src' : 'src'}/config/config.${env}.yaml`
+          console.log(configPath, 'configPath---------')
+          const configContent = require('fs').readFileSync(configPath, 'utf8')
+          console.log(configContent, 'configContent')
+          return { ...require('yaml').parse(configContent), env }
+        }
+      ]
+    })
   ],
-  exports: [ConfigModule],
+  exports: [ConfigModule]
 })
 export class GlobalConfigModule {}

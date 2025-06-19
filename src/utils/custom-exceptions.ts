@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common'
 
 export class CustomUnauthorizedException extends HttpException {
   constructor(message: string, statusCode?: HttpStatus, data?: any) {
@@ -6,9 +6,9 @@ export class CustomUnauthorizedException extends HttpException {
       {
         code: statusCode || HttpStatus.UNAUTHORIZED,
         message: message,
-        data: data || null,
+        data: data || null
       },
-      statusCode || HttpStatus.UNAUTHORIZED,
-    );
+      statusCode || HttpStatus.UNAUTHORIZED
+    )
   }
 }
