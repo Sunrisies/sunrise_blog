@@ -11,7 +11,7 @@ export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>
-  ) {}
+  ) { }
   async create(createCategoryDto: CreateCategoryDto): Promise<ResponseDto<CreateCategoryDto>> {
     const findCategory = await this.categoryRepository.findOne({
       where: { name: createCategoryDto.name }
@@ -85,6 +85,43 @@ export class CategoriesService {
     } catch (error) {
       console.error('删除分类失败:', error)
       return { message: '删除失败', data: null }
+    }
+  }
+  // 
+  async getCategoryList({ type, page, limit }: {
+    type: 'article' | 'library',
+    page: number,
+    limit: number
+  }): Promise<any> {
+    // 分类查询
+    const queryBuilder = this.categoryRepository.createQueryBuilder('category')
+    type && queryBuilder.where('category.type = :type', { type })
+    queryBuilder.skip((page - 1) * limit)
+    queryBuilder.take(limit)
+    const categories = await queryBuilder.getMany()
+    const total = await queryBuilder.getCount()
+    const totalPage = Math.ceil(total / limit)
+    // 直接检查原始页码
+    if (page > totalPage && totalPage > 0) {
+      // 添加 totalPage > 0 防止零数据误判
+      return {
+        code: 400,
+        message: `请求页码超出范围，最大页数为 ${totalPage}`,
+        data: null
+      }
+    }
+    const startIndex = (page - 1) * limit
+    return {
+      code: 200,
+      data: {
+        data: categories,
+        pagination: {
+          total,
+          limit,
+          page
+        }
+      },
+      message: '查询成功'
     }
   }
 }
