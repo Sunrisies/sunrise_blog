@@ -1,6 +1,8 @@
 import { JwtGuard } from '@/guard/jwt.guard'
 import { PaginatedResponseDto, ResponseDto } from '@/types'
 import {
+  DefaultValuePipe,
+  ParseIntPipe,
   BadRequestException,
   Body,
   Controller,
@@ -21,7 +23,7 @@ import { TagsService } from './tags.service'
 @ApiBearerAuth()
 @Controller('tags')
 export class TagsController {
-  constructor(private readonly tagsService: TagsService) {}
+  constructor(private readonly tagsService: TagsService) { }
 
   @Post()
   @ApiOperation({ summary: '添加标签' })
@@ -75,5 +77,30 @@ export class TagsController {
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<ResponseDto<null>> {
     return await this.tagsService.remove(+id)
+  }
+
+  // 获取标签列表带有分页功能的
+  @ApiOperation({ summary: '获取标签列表' })
+  @ApiOkResponse({ description: '获取成功', type: PaginatedResponseDto<ITag> })
+  @ApiQuery({
+    name: 'type',
+    description: '标签类型',
+    required: false,
+    enum: ['article', 'library']
+  })
+  @Get("list")
+  async getTagList(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query(
+      'type',
+      new ParseEnumPipe(['article', 'library'], {
+        optional: true, // 添加可选配置
+        exceptionFactory: () => new BadRequestException('type参数必须是 article 或 library')
+      })
+    )
+    type?: 'article' | 'library'
+  ): Promise<any> {
+    return await this.tagsService.getTagList({page, limit, type})
   }
 }
