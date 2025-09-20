@@ -13,19 +13,19 @@ import { UserModule } from './apps/user/user.module'
 import { GlobalConfigModule } from './config/config.module'
 import { MysqlConnectionModule } from './config/mysql.module'
 import { RedisConnectionModule } from './config/redis.module'
-import { TransformInterceptor } from './interceptor/transform.interceptor'
+// import { TransformInterceptor } from './interceptor/transform.interceptor'
 
 import { GithubCommitModule } from './apps/github-commit/github-commit.module'
 import { GithubRepositoriesModule } from './apps/github-repositories/github-repositories.module'
 import { MessageModule } from './apps/message/message.module'
 import { SitemapModule } from './apps/sitemap/sitemap.module'
-import { VisitLogModule } from './apps/visit-log/visit-log.module'
-import { PgConnectionModule } from './config/postgres.module'
+// import { VisitLogModule } from './apps/visit-log/visit-log.module'
+// import { PgConnectionModule } from './config/postgres.module'
 @Module({
   imports: [
     GlobalConfigModule,
     MysqlConnectionModule,
-    PgConnectionModule,
+    // PgConnectionModule,
     UserModule,
     AuthModule,
     TagsModule,
@@ -40,7 +40,7 @@ import { PgConnectionModule } from './config/postgres.module'
       inject: [ConfigService]
     }),
     RedisConnectionModule,
-    VisitLogModule,
+    // VisitLogModule,
     MessageModule,
     GithubCommitModule,
     GithubRepositoriesModule,
@@ -48,11 +48,11 @@ import { PgConnectionModule } from './config/postgres.module'
   ],
   controllers: [],
   providers: [
-    {
-      // 全局拦截器
-      provide: APP_INTERCEPTOR,
-      useClass: TransformInterceptor
-    }
+    // {
+    //   // 全局拦截器
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: TransformInterceptor
+    // }
   ]
 })
-export class AppModule {}
+export class AppModule { }
